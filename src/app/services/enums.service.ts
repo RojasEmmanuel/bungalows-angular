@@ -31,4 +31,8 @@ export class EnumsService {
   getTiposContacto(): Observable<EnumOption[]> {
     return this.http.get<EnumOption[]>(`${this.baseUrl}/tipos-contacto`);
   }
+
+  getParentescos(): Observable<EnumOption[]> {
+    return this.http.get<EnumOption[]>(`${this.baseUrl}/parentescos`);
+  }
 }

@@ -16,6 +16,7 @@ import { LaboralForm } from '../../components/laboral-form/laboral-form';
 import { ConfidencialForm } from '../../components/confidencial-form/confidencial-form';
 import { ConfidencialResponse } from '../../models/confidencial.model';
 import { ColaboradorDatos } from '../../components/colaborador-datos/colaborador-datos';
+import { Responsable } from '../../components/responsable/responsable';
 
 
 @Component({
@@ -26,7 +27,8 @@ import { ColaboradorDatos } from '../../components/colaborador-datos/colaborador
     ColaboradorInfo, ColaboradorDocumentos, 
     ColaboradorContactos, 
     DireccionForm, ModalComponent,
-    LaboralForm, ConfidencialForm, ColaboradorDatos
+    LaboralForm, ConfidencialForm, ColaboradorDatos,
+    Responsable
   ],
 
   templateUrl: './colaborador-view.html',
@@ -136,7 +138,7 @@ export class ColaboradorView implements OnInit {
     if (c) this.cargarColaborador(c.id);
   }
 
-  
+
   // ---------- Handlers ----------
   volver(): void {
     this.router.navigate(['/colaboradores']);
