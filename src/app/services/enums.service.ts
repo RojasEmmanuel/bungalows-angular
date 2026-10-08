@@ -35,4 +35,8 @@ export class EnumsService {
   getParentescos(): Observable<EnumOption[]> {
     return this.http.get<EnumOption[]>(`${this.baseUrl}/parentescos`);
   }
+
+  getEstatusPrestamo(): Observable<EnumOption[]> {
+    return this.http.get<EnumOption[]>(`${this.baseUrl}/estatus-prestamos`);
+  }
 }

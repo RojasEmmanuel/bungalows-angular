@@ -1,0 +1,103 @@
+@if (cargando()) {
+  <p class="state">Cargando colaboradores…</p>
+} @else {
+  <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    @if (errorGeneral()) {
+      <div class="banner">{{ errorGeneral() }}</div>
+    }
+
+    <!-- Colaborador -->
+    <div class="field">
+      <label class="field__label" for="p-colaborador">Colaborador</label>
+      <select
+        id="p-colaborador"
+        class="field__input"
+        formControlName="colaboradorId"
+        [disabled]="guardando()"
+      >
+        <option [ngValue]="null" disabled>Selecciona un colaborador…</option>
+        @for (c of colaboradores(); track c.id) {
+          <option [ngValue]="c.id">
+            {{ c.nombreCompleto }} — {{ c.puesto }} ({{ c.ubicacion }})
+          </option>
+        }
+      </select>
+      @if (errorDe('colaboradorId'); as msg) {
+        <p class="field__error">{{ msg }}</p>
+      }
+    </div>
+
+    <!-- Monto + fecha -->
+    <div class="grid grid--2">
+      <div class="field">
+        <label class="field__label" for="p-monto">Monto</label>
+        <input
+          id="p-monto"
+          class="field__input"
+          type="number"
+          min="100"
+          step="0.01"
+          formControlName="monto"
+          placeholder="Ej. 5000"
+          [disabled]="guardando()"
+        />
+        @if (errorDe('monto'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="p-fecha">Fecha del préstamo</label>
+        <input
+          id="p-fecha"
+          class="field__input"
+          type="date"
+          formControlName="fechaPrestamo"
+          [disabled]="guardando()"
+        />
+        @if (errorDe('fechaPrestamo'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+    </div>
+
+    <!-- Observaciones -->
+    <div class="field">
+      <label class="field__label" for="p-obs">Observaciones</label>
+      <textarea
+        id="p-obs"
+        class="field__input field__input--area"
+        formControlName="observaciones"
+        placeholder="Motivo del préstamo, condiciones, etc. (opcional)"
+        rows="3"
+        maxlength="300"
+        [disabled]="guardando()"
+      ></textarea>
+      <p class="field__hint">
+        {{ form.getRawValue().observaciones.length }} / 300 caracteres
+      </p>
+      @if (errorDe('observaciones'); as msg) {
+        <p class="field__error">{{ msg }}</p>
+      }
+    </div>
+
+    <!-- Acciones -->
+    <div class="actions">
+      <button
+        type="button"
+        class="btn btn--ghost"
+        (click)="cancelar()"
+        [disabled]="guardando()"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        class="btn btn--primary"
+        [disabled]="guardando()"
+      >
+        @if (guardando()) { Guardando… } @else { Crear préstamo }
+      </button>
+    </div>
+  </form>
+}

@@ -1,0 +1,95 @@
+@if (cargando()) {
+  <p class="state">Cargando préstamo…</p>
+} @else {
+  <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    @if (errorGeneral()) {
+      <div class="banner">{{ errorGeneral() }}</div>
+    }
+
+    <div class="grid grid--2">
+      <div class="field">
+        <label class="field__label" for="pe-monto">Monto</label>
+        <input
+          id="pe-monto"
+          class="field__input"
+          type="number"
+          min="100"
+          step="0.01"
+          formControlName="monto"
+          [disabled]="guardando()"
+        />
+        @if (errorDe('monto'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="pe-fecha">Fecha del préstamo</label>
+        <input
+          id="pe-fecha"
+          class="field__input"
+          type="date"
+          formControlName="fechaPrestamo"
+          [disabled]="guardando()"
+        />
+        @if (errorDe('fechaPrestamo'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="pe-estatus">Estatus</label>
+      <select
+        id="pe-estatus"
+        class="field__input"
+        formControlName="estatus"
+        [disabled]="guardando()"
+      >
+        @for (e of estatusList(); track e.value) {
+          <option [value]="e.value">{{ e.label }}</option>
+        }
+      </select>
+      @if (errorDe('estatus'); as msg) {
+        <p class="field__error">{{ msg }}</p>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="pe-obs">Observaciones</label>
+      <textarea
+        id="pe-obs"
+        class="field__input field__input--area"
+        formControlName="observaciones"
+        placeholder="Motivo del préstamo, condiciones, etc. (opcional)"
+        rows="3"
+        maxlength="300"
+        [disabled]="guardando()"
+      ></textarea>
+      <p class="field__hint">
+        {{ form.getRawValue().observaciones.length }} / 300 caracteres
+      </p>
+      @if (errorDe('observaciones'); as msg) {
+        <p class="field__error">{{ msg }}</p>
+      }
+    </div>
+
+    <div class="actions">
+      <button
+        type="button"
+        class="btn btn--ghost"
+        (click)="cancelar()"
+        [disabled]="guardando()"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        class="btn btn--primary"
+        [disabled]="guardando()"
+      >
+        @if (guardando()) { Guardando… } @else { Guardar cambios }
+      </button>
+    </div>
+  </form>
+}

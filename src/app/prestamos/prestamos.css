@@ -1,0 +1,42 @@
+.page {
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.page__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.page__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin: 0;
+}
+
+.page__subtitle {
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
+  margin: 0.25rem 0 0 0;
+}
+
+.btn-new {
+  height: 38px;
+  padding: 0 1rem;
+  border: 1px solid var(--color-brand);
+  border-radius: 0.5rem;
+  background-color: var(--color-brand);
+  color: var(--color-surface);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
