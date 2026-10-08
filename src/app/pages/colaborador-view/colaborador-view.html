@@ -12,6 +12,7 @@
           (editarDireccion)="abrirModalDireccion()"
           (editarLaboral)="abrirModalLaboral()"
           (editarConfidencial)="abrirModalConfidencial()"
+          (editarDatos)="abrirModalDatos()"
         />
       </div>
 
@@ -68,6 +69,20 @@
       [colaboradorId]="c.id"
       (guardado)="onConfidencialGuardado($event)"
       (cancelado)="modalConfidencialAbierto.set(false)"
+    />
+  }
+</app-modal>
+
+<app-modal
+  titulo="Editar datos personales"
+  [abierto]="modalDatosAbierto()"
+  (cerrar)="modalDatosAbierto.set(false)"
+>
+  @if (colaborador(); as c) {
+    <app-colaborador-datos
+      [colaboradorId]="c.id"
+      (guardado)="onDatosGuardados($event)"
+      (cancelado)="modalDatosAbierto.set(false)"
     />
   }
 </app-modal>

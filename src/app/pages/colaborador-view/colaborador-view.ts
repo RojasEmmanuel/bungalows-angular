@@ -15,6 +15,7 @@ import { LaboralResponse } from '../../models/laboral.model';
 import { LaboralForm } from '../../components/laboral-form/laboral-form';  
 import { ConfidencialForm } from '../../components/confidencial-form/confidencial-form';
 import { ConfidencialResponse } from '../../models/confidencial.model';
+import { ColaboradorDatos } from '../../components/colaborador-datos/colaborador-datos';
 
 
 @Component({
@@ -25,7 +26,7 @@ import { ConfidencialResponse } from '../../models/confidencial.model';
     ColaboradorInfo, ColaboradorDocumentos, 
     ColaboradorContactos, 
     DireccionForm, ModalComponent,
-    LaboralForm, ConfidencialForm
+    LaboralForm, ConfidencialForm, ColaboradorDatos
   ],
 
   templateUrl: './colaborador-view.html',
@@ -39,7 +40,7 @@ export class ColaboradorView implements OnInit {
   modalDireccionAbierto = signal(false);
   modalLaboralAbierto = signal(false); 
   modalConfidencialAbierto = signal(false);
-
+  modalDatosAbierto = signal(false); 
 
   // ---------- Estado ----------
   colaborador = signal<ColaboradorResponse | null>(null);
@@ -120,6 +121,22 @@ export class ColaboradorView implements OnInit {
     if (c) this.cargarColaborador(c.id);
   }
 
+
+  abrirModalDatos(): void {
+    this.modalDatosAbierto.set(true);
+  }
+
+  cerrarModalDatos(): void {
+    this.modalDatosAbierto.set(false);
+  }
+
+  onDatosGuardados(_c: ColaboradorResponse): void {
+    this.modalDatosAbierto.set(false);
+    const c = this.colaborador();
+    if (c) this.cargarColaborador(c.id);
+  }
+
+  
   // ---------- Handlers ----------
   volver(): void {
     this.router.navigate(['/colaboradores']);

@@ -1,1 +1,167 @@
-<p>colaborador-datos works!</p>
+@if (cargando()) {
+  <p class="state">Cargando datos del colaborador…</p>
+} @else {
+  <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    @if (errorGeneral()) {
+      <div class="banner">{{ errorGeneral() }}</div>
+    }
+
+    <!-- ============ Foto ============ -->
+    <div class="foto-field">
+      <label class="field__label">Fotografía</label>
+
+      <div class="foto">
+        <div class="foto__preview">
+          @if (tieneFoto()) {
+            <img
+              class="foto__img"
+              [src]="imagenActual()!"
+              alt="Fotografía"
+              (error)="onImageError()"
+            />
+          } @else {
+            <div class="foto__avatar">
+              <span class="foto__avatar-text">{{ iniciales() }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="foto__actions">
+          <label class="filepick" for="c-foto">
+            <span class="filepick__text">
+              @if (hayArchivoNuevo()) { Cambiar foto } @else { Seleccionar foto }
+            </span>
+            <input
+              id="c-foto"
+              class="filepick__input"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              (change)="onFotoSeleccionada($event)"
+              [disabled]="guardando() || subiendoFoto()"
+            />
+          </label>
+
+          @if (hayArchivoNuevo()) {
+            <button
+              type="button"
+              class="btn btn--ghost"
+              (click)="quitarFotoNueva()"
+              [disabled]="guardando() || subiendoFoto()"
+            >
+              Descartar cambio
+            </button>
+          }
+
+          <p class="field__hint">JPG, PNG o WEBP · máx 5 MB</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ Nombre ============ -->
+    <div class="grid grid--3">
+      <div class="field">
+        <label class="field__label" for="c-nombre">Nombre(s)</label>
+        <input
+          id="c-nombre"
+          class="field__input"
+          type="text"
+          formControlName="nombre"
+          autocomplete="off"
+          [disabled]="guardando()"
+        />
+        @if (errorDe('nombre'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="c-ap">Apellido paterno</label>
+        <input
+          id="c-ap"
+          class="field__input"
+          type="text"
+          formControlName="ap"
+          autocomplete="off"
+          [disabled]="guardando()"
+        />
+        @if (errorDe('ap'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="c-am">Apellido materno</label>
+        <input
+          id="c-am"
+          class="field__input"
+          type="text"
+          formControlName="am"
+          autocomplete="off"
+          [disabled]="guardando()"
+        />
+        @if (errorDe('am'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+    </div>
+
+    <!-- ============ Fecha nacimiento + Estado civil ============ -->
+    <div class="grid grid--2">
+      <div class="field">
+        <label class="field__label" for="c-fecha">Fecha de nacimiento</label>
+        <input
+          id="c-fecha"
+          class="field__input"
+          type="date"
+          formControlName="fechaNacimiento"
+          [disabled]="guardando()"
+        />
+        @if (errorDe('fechaNacimiento'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="c-estado-civil">Estado civil</label>
+        <select
+          id="c-estado-civil"
+          class="field__input"
+          formControlName="estadoCivil"
+          [disabled]="guardando()"
+        >
+          @for (e of estadosCivil(); track e.value) {
+            <option [value]="e.value">{{ e.label }}</option>
+          }
+        </select>
+        @if (errorDe('estadoCivil'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+    </div>
+
+    <!-- ============ Acciones ============ -->
+    <div class="actions">
+      <button
+        type="button"
+        class="btn btn--ghost"
+        (click)="cancelar()"
+        [disabled]="guardando() || subiendoFoto()"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        class="btn btn--primary"
+        [disabled]="guardando() || subiendoFoto()"
+      >
+        @if (subiendoFoto()) {
+          Subiendo foto…
+        } @else if (guardando()) {
+          Guardando…
+        } @else {
+          Guardar cambios
+        }
+      </button>
+    </div>
+  </form>
+}

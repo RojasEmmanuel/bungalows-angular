@@ -16,6 +16,7 @@ export class ColaboradorInfo {
   editarDireccion = output<void>();
   editarLaboral = output<void>(); 
   editarConfidencial = output<void>(); 
+  editarDatos = output<void>();  
 
   private readonly imageFailed = signal(false);
 
@@ -61,5 +62,9 @@ export class ColaboradorInfo {
 
   onEditarConfidencial(): void {
     this.editarConfidencial.emit();
+  }
+
+  onEditarDatos(): void {
+    this.editarDatos.emit();
   }
 }
