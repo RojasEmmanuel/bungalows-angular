@@ -29,8 +29,11 @@
     } @else {
       <div class="grid">
         @for (u of ubicaciones(); track u.id) {
-          <app-ubicacion-card [ubicacion]="u" />
-        }
+        <app-ubicacion-card
+          [ubicacion]="u"
+          (editar)="abrirModalEditarUbicacion($event)"
+        />
+}
       </div>
     }
   </div>
@@ -58,7 +61,6 @@
   </aside>
 </section>
 
-<!-- Modal: Nueva ubicación -->
 <app-modal
   titulo="Nueva ubicación"
   [abierto]="modalUbicacionAbierto()"
@@ -70,7 +72,6 @@
   />
 </app-modal>
 
-<!-- Modal: Nuevo puesto -->
 <app-modal
   titulo="Nuevo puesto"
   [abierto]="modalPuestoAbierto()"
@@ -80,4 +81,19 @@
     (creado)="onPuestoCreado($event)"
     (cancelado)="cerrarModalPuesto()"
   />
+</app-modal>
+
+
+<app-modal
+  titulo="Editar ubicación"
+  [abierto]="modalUbicacionPatchAbierto()"
+  (cerrar)="cerrarModalEditarUbicacion()"
+>
+  @if (ubicacionSeleccionadaId(); as id) {
+    <app-ubicacion-patch
+      [ubicacionId]="id"
+      (guardado)="onUbicacionActualizada($event)"
+      (cancelado)="cerrarModalEditarUbicacion()"
+    />
+  }
 </app-modal>

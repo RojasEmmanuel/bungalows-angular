@@ -1,7 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { UbicacionRequest, UbicacionResponse, UbicacionDetail} from '../models/ubicacion.model';
+import { 
+  UbicacionRequest, UbicacionResponse, UbicacionDetail, UbicacionPatch
+} from '../models/ubicacion.model';
 
 @Injectable({ providedIn: 'root' })
 export class UbicacionService {
@@ -19,6 +21,14 @@ export class UbicacionService {
   /** Listado simple para selects */
   getUbicaciones(): Observable<UbicacionResponse[]> {
     return this.http.get<UbicacionResponse[]>(this.baseUrl);
+  }
+
+  getUbicacionById(id: number): Observable<UbicacionResponse> {
+    return this.http.get<UbicacionResponse>(`${this.baseUrl}/${id}`);
+  }
+
+  actualizarUbicacion(body: UbicacionPatch): Observable<UbicacionResponse> {
+    return this.http.patch<UbicacionResponse>(this.baseUrl, body);
   }
 }
 

@@ -10,6 +10,7 @@ import { AntiguedadProximaCardComponent } from '../../components/antiguedad-prox
 import { UbicacionFormComponent } from '../../components/ubicacion-form/ubicacion-form';
 import { PuestoForm } from '../../components/puesto-form/puesto-form';
 import { ModalComponent } from '../../components/modal/modal';
+import { UbicacionPatch } from '../../components/ubicacion-patch/ubicacion-patch';
 
 @Component({
   selector: 'app-inicio',
@@ -21,6 +22,7 @@ import { ModalComponent } from '../../components/modal/modal';
     UbicacionFormComponent,
     PuestoForm,          // ← agregar
     ModalComponent,
+    UbicacionPatch
   ],
   templateUrl: './inicio.html',
   styleUrl: './inicio.css',
@@ -37,7 +39,9 @@ export class InicioComponent implements OnInit {
 
   // ---------- Modales ----------
   modalUbicacionAbierto = signal(false);
-  modalPuestoAbierto = signal(false);      // ← nuevo
+  modalPuestoAbierto = signal(false);      
+  modalUbicacionPatchAbierto = signal(false);
+  ubicacionSeleccionadaId = signal<number | null>(null);  
 
   ngOnInit(): void {
     this.cargarUbicaciones();
@@ -102,4 +106,23 @@ export class InicioComponent implements OnInit {
       },
     });
   }
+
+
+  abrirModalEditarUbicacion(u: UbicacionDetail): void {
+    this.ubicacionSeleccionadaId.set(u.id);
+    this.modalUbicacionPatchAbierto.set(true);
+  }
+
+  cerrarModalEditarUbicacion(): void {
+    this.modalUbicacionPatchAbierto.set(false);
+    this.ubicacionSeleccionadaId.set(null);
+  }
+
+  onUbicacionActualizada(_u: UbicacionResponse): void {
+    this.modalUbicacionPatchAbierto.set(false);
+    this.ubicacionSeleccionadaId.set(null);
+    this.cargarUbicaciones();   // recarga la lista para reflejar los cambios
+  }
+
+
 }

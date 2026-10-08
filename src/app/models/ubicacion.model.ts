@@ -29,3 +29,10 @@ export interface UbicacionResponse {
 export interface UploadResponse {
   path: string;
 }
+
+export interface UbicacionPatch{
+  id:number,
+  nombre:string,
+  direccion:string,
+  imagenPath:string | null
+}

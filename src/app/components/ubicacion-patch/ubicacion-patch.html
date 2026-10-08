@@ -1,0 +1,119 @@
+@if (cargando()) {
+  <p class="state">Cargando ubicación…</p>
+} @else {
+  <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    @if (errorGeneral()) {
+      <div class="banner">{{ errorGeneral() }}</div>
+    }
+
+    <!-- Imagen -->
+    <div class="field">
+      <label class="field__label">Imagen</label>
+
+      <div class="imagen">
+        <div class="imagen__preview">
+          @if (hayImagen()) {
+            <img
+              class="imagen__img"
+              [src]="imagenActual()!"
+              alt="Preview"
+              (error)="onImageError()"
+            />
+          } @else {
+            <div class="imagen__avatar">
+              <span class="imagen__avatar-text">{{ iniciales() }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="imagen__actions">
+          <label class="filepick" for="u-imagen">
+            <span class="filepick__text">
+              @if (hayArchivoNuevo()) { Cambiar imagen } @else { Seleccionar imagen }
+            </span>
+            <input
+              id="u-imagen"
+              class="filepick__input"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              (change)="onArchivoSeleccionado($event)"
+              [disabled]="guardando() || subiendoImagen()"
+            />
+          </label>
+
+          @if (hayArchivoNuevo()) {
+            <button
+              type="button"
+              class="btn btn--ghost"
+              (click)="quitarImagenNueva()"
+              [disabled]="guardando() || subiendoImagen()"
+            >
+              Descartar cambio
+            </button>
+          }
+
+          <p class="field__hint">JPG, PNG o WEBP · máx 5 MB</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nombre -->
+    <div class="field">
+      <label class="field__label" for="u-nombre">Nombre</label>
+      <input
+        id="u-nombre"
+        class="field__input"
+        type="text"
+        formControlName="nombre"
+        placeholder="Ej. Bungalows Zicatela"
+        autocomplete="off"
+        [disabled]="guardando()"
+      />
+      @if (errorDe('nombre'); as msg) {
+        <p class="field__error">{{ msg }}</p>
+      }
+    </div>
+
+    <!-- Dirección -->
+    <div class="field">
+      <label class="field__label" for="u-direccion">Dirección</label>
+      <input
+        id="u-direccion"
+        class="field__input"
+        type="text"
+        formControlName="direccion"
+        placeholder="Ej. Av. del Mar 123"
+        autocomplete="off"
+        [disabled]="guardando()"
+      />
+      @if (errorDe('direccion'); as msg) {
+        <p class="field__error">{{ msg }}</p>
+      }
+    </div>
+
+    <!-- Acciones -->
+    <div class="actions">
+      <button
+        type="button"
+        class="btn btn--ghost"
+        (click)="cancelar()"
+        [disabled]="guardando() || subiendoImagen()"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        class="btn btn--primary"
+        [disabled]="guardando() || subiendoImagen()"
+      >
+        @if (subiendoImagen()) {
+          Subiendo imagen…
+        } @else if (guardando()) {
+          Guardando…
+        } @else {
+          Guardar cambios
+        }
+      </button>
+    </div>
+  </form>
+}

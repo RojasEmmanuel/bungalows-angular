@@ -1,4 +1,4 @@
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { UbicacionDetail } from '../../models/ubicacion.model';
 
 @Component({
@@ -10,6 +10,9 @@ import { UbicacionDetail } from '../../models/ubicacion.model';
 export class UbicacionCardComponent {
   ubicacion = input.required<UbicacionDetail>();
 
+  /** Emite cuando el usuario hace click en el icono de editar */
+  editar = output<UbicacionDetail>();
+
   imageFailed = signal(false);
 
   showAvatar = computed(() => {
@@ -20,9 +23,7 @@ export class UbicacionCardComponent {
   iniciales = computed(() => {
     const nombre = this.ubicacion().nombre?.trim() ?? '';
     if (!nombre) return '?';
-
     const palabras = nombre.split(/\s+/).filter(Boolean);
-
     if (palabras.length === 1) {
       return palabras[0].substring(0, 2).toUpperCase();
     }
@@ -31,5 +32,9 @@ export class UbicacionCardComponent {
 
   onImageError(): void {
     this.imageFailed.set(true);
+  }
+
+  onEditar(): void {
+    this.editar.emit(this.ubicacion());
   }
 }
