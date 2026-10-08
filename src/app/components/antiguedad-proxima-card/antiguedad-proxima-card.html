@@ -1,7 +1,18 @@
 <article class="row">
-  <div class="row__badge">
-    <span class="row__days">{{ antiguedad().diasFaltantes }}</span>
-    <span class="row__days-label">días</span>
+  <!-- Avatar -->
+  <div class="row__avatar">
+    @if (showAvatar()) {
+      <div class="avatar">
+        <span class="avatar__text">{{ iniciales() }}</span>
+      </div>
+    } @else {
+      <img
+        class="avatar avatar--img"
+        [src]="antiguedad().fotografia!"
+        [alt]="antiguedad().nombreColaborador"
+        (error)="onImageError()"
+      />
+    }
   </div>
 
   <div class="row__info">
@@ -9,5 +20,10 @@
     <p class="row__meta">
       Cumple {{ antiguedad().antiguedadProxima }} años · {{ antiguedad().diasVacaciones }} días de vacaciones
     </p>
+  </div>
+
+   <div class="row__badge">
+    <span class="row__days">{{ antiguedad().diasFaltantes }}</span>
+    <span class="row__days-label">días</span>
   </div>
 </article>

@@ -34,8 +34,40 @@
   margin-top: 0.125rem;
 }
 
+/* Avatar */
+.row__avatar {
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  background-color: var(--color-brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.avatar__text {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-surface);
+  letter-spacing: 0.03em;
+  user-select: none;
+}
+
+.avatar--img {
+  object-fit: cover;
+  display: block;
+  background-color: var(--color-brand-soft);
+}
+
+/* Info */
 .row__info {
   min-width: 0;
+  flex: 1;   /* ← agregado para que ocupe el resto */
 }
 
 .row__name {

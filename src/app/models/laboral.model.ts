@@ -27,6 +27,7 @@ export interface LaboralResponse{
 export interface AntiguedadesProximas {
   id: number;
   nombreColaborador: string;
+  fotografia: string | null;
   diasFaltantes: number;
   antiguedadProxima: number;
   fechaIngreso: string;   // "2021-03-12"
