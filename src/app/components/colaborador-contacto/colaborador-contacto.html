@@ -1,0 +1,246 @@
+<section class="contactos">
+  <header class="contactos__head">
+    <div>
+      <h3 class="contactos__title">Contactos</h3>
+      <p class="contactos__subtitle">Medios de contacto del colaborador.</p>
+    </div>
+
+    <button type="button" class="btn-new" (click)="abrirModalCrear()">
+      Nuevo
+    </button>
+  </header>
+
+  <!-- ===== Lista ===== -->
+  @if (loading()) {
+    <p class="state">Cargando contactos…</p>
+  } @else if (error()) {
+    <p class="state state--error">{{ error() }}</p>
+  } @else if (contactos().length === 0) {
+    <p class="state">No hay contactos registrados.</p>
+  } @else {
+    <ul class="contact-list">
+      @for (c of contactos(); track c.id) {
+        <li class="contact">
+          <div class="contact__info">
+            <span class="contact__tipo">{{ labelTipo(c.tipo) }}</span>
+            <span class="contact__valor">{{ c.contacto }}</span>
+          </div>
+
+          <div class="contact__actions">
+            <button
+              type="button"
+              class="btn btn--ghost"
+              (click)="abrirModalEditar(c)"
+            >
+              Editar
+            </button>
+            <button
+              type="button"
+              class="btn btn--danger"
+              (click)="abrirModalEliminar(c)"
+            >
+              Eliminar
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>
+
+<!-- ==================== MODAL CREAR ==================== -->
+@if (modalCrearAbierto()) {
+  <div class="modal-backdrop" (click)="cerrarModalCrear()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <header class="modal__head">
+        <h4 class="modal__title">{{ tituloModalCrear() }}</h4>
+        <button
+          type="button"
+          class="modal__close"
+          (click)="cerrarModalCrear()"
+          [disabled]="guardando()"
+          aria-label="Cerrar"
+        >
+          ✕
+        </button>
+      </header>
+
+      <div class="modal__body">
+        @if (errorForm()) {
+          <div class="banner">{{ errorForm() }}</div>
+        }
+
+        <div class="field">
+          <label class="field__label" for="c-tipo">Tipo de contacto</label>
+          <select
+            id="c-tipo"
+            class="field__input"
+            [ngModel]="formTipo()"
+            (ngModelChange)="formTipo.set($event)"
+            [disabled]="guardando()"
+          >
+            @for (t of tiposContacto(); track t.value) {
+              <option [ngValue]="t.value">{{ t.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="c-valor">Contacto</label>
+          <input
+            id="c-valor"
+            class="field__input"
+            type="text"
+            placeholder="Ej. 951 123 4567 / correo@dominio.com"
+            [ngModel]="formContacto()"
+            (ngModelChange)="formContacto.set($event)"
+            [disabled]="guardando()"
+          />
+        </div>
+      </div>
+
+      <footer class="modal__foot">
+        <button
+          type="button"
+          class="btn btn--ghost"
+          (click)="cerrarModalCrear()"
+          [disabled]="guardando()"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn--primary"
+          (click)="guardarNuevo()"
+          [disabled]="guardando()"
+        >
+          @if (guardando()) { Guardando… } @else { Guardar }
+        </button>
+      </footer>
+    </div>
+  </div>
+}
+
+<!-- ==================== MODAL EDITAR ==================== -->
+@if (modalEditarAbierto()) {
+  <div class="modal-backdrop" (click)="cerrarModalEditar()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <header class="modal__head">
+        <h4 class="modal__title">{{ tituloModalEditar() }}</h4>
+        <button
+          type="button"
+          class="modal__close"
+          (click)="cerrarModalEditar()"
+          [disabled]="guardando()"
+          aria-label="Cerrar"
+        >
+          ✕
+        </button>
+      </header>
+
+      <div class="modal__body">
+        @if (errorForm()) {
+          <div class="banner">{{ errorForm() }}</div>
+        }
+
+        <div class="field">
+          <label class="field__label" for="ce-tipo">Tipo de contacto</label>
+          <select
+            id="ce-tipo"
+            class="field__input"
+            [ngModel]="formTipo()"
+            (ngModelChange)="formTipo.set($event)"
+            [disabled]="guardando()"
+          >
+            @for (t of tiposContacto(); track t.value) {
+              <option [ngValue]="t.value">{{ t.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="ce-valor">Contacto</label>
+          <input
+            id="ce-valor"
+            class="field__input"
+            type="text"
+            [ngModel]="formContacto()"
+            (ngModelChange)="formContacto.set($event)"
+            [disabled]="guardando()"
+          />
+        </div>
+      </div>
+
+      <footer class="modal__foot">
+        <button
+          type="button"
+          class="btn btn--ghost"
+          (click)="cerrarModalEditar()"
+          [disabled]="guardando()"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn--primary"
+          (click)="guardarEdicion()"
+          [disabled]="guardando()"
+        >
+          @if (guardando()) { Guardando… } @else { Guardar cambios }
+        </button>
+      </footer>
+    </div>
+  </div>
+}
+
+<!-- ==================== MODAL ELIMINAR ==================== -->
+@if (modalEliminarAbierto()) {
+  <div class="modal-backdrop" (click)="cerrarModalEliminar()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <header class="modal__head">
+        <h4 class="modal__title">Eliminar contacto</h4>
+        <button
+          type="button"
+          class="modal__close"
+          (click)="cerrarModalEliminar()"
+          [disabled]="guardando()"
+          aria-label="Cerrar"
+        >
+          ✕
+        </button>
+      </header>
+
+      <div class="modal__body">
+        <p class="confirm-text">
+          ¿Seguro que deseas eliminar este contacto?
+        </p>
+
+        @if (contactoSeleccionado(); as c) {
+          <div class="confirm-box">
+            <span class="confirm-box__tipo">{{ labelTipo(c.tipo) }}</span>
+            <span class="confirm-box__valor">{{ c.contacto }}</span>
+          </div>
+        }
+      </div>
+
+      <footer class="modal__foot">
+        <button
+          type="button"
+          class="btn btn--ghost"
+          (click)="cerrarModalEliminar()"
+          [disabled]="guardando()"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn--danger-solid"
+          (click)="confirmarEliminar()"
+          [disabled]="guardando()"
+        >
+          @if (guardando()) { Eliminando… } @else { Eliminar }
+        </button>
+      </footer>
+    </div>
+  </div>
+}

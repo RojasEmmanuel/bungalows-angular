@@ -1,0 +1,176 @@
+@if (cargando()) {
+  <p class="state">Cargando datos laborales…</p>
+} @else {
+  <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    @if (errorGeneral()) {
+      <div class="banner">{{ errorGeneral() }}</div>
+    }
+
+    <!-- ============ Fechas y sueldo ============ -->
+    <div class="grid grid--3">
+      <div class="field">
+        <label class="field__label" for="l-fecha">Fecha de ingreso</label>
+        <input
+          id="l-fecha"
+          class="field__input"
+          type="date"
+          formControlName="fechaIngreso"
+          [disabled]="guardando()"
+        />
+        @if (errorDe('fechaIngreso'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="l-sueldo">Sueldo</label>
+        <input
+          id="l-sueldo"
+          class="field__input"
+          type="number"
+          min="1000"
+          step="0.01"
+          formControlName="sueldo"
+          [disabled]="guardando()"
+        />
+        @if (errorDe('sueldo'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="l-estatus">Estatus</label>
+        <select
+          id="l-estatus"
+          class="field__input"
+          formControlName="estatus"
+          [disabled]="guardando()"
+        >
+          @for (e of estatusList(); track e.value) {
+            <option [value]="e.value">{{ e.label }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <!-- ============ Puesto y ubicación ============ -->
+    <div class="grid grid--2">
+      <div class="field">
+        <label class="field__label" for="l-puesto">Puesto</label>
+        <select
+          id="l-puesto"
+          class="field__input"
+          formControlName="idPuesto"
+          [disabled]="guardando()"
+        >
+          <option [ngValue]="null" disabled>Selecciona un puesto…</option>
+          @for (p of puestos(); track p.id) {
+            <option [ngValue]="p.id">{{ p.nombre }}</option>
+          }
+        </select>
+        @if (errorDe('idPuesto'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="l-ubicacion">Ubicación</label>
+        <select
+          id="l-ubicacion"
+          class="field__input"
+          formControlName="idUbicacion"
+          [disabled]="guardando()"
+        >
+          <option [ngValue]="null" disabled>Selecciona una ubicación…</option>
+          @for (u of ubicaciones(); track u.id) {
+            <option [ngValue]="u.id">{{ u.nombre }}</option>
+          }
+        </select>
+        @if (errorDe('idUbicacion'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+    </div>
+
+    <!-- ============ Turno y día de descanso ============ -->
+    <div class="grid grid--2">
+      <div class="field">
+        <label class="field__label" for="l-turno">Turno</label>
+        <select
+          id="l-turno"
+          class="field__input"
+          formControlName="turno"
+          [disabled]="guardando()"
+        >
+          @for (t of turnos(); track t.value) {
+            <option [value]="t.value">{{ t.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="l-descanso">Día de descanso</label>
+        <select
+          id="l-descanso"
+          class="field__input"
+          formControlName="diaDescanso"
+          [disabled]="guardando()"
+        >
+          @for (d of diasLaborales(); track d.value) {
+            <option [value]="d.value">{{ d.label }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <!-- ============ Horario ============ -->
+    <div class="grid grid--2">
+      <div class="field">
+        <label class="field__label" for="l-entrada">Entrada</label>
+        <input
+          id="l-entrada"
+          class="field__input"
+          type="time"
+          formControlName="entrada"
+          [disabled]="guardando()"
+        />
+        @if (errorDe('entrada'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="l-salida">Salida</label>
+        <input
+          id="l-salida"
+          class="field__input"
+          type="time"
+          formControlName="salida"
+          [disabled]="guardando()"
+        />
+        @if (errorDe('salida'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+    </div>
+
+    <!-- ============ Acciones ============ -->
+    <div class="actions">
+      <button
+        type="button"
+        class="btn btn--ghost"
+        (click)="cancelar()"
+        [disabled]="guardando()"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        class="btn btn--primary"
+        [disabled]="guardando()"
+      >
+        @if (guardando()) { Guardando… } @else { Guardar cambios }
+      </button>
+    </div>
+  </form>
+}

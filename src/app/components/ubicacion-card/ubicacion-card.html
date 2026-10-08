@@ -1,0 +1,35 @@
+<article class="card">
+  <header class="card__media">
+    @if (showAvatar()) {
+      <div class="card__avatar">
+        <span class="card__avatar-text">{{ iniciales() }}</span>
+      </div>
+    } @else {
+      <img
+        class="card__img"
+        [src]="ubicacion().imagenPath"
+        [alt]="ubicacion().nombre"
+        (error)="onImageError()"
+      />
+    }
+    <span class="card__slug">{{ ubicacion().slug }}</span>
+  </header>
+
+  <div class="card__body">
+    <h3 class="card__title">{{ ubicacion().nombre }}</h3>
+    <p class="card__address">{{ ubicacion().direccion }}</p>
+
+    <dl class="card__stats">
+      <div class="stat">
+        <dt class="stat__label">Colaboradores</dt>
+        <dd class="stat__value">{{ ubicacion().totalColaboradores }}</dd>
+      </div>
+      <div class="stat">
+        <dt class="stat__label">Activos</dt>
+        <dd class="stat__value stat__value--brand">
+          {{ ubicacion().colaboradoresActivos }}
+        </dd>
+      </div>
+    </dl>
+  </div>
+</article>

@@ -1,0 +1,21 @@
+@if (abierto()) {
+  <div class="modal-backdrop" (click)="onBackdropClick()">
+    <div class="modal" (click)="onContenidoClick($event)">
+      <header class="modal__head">
+        <h3 class="modal__title">{{ titulo() }}</h3>
+        <button
+          type="button"
+          class="modal__close"
+          (click)="cerrar.emit()"
+          aria-label="Cerrar"
+        >
+          ✕
+        </button>
+      </header>
+
+      <div class="modal__body">
+        <ng-content />
+      </div>
+    </div>
+  </div>
+}

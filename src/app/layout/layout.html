@@ -1,0 +1,120 @@
+<div class="grid min-h-screen grid-cols-[260px_1fr] bg-white">
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <aside class="sticky top-0 flex h-screen flex-col gap-6 border-r border-line bg-white px-4 py-6">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-3 border-b border-line px-2 pb-6">
+      <div class="flex flex-col leading-tight">
+        <span class="text-base font-bold text-ink">Bungalows</span>
+        <span class="text-[11px] uppercase tracking-wider text-brand">Admin</span>
+      </div>
+    </div>
+
+    <!-- Navegación -->
+    <nav class="flex-1 overflow-y-auto">
+      <ul class="flex flex-col gap-1">
+        @for (item of navItems(); track item.route) {
+          <li>
+            <a
+              [routerLink]="item.route"
+              routerLinkActive="!bg-brand !text-white"
+              [routerLinkActiveOptions]="{ exact: false }"
+              class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-ink-soft transition-colors hover:bg-brand-soft hover:text-brand">
+
+              <span class="inline-flex h-5 w-5 items-center justify-center">
+                @switch (item.icon) {
+                  @case ('home') {
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="h-[18px] w-[18px]">
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                      <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                  }
+                  @case ('users') {
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="h-[18px] w-[18px]">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                  }
+                  @case ('document') {
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="h-[18px] w-[18px]">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                      <line x1="16" y1="13" x2="8" y2="13"/>
+                      <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                  }
+                  @case ('beach'){
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-parasol preview-icon"><path d="M12.5 11.134 18.196 21"/><path d="M20.425 5.299a10 10 0 0 0-16.941 9.78c.183.563.843.774 1.355.478L20.16 6.711c.512-.296.66-.973.264-1.413"/><path d="M21 21H3"/></svg>
+                  }
+                  @case ('money') {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-banknote preview-icon"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
+                  }
+                }
+              </span>
+              <span>{{ item.label }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+
+    <!-- Footer sidebar -->
+    <div class="border-t border-line pt-4 text-center">
+      <span class="text-[11px] text-brand">v1.0.0</span>
+    </div>
+  </aside>
+
+  <!-- ==================== MAIN ==================== -->
+  <div class="flex min-w-0 flex-col bg-white">
+
+    <!-- ========== TOPBAR ========== -->
+    <header class="sticky top-0 z-20 flex items-center justify-between border-b border-line bg-white px-8 py-3.5">
+      <h1 class="m-0 text-lg font-semibold text-ink"></h1>
+
+      <div class="flex items-center gap-4">
+
+        <!-- Perfil -->
+        <div class="flex cursor-pointer items-center gap-2.5 rounded-full py-1.5 pr-3 pl-1.5 transition-colors hover:bg-brand-soft">
+          <img
+            [src]="user().avatar"
+            [alt]="'Foto de ' + user().name"
+            class="h-9 w-9 rounded-full border-2 border-brand object-cover" />
+          <div class="hidden flex-col leading-tight sm:flex">
+            <span class="text-sm font-semibold text-ink">{{ user().name }}</span>
+            <span class="text-[11px] text-brand">{{ user().role }}</span>
+          </div>
+        </div>
+
+        <!-- Logout -->
+        <button
+          type="button"
+          class="inline-flex items-center gap-2 rounded-lg border border-brand px-4 py-2 text-sm font-semibold text-brand transition-colors hover:bg-brand hover:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+               class="h-4 w-4">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          <span class="hidden sm:inline">Salir</span>
+        </button>
+
+      </div>
+    </header>
+
+    <!-- ========== CONTENIDO ========== -->
+    <main class="flex-1 overflow-y-auto bg-white p-2">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+</div>

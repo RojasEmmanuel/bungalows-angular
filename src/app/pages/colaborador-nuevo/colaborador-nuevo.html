@@ -1,0 +1,11 @@
+<section class="page">
+  <header class="page__head">
+    <h1 class="page__title">Nuevo colaborador</h1>
+    <p class="page__subtitle">Registra los datos del nuevo colaborador.</p>
+  </header>
+
+  <app-colaborador-form
+    (creado)="onCreado($event)"
+    (cancelado)="onCancelado()"
+  />
+</section>

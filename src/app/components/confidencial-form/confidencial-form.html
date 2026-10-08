@@ -1,0 +1,79 @@
+@if (cargando()) {
+  <p class="state">Cargando datos confidenciales…</p>
+} @else {
+  <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    @if (errorGeneral()) {
+      <div class="banner">{{ errorGeneral() }}</div>
+    }
+
+    <div class="field">
+      <label class="field__label" for="c-curp">CURP</label>
+      <input
+        id="c-curp"
+        class="field__input field__input--mono"
+        type="text"
+        formControlName="curp"
+        placeholder="Ej. ROJE010101HDFXXX01"
+        maxlength="18"
+        autocomplete="off"
+        [disabled]="guardando()"
+      />
+      @if (errorDe('curp'); as msg) {
+        <p class="field__error">{{ msg }}</p>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="c-rfc">RFC</label>
+      <input
+        id="c-rfc"
+        class="field__input field__input--mono"
+        type="text"
+        formControlName="rfc"
+        placeholder="Ej. ROJE010101XXX"
+        maxlength="13"
+        autocomplete="off"
+        [disabled]="guardando()"
+      />
+      @if (errorDe('rfc'); as msg) {
+        <p class="field__error">{{ msg }}</p>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="c-nss">NSS</label>
+      <input
+        id="c-nss"
+        class="field__input field__input--mono"
+        type="text"
+        inputmode="numeric"
+        formControlName="nss"
+        placeholder="Ej. 12345678901"
+        maxlength="11"
+        autocomplete="off"
+        [disabled]="guardando()"
+      />
+      @if (errorDe('nss'); as msg) {
+        <p class="field__error">{{ msg }}</p>
+      }
+    </div>
+
+    <div class="actions">
+      <button
+        type="button"
+        class="btn btn--ghost"
+        (click)="cancelar()"
+        [disabled]="guardando()"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        class="btn btn--primary"
+        [disabled]="guardando()"
+      >
+        @if (guardando()) { Guardando… } @else { Guardar cambios }
+      </button>
+    </div>
+  </form>
+}

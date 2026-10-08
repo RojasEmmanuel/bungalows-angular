@@ -1,0 +1,73 @@
+<section class="view">
+  @if (loading()) {
+    <p class="state">Cargando información…</p>
+  } @else if (error()) {
+    <p class="state state--error">{{ error() }}</p>
+  } @else if (colaborador(); as c) {
+
+    <div class="view__grid">
+      <div class="view__main">
+        <app-colaborador-info
+          [colaborador]="c"
+          (editarDireccion)="abrirModalDireccion()"
+          (editarLaboral)="abrirModalLaboral()"
+          (editarConfidencial)="abrirModalConfidencial()"
+        />
+      </div>
+
+      <aside class="view__aside">
+        <div class="view__aside-top">
+          <app-colaborador-contactos [colaboradorId]="c.id" />
+        </div>
+        <div class="view__aside-bottom">
+          <app-colaborador-documentos [colaboradorId]="c.id" />
+        </div>
+      </aside>
+    </div>
+
+  }
+</section>
+
+<app-modal
+  titulo="Editar dirección"
+  [abierto]="modalDireccionAbierto()"
+  (cerrar)="modalDireccionAbierto.set(false)"
+>
+  @if (colaborador(); as c) {
+    <app-direccion-form
+      [colaboradorId]="c.id"
+      (guardado)="onDireccionGuardada($event)"
+      (cancelado)="modalDireccionAbierto.set(false)"
+      
+    />
+  }
+</app-modal>
+
+
+<app-modal
+  titulo="Editar datos laborales"
+  [abierto]="modalLaboralAbierto()"
+  (cerrar)="modalLaboralAbierto.set(false)"
+>
+  @if (colaborador(); as c) {
+    <app-laboral-form
+      [colaboradorId]="c.id"
+      (guardado)="onLaboralGuardado($event)"
+      (cancelado)="modalLaboralAbierto.set(false)"
+    />
+  }
+</app-modal>
+
+<app-modal
+  titulo="Editar información complementaria"
+  [abierto]="modalConfidencialAbierto()"
+  (cerrar)="modalConfidencialAbierto.set(false)"
+>
+  @if (colaborador(); as c) {
+    <app-confidencial-form
+      [colaboradorId]="c.id"
+      (guardado)="onConfidencialGuardado($event)"
+      (cancelado)="modalConfidencialAbierto.set(false)"
+    />
+  }
+</app-modal>

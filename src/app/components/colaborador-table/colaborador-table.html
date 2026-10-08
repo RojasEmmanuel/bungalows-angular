@@ -1,0 +1,94 @@
+<div class="table-wrap">
+  <table class="table">
+    <thead class="table__head">
+      <tr>
+        <th class="th th--colab th--sortable" (click)="onSort('nombreCompleto')">
+          <span class="th__inner">
+            Colaborador
+            <svg class="sort-icon" [class]="iconClass('nombreCompleto')" viewBox="0 0 24 24">
+              <path d="M12 5l6 6H6z" />
+              <path d="M12 19l-6-6h12z" />
+            </svg>
+          </span>
+        </th>
+        <th class="th th--sortable" (click)="onSort('edad')">
+          <span class="th__inner">
+            Edad
+            <svg class="sort-icon" [class]="iconClass('edad')" viewBox="0 0 24 24">
+              <path d="M12 5l6 6H6z" />
+              <path d="M12 19l-6-6h12z" />
+            </svg>
+          </span>
+        </th>
+        <th class="th">Puesto</th>
+        <th class="th">Ubicación</th>
+        <th class="th th--sortable" (click)="onSort('antiguedad')">
+          <span class="th__inner">
+            Antigüedad
+            <svg class="sort-icon" [class]="iconClass('antiguedad')" viewBox="0 0 24 24">
+              <path d="M12 5l6 6H6z" />
+              <path d="M12 19l-6-6h12z" />
+            </svg>
+          </span>
+        </th>
+        <th class="th">Ingreso</th>
+        <th class="th th--num">Sueldo</th>
+        <th class="th">Turno</th>
+        <th class="th">Descanso</th>
+        <th class="th">Horario</th>
+        <th class="th th--actions">Acciones</th> <!-- ← NUEVA -->
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (c of colaboradores(); track c.id) {
+        <tr class="tr">
+          <td class="td td--colab">
+            <div class="colab">
+              @if (showAvatar(c)) {
+                <div class="avatar">
+                  <span class="avatar__text">{{ iniciales(c.nombreCompleto) }}</span>
+                </div>
+              } @else {
+                <img
+                  class="avatar avatar--img"
+                  [src]="c.fotografia"
+                  [alt]="c.nombreCompleto"
+                  (error)="onImageError(c.id)"
+                />
+              }
+              <span class="colab__name">{{ c.nombreCompleto }}</span>
+            </div>
+          </td>
+
+          <td class="td td--muted">{{ c.edad }}</td>
+          <td class="td">{{ c.puesto }}</td>
+          <td class="td td--muted">{{ c.ubicacion }}</td>
+          <td class="td"><span class="pill">{{ c.antiguedad }} años</span></td>
+          <td class="td td--muted">{{ c.fechaIngreso }}</td>
+          <td class="td td--num">{{ formatoSueldo(c.sueldo) }}</td>
+          <td class="td">{{ c.turno }}</td>
+          <td class="td td--muted">{{ c.diaDescanso }}</td>
+          <td class="td td--muted">
+            {{ c.entrada?.slice(0, 5) }} – {{ c.salida?.slice(0, 5) }}
+          </td>
+          <td class="td td--actions"> <!-- ← NUEVA -->
+            <button
+              type="button"
+              class="btn-ver"
+              (click)="onVer(c.id)"
+            >
+              Ver
+            </button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td class="td td--empty" [attr.colspan]="12">
+            No hay colaboradores registrados.
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

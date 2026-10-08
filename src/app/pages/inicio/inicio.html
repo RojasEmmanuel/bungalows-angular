@@ -1,0 +1,83 @@
+<section class="dashboard">
+  <!-- Columna ancha: ubicaciones -->
+  <div class="dashboard__main">
+    <header class="section-head">
+      <h2 class="section-head__title">Ubicaciones</h2>
+
+      <div class="section-head__actions">
+        <button
+          type="button"
+          class="btn-new btn-new--ghost"
+          (click)="abrirModalPuesto()"
+        >
+          Nuevo puesto
+        </button>
+        <button
+          type="button"
+          class="btn-new"
+          (click)="abrirModalUbicacion()"
+        >
+          Nueva
+        </button>
+      </div>
+    </header>
+
+    @if (loadingUbicaciones()) {
+      <p class="state">Cargando ubicaciones…</p>
+    } @else if (ubicaciones().length === 0) {
+      <p class="state">No hay ubicaciones registradas.</p>
+    } @else {
+      <div class="grid">
+        @for (u of ubicaciones(); track u.id) {
+          <app-ubicacion-card [ubicacion]="u" />
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Columna angosta: antigüedades próximas -->
+  <aside class="dashboard__aside">
+    <header class="section-head">
+      <h2 class="section-head__title">Próximos aniversarios</h2>
+      <span class="section-head__count">
+        {{ antiguedades().length }}
+      </span>
+    </header>
+
+    @if (loadingAntiguedades()) {
+      <p class="state">Cargando antigüedades…</p>
+    } @else if (antiguedades().length === 0) {
+      <p class="state">Sin aniversarios próximos.</p>
+    } @else {
+      <div class="stack">
+        @for (a of antiguedades(); track a.id) {
+          <app-antiguedad-proxima-card [antiguedad]="a" />
+        }
+      </div>
+    }
+  </aside>
+</section>
+
+<!-- Modal: Nueva ubicación -->
+<app-modal
+  titulo="Nueva ubicación"
+  [abierto]="modalUbicacionAbierto()"
+  (cerrar)="cerrarModalUbicacion()"
+>
+  <app-ubicacion-form
+    (creada)="onUbicacionCreada($event)"
+    (cancelada)="cerrarModalUbicacion()"
+  />
+</app-modal>
+
+<!-- Modal: Nuevo puesto -->
+<app-modal
+  titulo="Nuevo puesto"
+  [abierto]="modalPuestoAbierto()"
+  (cerrar)="cerrarModalPuesto()"
+>
+  <app-puesto-form
+    (creado)="onPuestoCreado($event)"
+    (cancelado)="cerrarModalPuesto()"
+  />
+</app-modal>

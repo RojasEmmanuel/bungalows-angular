@@ -1,0 +1,160 @@
+@let c = colaborador();
+
+<!-- ============ HERO (cabecera con foto) ============ -->
+<div class="hero">
+  <div class="hero__avatar">
+    @if (showAvatar()) {
+      <div class="avatar">
+        <span class="avatar__text">{{ iniciales() }}</span>
+      </div>
+    } @else {
+      <img
+        class="avatar avatar--img"
+        [src]="c.fotografia"
+        [alt]="c.nombreCompleto"
+        (error)="onImageError()"
+      />
+    }
+  </div>
+
+  <div class="hero__main">
+    <h2 class="hero__name">{{ c.nombreCompleto }}</h2>
+    <p class="hero__role">{{ c.puesto }} · {{ c.ubicacion }}</p>
+
+    <div class="hero__meta">
+      <span class="chip">
+        <strong>{{ c.edad }}</strong> años
+      </span>
+      <span class="chip">
+        <strong>{{ c.antiguedad }}</strong> años de antigüedad
+      </span>
+      <span class="chip">
+        Ingresó el <strong>{{ c.fechaIngreso }}</strong>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ GRID DE SECCIONES ============ -->
+<div class="grid">
+  <!-- Datos laborales -->
+  <section class="card">
+   
+    <div class="card__head">
+      <h3 class="card__title card__title--bare">Datos laborales</h3>
+      <button
+        type="button"
+        class="btn-edit"
+        (click)="onEditarLaboral()"
+        aria-label="Editar datos laborales"
+        title="Editar datos laborales"
+      >
+        <svg class="btn-edit__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+        </svg>
+      </button>
+    </div>
+
+
+    <dl class="kv">
+      <div class="kv__row">
+        <dt class="kv__k">Puesto</dt>
+        <dd class="kv__v">{{ c.puesto }}</dd>
+      </div>
+      <div class="kv__row">
+        <dt class="kv__k">Ubicación</dt>
+        <dd class="kv__v">{{ c.ubicacion }}</dd>
+      </div>
+      <div class="kv__row">
+        <dt class="kv__k">Sueldo</dt>
+        <dd class="kv__v kv__v--strong">{{ formatoSueldo(c.sueldo) }}</dd>
+      </div>
+      <div class="kv__row">
+        <dt class="kv__k">Turno</dt>
+        <dd class="kv__v">{{ c.turno }}</dd>
+      </div>
+      <div class="kv__row">
+        <dt class="kv__k">Día de descanso</dt>
+        <dd class="kv__v">{{ c.diaDescanso }}</dd>
+      </div>
+      <div class="kv__row">
+        <dt class="kv__k">Horario</dt>
+        <dd class="kv__v">
+          {{ formatoHora(c.entrada) }} – {{ formatoHora(c.salida) }}
+        </dd>
+      </div>
+      <div class="kv__row">
+        <dt class="kv__k">Fecha de ingreso</dt>
+        <dd class="kv__v">{{ c.fechaIngreso }}</dd>
+      </div>
+      <div class="kv__row">
+        <dt class="kv__k">Antigüedad</dt>
+        <dd class="kv__v">{{ c.antiguedad }} años</dd>
+      </div>
+    </dl>
+  </section>
+
+  <!-- Datos confidenciales -->
+  <section class="card">
+    <div class="card__head">
+      <h3 class="card__title card__title--bare">Información complementaria</h3>
+      <button
+        type="button"
+        class="btn-edit"
+        (click)="onEditarConfidencial()"
+        aria-label="Editar información complementaria"
+        title="Editar información complementaria"
+      >
+        <svg class="btn-edit__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+        </svg>
+      </button>
+    </div>
+
+
+    <dl class="kv">
+      <div class="kv__row">
+        <dt class="kv__k">CURP</dt>
+        <dd class="kv__v kv__v--mono">{{ c.curp }}</dd>
+      </div>
+      <div class="kv__row">
+        <dt class="kv__k">RFC</dt>
+        <dd class="kv__v kv__v--mono">{{ c.rfc }}</dd>
+      </div>
+      <div class="kv__row">
+        <dt class="kv__k">NSS</dt>
+        <dd class="kv__v kv__v--mono">{{ c.nss }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <!-- Dirección -->
+  <section class="card card--wide">
+    <div class="card__head">
+      <h3 class="card__title card__title--bare">Dirección</h3>
+      <button
+        type="button"
+        class="btn-edit"
+        (click)="onEditarDireccion()"
+        aria-label="Editar dirección"
+        title="Editar dirección"
+      >
+        <svg
+          class="btn-edit__icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+        </svg>
+      </button>
+    </div>
+    <p class="address">{{ c.direccion }}</p>
+  </section>
+</div>

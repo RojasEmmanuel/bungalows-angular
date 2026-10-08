@@ -1,0 +1,213 @@
+<section class="docs">
+  <header class="docs__head">
+    <div>
+      <h3 class="docs__title">Documentación</h3>
+      <p class="docs__subtitle">Archivos y documentos del colaborador.</p>
+    </div>
+
+    <button type="button" class="btn-new" (click)="abrirModal()">
+      Nuevo
+    </button>
+  </header>
+
+  <!-- ===== Lista ===== -->
+  @if (loading()) {
+    <p class="state">Cargando documentos…</p>
+  } @else if (error()) {
+    <p class="state state--error">{{ error() }}</p>
+  } @else if (documentos().length === 0) {
+    <p class="state">No hay documentos registrados.</p>
+  } @else {
+    <ul class="doc-list">
+      @for (d of documentos(); track d.id) {
+        <li class="doc">
+          <div class="doc__icon">
+            @if (esPdf(d.path)) {
+              <span class="doc__badge doc__badge--pdf">PDF</span>
+            } @else if (esImagen(d.path)) {
+              <span class="doc__badge doc__badge--img">IMG</span>
+            } @else {
+              <span class="doc__badge">FILE</span>
+            }
+          </div>
+
+          <div class="doc__info">
+            <a
+              class="doc__name"
+              [href]="d.path"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ d.nombre }}
+            </a>
+            <span class="doc__file">{{ nombreArchivo(d.path) }}</span>
+          </div>
+
+          <div class="doc__actions">
+            <a
+              class="btn btn--ghost"
+              [href]="d.path"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Abrir
+            </a>
+            <button
+              type="button"
+              class="btn btn--danger"
+              (click)="abrirModalEliminar(d)"
+            >
+              Eliminar
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>
+
+<!-- ============ MODAL CREAR ============ -->
+@if (modalAbierto()) {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <header class="modal__head">
+        <h4 class="modal__title">Nuevo documento</h4>
+        <button
+          type="button"
+          class="modal__close"
+          (click)="cerrarModal()"
+          [disabled]="subiendo()"
+          aria-label="Cerrar"
+        >
+          ✕
+        </button>
+      </header>
+
+      <div class="modal__body">
+        @if (errorSubida()) {
+          <div class="banner">{{ errorSubida() }}</div>
+        }
+
+        <div class="field">
+          <label class="field__label" for="doc-nombre">Nombre</label>
+          <input
+            id="doc-nombre"
+            class="field__input"
+            type="text"
+            placeholder="Ej. Contrato 2024"
+            [value]="nombreDocumento()"
+            (input)="onNombreChange($event)"
+            [disabled]="subiendo()"
+          />
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="doc-archivo">Archivo</label>
+
+          @if (archivoSeleccionado(); as f) {
+            <div class="file-info">
+              <span class="file-info__name">{{ f.name }}</span>
+              <span class="file-info__size">
+                {{ (f.size / 1024 / 1024).toFixed(2) }} MB
+              </span>
+            </div>
+          } @else {
+            <label class="filepick" for="doc-archivo">
+              <span class="filepick__text">Seleccionar archivo…</span>
+              <input
+                id="doc-archivo"
+                class="filepick__input"
+                type="file"
+                accept="application/pdf,image/jpeg,image/png,image/webp"
+                (change)="onArchivoSeleccionado($event)"
+                [disabled]="subiendo()"
+              />
+            </label>
+            <p class="field__hint">PDF, JPG, PNG o WEBP · máx 10 MB</p>
+          }
+        </div>
+      </div>
+
+      <footer class="modal__foot">
+        <button
+          type="button"
+          class="btn btn--ghost"
+          (click)="cerrarModal()"
+          [disabled]="subiendo()"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn--primary"
+          (click)="guardarDocumento()"
+          [disabled]="subiendo()"
+        >
+          @if (subiendo()) {
+            Subiendo…
+          } @else {
+            Guardar
+          }
+        </button>
+      </footer>
+    </div>
+  </div>
+}
+
+<!-- ============ MODAL ELIMINAR ============ -->
+@if (modalEliminarAbierto()) {
+  <div class="modal-backdrop" (click)="cerrarModalEliminar()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <header class="modal__head">
+        <h4 class="modal__title">Eliminar documento</h4>
+        <button
+          type="button"
+          class="modal__close"
+          (click)="cerrarModalEliminar()"
+          [disabled]="eliminando()"
+          aria-label="Cerrar"
+        >
+          ✕
+        </button>
+      </header>
+
+      <div class="modal__body">
+        <p class="confirm-text">
+          ¿Seguro que deseas eliminar este documento? Esta acción no se puede
+          deshacer.
+        </p>
+
+        @if (documentoAEliminar(); as d) {
+          <div class="confirm-box">
+            <span class="confirm-box__tipo">
+              @if (esPdf(d.path)) { PDF }
+              @else if (esImagen(d.path)) { IMAGEN }
+              @else { ARCHIVO }
+            </span>
+            <span class="confirm-box__valor">{{ d.nombre }}</span>
+            <span class="confirm-box__file">{{ nombreArchivo(d.path) }}</span>
+          </div>
+        }
+      </div>
+
+      <footer class="modal__foot">
+        <button
+          type="button"
+          class="btn btn--ghost"
+          (click)="cerrarModalEliminar()"
+          [disabled]="eliminando()"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn--danger-solid"
+          (click)="confirmarEliminar()"
+          [disabled]="eliminando()"
+        >
+          @if (eliminando()) { Eliminando… } @else { Eliminar }
+        </button>
+      </footer>
+    </div>
+  </div>
+}

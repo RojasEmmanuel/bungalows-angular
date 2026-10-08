@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  /* Azul primario y sus derivados (todo sale de #155dfc) */
+  --color-brand:        #155dfc;
+  --color-brand-hover:  #0d4fd6;
+  --color-brand-soft:   #e8efff;  
+  --color-brand-softer: #f4f7ff;  
+
+  /* Superficies */
+  --color-surface:      #ffffff;
+  --color-line:         #e5edff;   
+
+  /* Texto sobre blanco */
+  --color-ink:          #0b1b3f;  
+  --color-ink-soft:     #3b5488;  
+}
+
+html, body {
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}

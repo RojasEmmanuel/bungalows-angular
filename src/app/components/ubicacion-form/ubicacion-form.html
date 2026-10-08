@@ -1,0 +1,98 @@
+<form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <h2 class="form__title">Nueva ubicación</h2>
+
+  @if (errorGeneral()) {
+    <div class="banner">{{ errorGeneral() }}</div>
+  }
+
+  <!-- Nombre -->
+  <div class="field">
+    <label class="field__label" for="nombre">Nombre</label>
+    <input
+      id="nombre"
+      class="field__input"
+      type="text"
+      formControlName="nombre"
+      placeholder="Ej. Bungalows Zicatela"
+      autocomplete="off"
+      [class.field__input--error]="mostrarError('nombre')"
+    />
+    @if (mostrarError('nombre'); as msg) {
+      <p class="field__error">{{ msg }}</p>
+    }
+  </div>
+
+  <!-- Dirección -->
+  <div class="field">
+    <label class="field__label" for="direccion">Dirección</label>
+    <input
+      id="direccion"
+      class="field__input"
+      type="text"
+      formControlName="direccion"
+      placeholder="Ej. Av. del Mar 123"
+      autocomplete="off"
+      [class.field__input--error]="mostrarError('direccion')"
+    />
+    @if (mostrarError('direccion'); as msg) {
+      <p class="field__error">{{ msg }}</p>
+    }
+  </div>
+
+  <!-- Imagen -->
+  <div class="field">
+    <label class="field__label">Imagen (opcional)</label>
+
+    @if (previewUrl()) {
+      <div class="preview">
+        <img class="preview__img" [src]="previewUrl()" alt="Preview" />
+        <div class="preview__info">
+          <span class="preview__name">{{ nombreArchivo() }}</span>
+          <button
+            type="button"
+            class="preview__remove"
+            (click)="quitarArchivo()"
+            [disabled]="enviando()"
+          >
+            Quitar
+          </button>
+        </div>
+      </div>
+    } @else {
+      <label class="filepick" for="imagen">
+        <span class="filepick__text">Seleccionar imagen…</span>
+        <input
+          id="imagen"
+          class="filepick__input"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          (change)="onArchivoSeleccionado($event)"
+          [disabled]="enviando()"
+        />
+      </label>
+      <p class="field__hint">JPG, PNG o WEBP · máx 5 MB</p>
+    }
+  </div>
+
+  <!-- Acciones -->
+  <div class="actions">
+    <button
+      type="button"
+      class="btn btn--ghost"
+      (click)="cancelar()"
+      [disabled]="enviando()"
+    >
+      Cancelar
+    </button>
+
+    <button type="submit" class="btn btn--primary" [disabled]="enviando()">
+      @if (subiendoImagen()) {
+        Subiendo imagen…
+      } @else if (guardando()) {
+        Guardando…
+      } @else {
+        Crear ubicación
+      }
+    </button>
+  </div>
+</form>
