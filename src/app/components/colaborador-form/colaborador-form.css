@@ -1,4 +1,138 @@
-/* Estados de carga */
+/* ============ Wizard ============ */
+.wizard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.wizard__head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.wizard__progress {
+  width: 100%;
+  height: 4px;
+  background-color: var(--color-brand-softer);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.wizard__progress-fill {
+  height: 100%;
+  background-color: var(--color-brand);
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+/* Stepper */
+.stepper {
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 0.5rem;
+}
+
+.stepper__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+  flex: 1;
+  min-width: 0;
+}
+
+.stepper__dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  background-color: var(--color-brand-softer);
+  color: var(--color-ink-soft);
+  border: 1px solid var(--color-line);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.stepper__item--active .stepper__dot {
+  background-color: var(--color-brand);
+  color: var(--color-surface);
+  border-color: var(--color-brand);
+}
+
+.stepper__item--done .stepper__dot {
+  background-color: var(--color-brand-soft);
+  color: var(--color-brand);
+  border-color: var(--color-brand-soft);
+}
+
+.stepper__label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stepper__item--active .stepper__label {
+  color: var(--color-brand);
+}
+
+.stepper__check {
+  width: 12px;
+  height: 12px;
+}
+
+/* Body */
+.wizard__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem 0;
+  min-height: 180px;
+}
+
+.step-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.step-title__name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin: 0;
+}
+
+.step-title__desc {
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+  margin: 0;
+}
+
+/* Footer */
+.wizard__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-line);
+}
+
+.wizard__nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* ============ Estados ============ */
 .state {
   font-size: 0.875rem;
   color: var(--color-ink-soft);
@@ -10,13 +144,6 @@
   color: var(--color-brand);
 }
 
-/* Formulario */
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
 .banner {
   padding: 0.625rem 0.875rem;
   border: 1px solid var(--color-line);
@@ -26,25 +153,7 @@
   font-size: 0.875rem;
 }
 
-/* Secciones */
-.section {
-  border: 1px solid var(--color-line);
-  border-radius: 0.75rem;
-  padding: 1rem;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.section__title {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--color-brand);
-  padding: 0 0.5rem;
-}
-
-/* Grids internos */
+/* ============ Grids ============ */
 .grid {
   display: grid;
   gap: 0.75rem;
@@ -62,7 +171,7 @@
   }
 }
 
-/* Campos */
+/* ============ Campos ============ */
 .field {
   display: flex;
   flex-direction: column;
@@ -103,7 +212,6 @@
   margin: 0;
 }
 
-/* Select con flecha custom (opcional) */
 select.field__input {
   appearance: none;
   padding-right: 1.75rem;
@@ -116,7 +224,7 @@ select.field__input {
   cursor: pointer;
 }
 
-/* Foto */
+/* ============ Foto ============ */
 .filepick {
   display: flex;
   align-items: center;
@@ -188,15 +296,7 @@ select.field__input {
   cursor: not-allowed;
 }
 
-/* Acciones */
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--color-line);
-}
-
+/* ============ Botones ============ */
 .btn {
   height: 40px;
   padding: 0 1rem;
@@ -214,14 +314,14 @@ select.field__input {
   border-color: var(--color-brand);
 }
 
-.btn--primary:disabled,
-.btn--ghost:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 .btn--ghost {
   background-color: transparent;
   color: var(--color-ink-soft);
   border-color: var(--color-line);
+}
+
+.btn--primary:disabled,
+.btn--ghost:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

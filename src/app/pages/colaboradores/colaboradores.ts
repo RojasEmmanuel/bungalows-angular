@@ -1,8 +1,12 @@
-import { Component, computed, inject, signal, OnInit } from '@angular/core';
+import { Component, computed, inject, signal, OnInit, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+
 import { ColaboradorService } from '../../services/colaborador.service';
 import { ColaboradorTableComponent } from '../../components/colaborador-table/colaborador-table';
+import { ColaboradorForm } from '../../components/colaborador-form/colaborador-form';
+import { ModalComponent } from '../../components/modal/modal';
 import { ColaboradorTable } from '../../models/colaborador.model';
 
 type SortColumn = 'nombreCompleto' | 'edad' | 'antiguedad' | null;
@@ -11,7 +15,11 @@ type SortDirection = 'asc' | 'desc';
 @Component({
   selector: 'app-colaboradores',
   standalone: true,
-  imports: [CommonModule, ColaboradorTableComponent, RouterLink],
+  imports: [
+    CommonModule,
+    ColaboradorTableComponent,
+    RouterLink,
+  ],
   templateUrl: './colaboradores.html',
   styleUrl: './colaboradores.css',
 })
@@ -19,21 +27,27 @@ export class ColaboradoresComponent implements OnInit {
   private readonly colaboradorService = inject(ColaboradorService);
   private readonly router = inject(Router);
 
-  /** Datos crudos del backend */
+  /** Referencia al componente tabla (si lo necesitas para recargar) */
+  tabla = viewChild(ColaboradorTableComponent);
+
+  // ---------- Datos crudos ----------
   colaboradores = signal<ColaboradorTable[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
 
-  /** Filtros */
+  // ---------- Filtros ----------
   busqueda = signal('');
   filtroPuesto = signal('');
   filtroUbicacion = signal('');
   filtroTurno = signal('');
   filtroDiaDescanso = signal('');
 
-  /** Ordenamiento */
+  // ---------- Ordenamiento ----------
   sortColumn = signal<SortColumn>(null);
   sortDirection = signal<SortDirection>('asc');
+
+  // ---------- Modal crear ----------
+  modalCrearAbierto = signal(false);
 
   // ---------- Opciones únicas para los selects ----------
   opcionesPuesto = computed(() =>
@@ -104,11 +118,30 @@ export class ColaboradoresComponent implements OnInit {
       !!this.filtroDiaDescanso()
   );
 
+  // ---------- Ciclo de vida ----------
   ngOnInit(): void {
     this.cargarColaboradores();
   }
 
-  // ---------- Handlers ----------
+  // ---------- Modal crear ----------
+  abrirModal(): void {
+    this.modalCrearAbierto.set(true);
+  }
+
+  cerrarModal(): void {
+    this.modalCrearAbierto.set(false);
+  }
+
+  /**
+   * Cuando el form emite `creado`, redirige al detalle del colaborador.
+   * El `ColaboradorTable` que devuelve el backend incluye el `id`.
+   */
+  onColaboradorCreado(colaborador: ColaboradorTable): void {
+    this.modalCrearAbierto.set(false);
+    this.router.navigate(['/colaboradores', colaborador.id]);
+  }
+
+  // ---------- Handlers de filtros ----------
   onBusqueda(event: Event): void {
     this.busqueda.set((event.target as HTMLInputElement).value);
   }
@@ -147,7 +180,6 @@ export class ColaboradoresComponent implements OnInit {
     }
   }
 
-  /** Clase CSS para el ícono de orden */
   sortIconClass(columna: SortColumn): string {
     if (this.sortColumn() !== columna) return 'sort-icon sort-icon--off';
     return this.sortDirection() === 'asc'
@@ -180,7 +212,7 @@ export class ColaboradoresComponent implements OnInit {
         this.colaboradores.set(data);
         this.loading.set(false);
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         console.error('Error al cargar colaboradores', err);
         this.error.set('No se pudieron cargar los colaboradores.');
         this.loading.set(false);

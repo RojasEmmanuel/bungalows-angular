@@ -3,258 +3,275 @@
 } @else if (errorCatalogos()) {
   <p class="state state--error">{{ errorCatalogos() }}</p>
 } @else {
-  <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <form class="wizard" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
+    <!-- ============ Header: barra + stepper ============ -->
+    <header class="wizard__head">
+      <div class="wizard__progress">
+        <div
+          class="wizard__progress-fill"
+          [style.width.%]="progreso()"
+        ></div>
+      </div>
+
+      <ul class="stepper">
+        @for (p of pasos; track $index) {
+          <li
+            class="stepper__item"
+            [class.stepper__item--active]="$index === pasoActual()"
+            [class.stepper__item--done]="$index < pasoActual()"
+          >
+            <span class="stepper__dot">
+              @if ($index < pasoActual()) {
+                <svg class="stepper__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              } @else {
+                {{ $index + 1 }}
+              }
+            </span>
+            <span class="stepper__label">{{ p.label }}</span>
+          </li>
+        }
+      </ul>
+    </header>
+
+    <!-- ============ Banner general ============ -->
     @if (errorGeneral()) {
       <div class="banner">{{ errorGeneral() }}</div>
     }
 
-    <!-- ============ DATOS PERSONALES ============ -->
-    <fieldset class="section">
-      <legend class="section__title">Datos personales</legend>
-
-      <div class="grid grid--3">
-        <div class="field">
-          <label class="field__label" for="nombre">Nombre(s)</label>
-          <input id="nombre" class="field__input" formControlName="nombre" type="text" />
-          @if (errorDe('nombre'); as msg) { <p class="field__error">{{ msg }}</p> }
-        </div>
-
-        <div class="field">
-          <label class="field__label" for="ap">Apellido paterno</label>
-          <input id="ap" class="field__input" formControlName="ap" type="text" />
-          @if (errorDe('ap'); as msg) { <p class="field__error">{{ msg }}</p> }
-        </div>
-
-        <div class="field">
-          <label class="field__label" for="am">Apellido materno</label>
-          <input id="am" class="field__input" formControlName="am" type="text" />
-          @if (errorDe('am'); as msg) { <p class="field__error">{{ msg }}</p> }
-        </div>
+    <!-- ============ Body: contenido del paso ============ -->
+    <div class="wizard__body">
+      <div class="step-title">
+        <h4 class="step-title__name">{{ pasoConfig().label }}</h4>
+        <p class="step-title__desc">{{ pasoConfig().descripcion }}</p>
       </div>
 
-      <div class="grid grid--3">
-        <div class="field">
-          <label class="field__label" for="fechaNacimiento">Fecha de nacimiento</label>
-          <input
-            id="fechaNacimiento"
-            class="field__input"
-            formControlName="fechaNacimiento"
-            type="date"
-          />
-          @if (errorDe('fechaNacimiento'); as msg) { <p class="field__error">{{ msg }}</p> }
-        </div>
+      @switch (pasoActual()) {
 
-        <div class="field">
-          <label class="field__label" for="estadoCivil">Estado civil</label>
-          <select id="estadoCivil" class="field__input" formControlName="estadoCivil">
-            @for (e of estadosCivil(); track e.value) {
-              <option [value]="e.value">{{ e.label }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="field">
-          <label class="field__label">Fotografía</label>
-
-          @if (previewUrl()) {
-            <div class="preview">
-              <img class="preview__img" [src]="previewUrl()" alt="Preview" />
-              <div class="preview__info">
-                <span class="preview__name">{{ nombreArchivo() }}</span>
-                <button
-                  type="button"
-                  class="preview__remove"
-                  (click)="quitarFoto()"
-                  [disabled]="enviando()"
-                >
-                  Quitar
-                </button>
-              </div>
+        <!-- ============ PASO 1: Datos personales ============ -->
+        @case (0) {
+          <div class="grid grid--3">
+            <div class="field">
+              <label class="field__label" for="nombre">Nombre(s)</label>
+              <input id="nombre" class="field__input" formControlName="nombre" type="text" />
+              @if (errorDe('nombre'); as msg) { <p class="field__error">{{ msg }}</p> }
             </div>
-          } @else {
-            <label class="filepick" for="foto">
-              <span class="filepick__text">Seleccionar foto…</span>
-              <input
-                id="foto"
-                class="filepick__input"
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                (change)="onFotoSeleccionada($event)"
-                [disabled]="enviando()"
-              />
-            </label>
-          }
-        </div>
-      </div>
-    </fieldset>
 
-    <!-- ============ DATOS LABORALES ============ -->
-    <fieldset class="section">
-      <legend class="section__title">Datos laborales</legend>
+            <div class="field">
+              <label class="field__label" for="ap">Apellido paterno</label>
+              <input id="ap" class="field__input" formControlName="ap" type="text" />
+              @if (errorDe('ap'); as msg) { <p class="field__error">{{ msg }}</p> }
+            </div>
 
-      <div class="grid grid--3">
-        <div class="field">
-          <label class="field__label" for="fechaIngreso">Fecha de ingreso</label>
-          <input
-            id="fechaIngreso"
-            class="field__input"
-            formControlName="fechaIngreso"
-            type="date"
-          />
-          @if (errorDe('fechaIngreso'); as msg) { <p class="field__error">{{ msg }}</p> }
-        </div>
+            <div class="field">
+              <label class="field__label" for="am">Apellido materno</label>
+              <input id="am" class="field__input" formControlName="am" type="text" />
+              @if (errorDe('am'); as msg) { <p class="field__error">{{ msg }}</p> }
+            </div>
+          </div>
 
-        <div class="field">
-          <label class="field__label" for="sueldo">Sueldo</label>
-          <input
-            id="sueldo"
-            class="field__input"
-            formControlName="sueldo"
-            type="number"
-            min="1000"
-            step="0.01"
-          />
-          @if (errorDe('sueldo'); as msg) { <p class="field__error">{{ msg }}</p> }
-        </div>
+          <div class="grid grid--3">
+            <div class="field">
+              <label class="field__label" for="fechaNacimiento">Fecha de nacimiento</label>
+              <input id="fechaNacimiento" class="field__input" formControlName="fechaNacimiento" type="date" />
+              @if (errorDe('fechaNacimiento'); as msg) { <p class="field__error">{{ msg }}</p> }
+            </div>
 
-        <div class="field">
-          <label class="field__label" for="estatus">Estatus</label>
-          <select id="estatus" class="field__input" formControlName="estatus">
-            @for (e of estatusList(); track e.value) {
-              <option [value]="e.value">{{ e.label }}</option>
-            }
-          </select>
-        </div>
-      </div>
+            <div class="field">
+              <label class="field__label" for="estadoCivil">Estado civil</label>
+              <select id="estadoCivil" class="field__input" formControlName="estadoCivil">
+                @for (e of estadosCivil(); track e.value) {
+                  <option [value]="e.value">{{ e.label }}</option>
+                }
+              </select>
+            </div>
 
-      <div class="grid grid--3">
-        <div class="field">
-          <label class="field__label" for="idPuesto">Puesto</label>
-          <select id="idPuesto" class="field__input" formControlName="idPuesto">
-            <option [ngValue]="null" disabled>Selecciona un puesto…</option>
-            @for (p of puestos(); track p.id) {
-              <option [ngValue]="p.id">{{ p.nombre }}</option>
-            }
-          </select>
-          @if (errorDe('idPuesto'); as msg) { <p class="field__error">{{ msg }}</p> }
-        </div>
+            <div class="field">
+              <label class="field__label">Fotografía</label>
 
-        <div class="field">
-          <label class="field__label" for="idUbicacion">Ubicación</label>
-          <select id="idUbicacion" class="field__input" formControlName="idUbicacion">
-            <option [ngValue]="null" disabled>Selecciona una ubicación…</option>
-            @for (u of ubicaciones(); track u.id) {
-              <option [ngValue]="u.id">{{ u.nombre }}</option>
-            }
-          </select>
-          @if (errorDe('idUbicacion'); as msg) { <p class="field__error">{{ msg }}</p> }
-        </div>
+              @if (previewUrl()) {
+                <div class="preview">
+                  <img class="preview__img" [src]="previewUrl()" alt="Preview" />
+                  <div class="preview__info">
+                    <span class="preview__name">{{ nombreArchivo() }}</span>
+                    <button
+                      type="button"
+                      class="preview__remove"
+                      (click)="quitarFoto()"
+                      [disabled]="enviando()"
+                    >
+                      Quitar
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <label class="filepick" for="foto">
+                  <span class="filepick__text">Seleccionar foto…</span>
+                  <input
+                    id="foto"
+                    class="filepick__input"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    (change)="onFotoSeleccionada($event)"
+                    [disabled]="enviando()"
+                  />
+                </label>
+              }
+            </div>
+          </div>
+        }
 
-        <div class="field"></div>
-      </div>
+        <!-- ============ PASO 2: Datos laborales ============ -->
+        @case (1) {
+          <div class="grid grid--3">
+            <div class="field">
+              <label class="field__label" for="fechaIngreso">Fecha de ingreso</label>
+              <input id="fechaIngreso" class="field__input" formControlName="fechaIngreso" type="date" />
+              @if (errorDe('fechaIngreso'); as msg) { <p class="field__error">{{ msg }}</p> }
+            </div>
 
-      <div class="grid grid--4">
-        <div class="field">
-          <label class="field__label" for="turno">Turno</label>
-          <select id="turno" class="field__input" formControlName="turno">
-            @for (t of turnos(); track t.value) {
-              <option [value]="t.value">{{ t.label }}</option>
-            }
-          </select>
-        </div>
+            <div class="field">
+              <label class="field__label" for="sueldo">Sueldo</label>
+              <input id="sueldo" class="field__input" formControlName="sueldo" type="number" min="1000" step="0.01" />
+              @if (errorDe('sueldo'); as msg) { <p class="field__error">{{ msg }}</p> }
+            </div>
 
-        <div class="field">
-          <label class="field__label" for="diaDescanso">Día de descanso</label>
-          <select id="diaDescanso" class="field__input" formControlName="diaDescanso">
-            @for (d of diasLaborales(); track d.value) {
-              <option [value]="d.value">{{ d.label }}</option>
-            }
-          </select>
-        </div>
+            <div class="field">
+              <label class="field__label" for="estatus">Estatus</label>
+              <select id="estatus" class="field__input" formControlName="estatus">
+                @for (e of estatusList(); track e.value) {
+                  <option [value]="e.value">{{ e.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
 
-        <div class="field">
-          <label class="field__label" for="entrada">Entrada</label>
-          <input id="entrada" class="field__input" formControlName="entrada" type="time" />
-          @if (errorDe('entrada'); as msg) { <p class="field__error">{{ msg }}</p> }
-        </div>
+          <div class="grid grid--2">
+            <div class="field">
+              <label class="field__label" for="idPuesto">Puesto</label>
+              <select id="idPuesto" class="field__input" formControlName="idPuesto">
+                <option [ngValue]="null" disabled>Selecciona un puesto…</option>
+                @for (p of puestos(); track p.id) {
+                  <option [ngValue]="p.id">{{ p.nombre }}</option>
+                }
+              </select>
+              @if (errorDe('idPuesto'); as msg) { <p class="field__error">{{ msg }}</p> }
+            </div>
 
-        <div class="field">
-          <label class="field__label" for="salida">Salida</label>
-          <input id="salida" class="field__input" formControlName="salida" type="time" />
-          @if (errorDe('salida'); as msg) { <p class="field__error">{{ msg }}</p> }
-        </div>
-      </div>
-    </fieldset>
+            <div class="field">
+              <label class="field__label" for="idUbicacion">Ubicación</label>
+              <select id="idUbicacion" class="field__input" formControlName="idUbicacion">
+                <option [ngValue]="null" disabled>Selecciona una ubicación…</option>
+                @for (u of ubicaciones(); track u.id) {
+                  <option [ngValue]="u.id">{{ u.nombre }}</option>
+                }
+              </select>
+              @if (errorDe('idUbicacion'); as msg) { <p class="field__error">{{ msg }}</p> }
+            </div>
+          </div>
 
-    <!-- ============ DATOS CONFIDENCIALES ============ -->
-    <fieldset class="section">
-      <legend class="section__title">Información</legend>
+          <div class="grid grid--4">
+            <div class="field">
+              <label class="field__label" for="turno">Turno</label>
+              <select id="turno" class="field__input" formControlName="turno">
+                @for (t of turnos(); track t.value) {
+                  <option [value]="t.value">{{ t.label }}</option>
+                }
+              </select>
+            </div>
 
-      <div class="grid grid--3">
-        <div class="field">
-          <label class="field__label" for="curp">CURP</label>
-          <input id="curp" class="field__input" formControlName="curp" type="text" />
-          @if (errorDe('curp'); as msg) { <p class="field__error">{{ msg }}</p> }
-        </div>
+            <div class="field">
+              <label class="field__label" for="diaDescanso">Día de descanso</label>
+              <select id="diaDescanso" class="field__input" formControlName="diaDescanso">
+                @for (d of diasLaborales(); track d.value) {
+                  <option [value]="d.value">{{ d.label }}</option>
+                }
+              </select>
+            </div>
 
-        <div class="field">
-          <label class="field__label" for="nss">NSS</label>
-          <input id="nss" class="field__input" formControlName="nss" type="text" />
-          @if (errorDe('nss'); as msg) { <p class="field__error">{{ msg }}</p> }
-        </div>
+            <div class="field">
+              <label class="field__label" for="entrada">Entrada</label>
+              <input id="entrada" class="field__input" formControlName="entrada" type="time" />
+              @if (errorDe('entrada'); as msg) { <p class="field__error">{{ msg }}</p> }
+            </div>
 
-        <div class="field">
-          <label class="field__label" for="rfc">RFC</label>
-          <input id="rfc" class="field__input" formControlName="rfc" type="text" />
-          @if (errorDe('rfc'); as msg) { <p class="field__error">{{ msg }}</p> }
-        </div>
-      </div>
-    </fieldset>
+            <div class="field">
+              <label class="field__label" for="salida">Salida</label>
+              <input id="salida" class="field__input" formControlName="salida" type="time" />
+              @if (errorDe('salida'); as msg) { <p class="field__error">{{ msg }}</p> }
+            </div>
+          </div>
+        }
 
-    <!-- ============ DIRECCIÓN ============ -->
-    <fieldset class="section">
-      <legend class="section__title">Dirección</legend>
+        <!-- ============ PASO 3: Información (confidencial) ============ -->
+        @case (2) {
+          <div class="grid grid--3">
+            <div class="field">
+              <label class="field__label" for="curp">CURP</label>
+              <input id="curp" class="field__input" formControlName="curp" type="text" />
+              @if (errorDe('curp'); as msg) { <p class="field__error">{{ msg }}</p> }
+            </div>
 
-      <div class="grid grid--2">
-        <div class="field">
-          <label class="field__label" for="calle">Calle</label>
-          <input id="calle" class="field__input" formControlName="calle" type="text" />
-          @if (errorDe('calle'); as msg) { <p class="field__error">{{ msg }}</p> }
-        </div>
+            <div class="field">
+              <label class="field__label" for="nss">NSS</label>
+              <input id="nss" class="field__input" formControlName="nss" type="text" />
+              @if (errorDe('nss'); as msg) { <p class="field__error">{{ msg }}</p> }
+            </div>
 
-        <div class="field">
-          <label class="field__label" for="colonia">Colonia</label>
-          <input id="colonia" class="field__input" formControlName="colonia" type="text" />
-          @if (errorDe('colonia'); as msg) { <p class="field__error">{{ msg }}</p> }
-        </div>
-      </div>
+            <div class="field">
+              <label class="field__label" for="rfc">RFC</label>
+              <input id="rfc" class="field__input" formControlName="rfc" type="text" />
+              @if (errorDe('rfc'); as msg) { <p class="field__error">{{ msg }}</p> }
+            </div>
+          </div>
+        }
 
-      <div class="grid grid--3">
-        <div class="field">
-          <label class="field__label" for="ciudad">Ciudad</label>
-          <input id="ciudad" class="field__input" formControlName="ciudad" type="text" />
-          @if (errorDe('ciudad'); as msg) { <p class="field__error">{{ msg }}</p> }
-        </div>
+        <!-- ============ PASO 4: Dirección ============ -->
+        @case (3) {
+          <div class="grid grid--2">
+            <div class="field">
+              <label class="field__label" for="calle">Calle</label>
+              <input id="calle" class="field__input" formControlName="calle" type="text" />
+              @if (errorDe('calle'); as msg) { <p class="field__error">{{ msg }}</p> }
+            </div>
 
-        <div class="field">
-          <label class="field__label" for="estado">Estado</label>
-          <select id="estado" class="field__input" formControlName="estado">
-            @for (e of estados(); track e.value) {
-              <option [value]="e.value">{{ e.label }}</option>
-            }
-          </select>
-        </div>
+            <div class="field">
+              <label class="field__label" for="colonia">Colonia</label>
+              <input id="colonia" class="field__input" formControlName="colonia" type="text" />
+              @if (errorDe('colonia'); as msg) { <p class="field__error">{{ msg }}</p> }
+            </div>
+          </div>
 
-        <div class="field">
-          <label class="field__label" for="cp">Código postal</label>
-          <input id="cp" class="field__input" formControlName="cp" type="text" />
-          @if (errorDe('cp'); as msg) { <p class="field__error">{{ msg }}</p> }
-        </div>
-      </div>
-    </fieldset>
+          <div class="grid grid--3">
+            <div class="field">
+              <label class="field__label" for="ciudad">Ciudad</label>
+              <input id="ciudad" class="field__input" formControlName="ciudad" type="text" />
+              @if (errorDe('ciudad'); as msg) { <p class="field__error">{{ msg }}</p> }
+            </div>
 
-    <!-- ============ ACCIONES ============ -->
-    <div class="actions">
+            <div class="field">
+              <label class="field__label" for="estado">Estado</label>
+              <select id="estado" class="field__input" formControlName="estado">
+                @for (e of estados(); track e.value) {
+                  <option [value]="e.value">{{ e.label }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="cp">Código postal</label>
+              <input id="cp" class="field__input" formControlName="cp" type="text" />
+              @if (errorDe('cp'); as msg) { <p class="field__error">{{ msg }}</p> }
+            </div>
+          </div>
+        }
+      }
+    </div>
+
+    <!-- ============ Footer: navegación ============ -->
+    <footer class="wizard__foot">
       <button
         type="button"
         class="btn btn--ghost"
@@ -264,15 +281,43 @@
         Cancelar
       </button>
 
-      <button type="submit" class="btn btn--primary" [disabled]="enviando()">
-        @if (subiendoFoto()) {
-          Subiendo foto…
-        } @else if (guardando()) {
-          Guardando…
-        } @else {
-          Crear colaborador
+      <div class="wizard__nav">
+        @if (!esPrimerPaso()) {
+          <button
+            type="button"
+            class="btn btn--ghost"
+            (click)="atras()"
+            [disabled]="enviando()"
+          >
+            ← Atrás
+          </button>
         }
-      </button>
-    </div>
+
+        @if (!esUltimoPaso()) {
+          <button
+            type="button"
+            class="btn btn--primary"
+            (click)="siguiente()"
+            [disabled]="enviando()"
+          >
+            Siguiente →
+          </button>
+        } @else {
+          <button
+            type="submit"
+            class="btn btn--primary"
+            [disabled]="enviando()"
+          >
+            @if (subiendoFoto()) {
+              Subiendo foto…
+            } @else if (guardando()) {
+              Guardando…
+            } @else {
+              Crear colaborador
+            }
+          </button>
+        }
+      </div>
+    </footer>
   </form>
 }

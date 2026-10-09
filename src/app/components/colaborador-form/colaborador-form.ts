@@ -30,6 +30,39 @@ import { PuestoResponse } from '../../models/puesto.model';
 import { UbicacionResponse } from '../../models/ubicacion.model';
 import { EnumOption } from '../../models/enum-option.model';
 
+/** Configuración de cada paso del wizard */
+interface PasoConfig {
+  label: string;
+  descripcion: string;
+  campos: string[];
+}
+
+const PASOS: PasoConfig[] = [
+  {
+    label: 'Datos personales',
+    descripcion: 'Información personal y fotografía del colaborador.',
+    campos: ['nombre', 'ap', 'am', 'fechaNacimiento', 'estadoCivil'],
+  },
+  {
+    label: 'Datos laborales',
+    descripcion: 'Puesto, ubicación, horario y condiciones laborales.',
+    campos: [
+      'fechaIngreso', 'sueldo', 'turno', 'diaDescanso',
+      'entrada', 'salida', 'estatus', 'idPuesto', 'idUbicacion',
+    ],
+  },
+  {
+    label: 'Información',
+    descripcion: 'Datos confidenciales del colaborador.',
+    campos: ['curp', 'nss', 'rfc'],
+  },
+  {
+    label: 'Dirección',
+    descripcion: 'Domicilio actual del colaborador.',
+    campos: ['calle', 'colonia', 'ciudad', 'estado', 'cp'],
+  },
+];
+
 @Component({
   selector: 'app-colaborador-form',
   standalone: true,
@@ -45,10 +78,21 @@ export class ColaboradorForm implements OnInit, OnDestroy {
   private readonly enumsService = inject(EnumsService);
   private readonly uploadService = inject(UploadColaboradorService);
 
-  /** Emite cuando se crea el colaborador */
   creado = output<ColaboradorTable>();
-  /** Emite cuando se cancela */
   cancelado = output<void>();
+
+  // ---------- Configuración del wizard ----------
+  readonly pasos = PASOS;
+  readonly totalPasos = PASOS.length;
+
+  pasoActual = signal(0);
+
+  esPrimerPaso = computed(() => this.pasoActual() === 0);
+  esUltimoPaso = computed(() => this.pasoActual() === this.totalPasos - 1);
+  pasoConfig = computed(() => this.pasos[this.pasoActual()]);
+  progreso = computed(() =>
+    Math.round(((this.pasoActual() + 1) / this.totalPasos) * 100)
+  );
 
   // ---------- Catálogos ----------
   puestos = signal<PuestoResponse[]>([]);
@@ -128,53 +172,84 @@ export class ColaboradorForm implements OnInit, OnDestroy {
     if (anterior) URL.revokeObjectURL(anterior);
   }
 
+  // ---------- Carga de catálogos ----------
   private cargarCatalogos(): void {
-  this.cargandoCatalogos.set(true);
-  this.errorCatalogos.set(null);
+    this.cargandoCatalogos.set(true);
+    this.errorCatalogos.set(null);
 
-  forkJoin({
-    puestos: this.puestoService.getPuestos(),
-    ubicaciones: this.ubicacionService.getUbicaciones(),
-    estadosCivil: this.enumsService.getEstadosCivil(),
-    turnos: this.enumsService.getTurnos(),
-    diasLaborales: this.enumsService.getDiasLaborales(),
-    estatusList: this.enumsService.getEstatusColaborador(),
-    estados: this.enumsService.getEstados(),
-  }).subscribe({
-    next: (res: {
-      puestos: PuestoResponse[];
-      ubicaciones: UbicacionResponse[];
-      estadosCivil: EnumOption[];
-      turnos: EnumOption[];
-      diasLaborales: EnumOption[];
-      estatusList: EnumOption[];
-      estados: EnumOption[];
-    }) => {
-      this.puestos.set(res.puestos);
-      this.ubicaciones.set(res.ubicaciones);
-      this.estadosCivil.set(res.estadosCivil);
-      this.turnos.set(res.turnos);
-      this.diasLaborales.set(res.diasLaborales);
-      this.estatusList.set(res.estatusList);
-      this.estados.set(res.estados);
+    forkJoin({
+      puestos: this.puestoService.getPuestos(),
+      ubicaciones: this.ubicacionService.getUbicaciones(),
+      estadosCivil: this.enumsService.getEstadosCivil(),
+      turnos: this.enumsService.getTurnos(),
+      diasLaborales: this.enumsService.getDiasLaborales(),
+      estatusList: this.enumsService.getEstatusColaborador(),
+      estados: this.enumsService.getEstados(),
+    }).subscribe({
+      next: (res: {
+        puestos: PuestoResponse[];
+        ubicaciones: UbicacionResponse[];
+        estadosCivil: EnumOption[];
+        turnos: EnumOption[];
+        diasLaborales: EnumOption[];
+        estatusList: EnumOption[];
+        estados: EnumOption[];
+      }) => {
+        this.puestos.set(res.puestos);
+        this.ubicaciones.set(res.ubicaciones);
+        this.estadosCivil.set(res.estadosCivil);
+        this.turnos.set(res.turnos);
+        this.diasLaborales.set(res.diasLaborales);
+        this.estatusList.set(res.estatusList);
+        this.estados.set(res.estados);
 
-      this.form.patchValue({
-        estadoCivil: res.estadosCivil[0]?.value ?? '',
-        turno: res.turnos[0]?.value ?? '',
-        diaDescanso: res.diasLaborales[0]?.value ?? '',
-        estatus: res.estatusList[0]?.value ?? '',
-        estado: res.estados[0]?.value ?? '',
-      });
+        this.form.patchValue({
+          estadoCivil: res.estadosCivil[0]?.value ?? '',
+          turno: res.turnos[0]?.value ?? '',
+          diaDescanso: res.diasLaborales[0]?.value ?? '',
+          estatus: res.estatusList[0]?.value ?? '',
+          estado: res.estados[0]?.value ?? '',
+        });
 
-      this.cargandoCatalogos.set(false);
-    },
-    error: (err: HttpErrorResponse) => {
-      console.error('Error al cargar catálogos', err);
-      this.errorCatalogos.set('No se pudieron cargar los catálogos.');
-      this.cargandoCatalogos.set(false);
-    },
-  });
-}
+        this.cargandoCatalogos.set(false);
+      },
+      error: (err: HttpErrorResponse) => {
+        console.error('Error al cargar catálogos', err);
+        this.errorCatalogos.set('No se pudieron cargar los catálogos.');
+        this.cargandoCatalogos.set(false);
+      },
+    });
+  }
+
+  // ---------- Navegación del wizard ----------
+  siguiente(): void {
+    if (!this.pasoEsValido()) {
+      this.marcarPasoTocado();
+      return;
+    }
+    if (this.esUltimoPaso()) return;
+    this.pasoActual.update((p) => p + 1);
+  }
+
+  atras(): void {
+    if (this.esPrimerPaso()) return;
+    this.pasoActual.update((p) => p - 1);
+  }
+
+  /** Valida todos los campos del paso actual */
+  private pasoEsValido(): boolean {
+    return this.pasoConfig().campos.every((c) => {
+      const ctrl = this.form.get(c);
+      return !ctrl || ctrl.valid;
+    });
+  }
+
+  /** Marca como touched todos los campos del paso actual */
+  private marcarPasoTocado(): void {
+    this.pasoConfig().campos.forEach((c) => {
+      this.form.get(c)?.markAsTouched();
+    });
+  }
 
   // ---------- Foto ----------
   onFotoSeleccionada(event: Event): void {
@@ -215,6 +290,11 @@ export class ColaboradorForm implements OnInit, OnDestroy {
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      // Salta al primer paso inválido
+      const idx = this.pasos.findIndex((p) =>
+        p.campos.some((c) => this.form.get(c)?.invalid)
+      );
+      if (idx >= 0) this.pasoActual.set(idx);
       return;
     }
 
@@ -294,7 +374,6 @@ export class ColaboradorForm implements OnInit, OnDestroy {
 
   // ---------- Helpers ----------
   private normalizarHora(hora: string): string {
-    // "08:00" → "08:00:00" para LocalTime
     return hora.length === 5 ? `${hora}:00` : hora;
   }
 
@@ -325,6 +404,7 @@ export class ColaboradorForm implements OnInit, OnDestroy {
     });
     this.quitarFoto();
     this.fotografiaPath.set(null);
+    this.pasoActual.set(0);
   }
 
   private extraerMensajeError(err: HttpErrorResponse): string {
@@ -338,7 +418,6 @@ export class ColaboradorForm implements OnInit, OnDestroy {
     return 'No se pudo crear el colaborador. Intenta de nuevo.';
   }
 
-  /** Devuelve el mensaje de error de un campo si está inválido y tocado */
   errorDe(campo: string): string | null {
     const control = this.form.get(campo);
     if (!control || !control.touched || control.valid) return null;
