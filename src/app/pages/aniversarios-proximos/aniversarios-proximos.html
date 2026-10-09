@@ -1,1 +1,24 @@
-<p>aniversarios-proximos works!</p>
+<section class="page">
+  <header class="page__head">
+    <div>
+      <h1 class="page__title">Aniversarios</h1>
+      <p class="page__subtitle">
+        Colaboradores que cumplen un año más en la empresa.
+      </p>
+    </div>
+  </header>
+
+  <!-- ============ Aniversarios de hoy ============ -->
+  <app-aniversarios />
+
+  <!-- ============ Próximos aniversarios ============ -->
+  <section class="section">
+    @if (loading()) {
+      <p class="state">Cargando aniversarios próximos…</p>
+    } @else if (error()) {
+      <p class="state state--error">{{ error() }}</p>
+    } @else {
+      <app-antiguedad-proxima-card [antiguedades]="antiguedades()" />
+    }
+  </section>
+</section>

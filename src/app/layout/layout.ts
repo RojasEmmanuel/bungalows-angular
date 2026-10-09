@@ -5,7 +5,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 interface NavItem {
   label: string;
   route: string;
-  icon: 'home' | 'users' | 'document' | 'beach' | 'money';
+  icon: 'home' | 'users' | 'document' | 'beach' | 'money' | 'calendar';
 }
 
 @Component({
@@ -20,7 +20,8 @@ export class LayoutComponent {
     { label: 'Colaboradores', route: '/colaboradores', icon: 'users'    },
     { label: 'Nóminas',       route: '/nominas',       icon: 'document' },
     { label: 'Vacaciones',    route: '/vacaciones',    icon: 'beach' },
-    { label: 'Préstamos',      route: '/prestamos',    icon: 'money' },
+    { label: 'Aniversarios',  route: '/aniversarios',    icon: 'calendar' },
+    { label: 'Préstamos',     route: '/prestamos',    icon: 'money' },
   ]);
 
   readonly user = signal({

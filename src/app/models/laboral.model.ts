@@ -28,6 +28,8 @@ export interface AntiguedadesProximas {
   id: number;
   nombreColaborador: string;
   fotografia: string | null;
+  puesto:string,
+  ubicacion:string,
   diasFaltantes: number;
   antiguedadProxima: number;
   fechaIngreso: string;   // "2021-03-12"

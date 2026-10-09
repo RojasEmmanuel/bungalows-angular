@@ -26,6 +26,18 @@ export class Aniversarios implements OnInit {
   // ---------- Computed ----------
   hayAniversarios = computed(() => this.aniversarios().length > 0);
 
+  /**
+   * Clase del grid según cantidad:
+   * 1 → 1 columna, 2 → 2, 3 → 3, 4+ → 3 por fila (las que sobren pasan abajo)
+   */
+  gridClase = computed(() => {
+    const n = this.aniversarios().length;
+    if (n === 1) return 'anivs__grid anivs__grid--1';
+    if (n === 2) return 'anivs__grid anivs__grid--2';
+    if (n === 3) return 'anivs__grid anivs__grid--3';
+    return 'anivs__grid anivs__grid--auto';
+  });
+
   // ---------- Ciclo de vida ----------
   ngOnInit(): void {
     this.cargarAniversarios();
@@ -50,7 +62,6 @@ export class Aniversarios implements OnInit {
   }
 
   // ---------- Helpers ----------
-  /** Iniciales del nombre: "Emmanuel Rojas" → "ER" */
   iniciales(nombre: string): string {
     const limpio = nombre?.trim() ?? '';
     if (!limpio) return '?';
@@ -59,7 +70,6 @@ export class Aniversarios implements OnInit {
     return (partes[0][0] + partes[1][0]).toUpperCase();
   }
 
-  /** ¿Debemos mostrar el avatar de iniciales? */
   showAvatar(a: AniversarioModel): boolean {
     const path = a.fotografia;
     if (!path || path.trim() === '' || path === 'no disponible') return true;
@@ -72,7 +82,6 @@ export class Aniversarios implements OnInit {
     this.failedImages.set(actual);
   }
 
-  /** Formato de fecha de ingreso: "2021-03-12" → "12 mar 2021" */
   formatoFecha(fecha: string | null | undefined): string {
     if (!fecha) return '—';
     const [anio, mes, dia] = fecha.split('-').map(Number);

@@ -39,15 +39,7 @@
   </div>
 
   <aside class="dashboard__aside">
-    <!-- Aniversarios de hoy -->
-     <div class="aside-section">
-      <header class="section-head">
-        <h2 class="section-head__title">Aniversarios de Hoy</h2>
-      </header>
-
-      <app-aniversarios />
-
-     </div>
+    
 
     <!-- Antigüedades próximas -->
     <div class="aside-section">
@@ -62,13 +54,7 @@
         <p class="state">Cargando antigüedades…</p>
       } @else if (antiguedades().length === 0) {
         <p class="state">Sin aniversarios próximos.</p>
-      } @else {
-        <div class="stack">
-          @for (a of antiguedades(); track a.id) {
-            <app-antiguedad-proxima-card [antiguedad]="a" />
-          }
-        </div>
-      }
+      } 
     </div>
   </aside>
 </section>

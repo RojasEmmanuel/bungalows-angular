@@ -1,29 +1,139 @@
-<article class="row">
-  <!-- Avatar -->
-  <div class="row__avatar">
-    @if (showAvatar()) {
-      <div class="avatar">
-        <span class="avatar__text">{{ iniciales() }}</span>
+<section class="directorio">
+  <!-- ============ Header ============ -->
+  <header class="directorio__head">
+    <div class="directorio__title-wrap">
+      <h3 class="directorio__title">Próximos aniversarios</h3>
+      <p class="directorio__subtitle">
+        Próximos 60 días · {{ total() }} colaborador{{ total() === 1 ? '' : 'es' }}
+      </p>
+    </div>
+
+    <div class="seacha__actions">
+      <div class="search">
+        <svg class="search__icon" viewBox="0 0 512 512">
+          <path
+            d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+          />
+        </svg>
+        <input
+          class="search__input"
+          type="text"
+          placeholder="Buscar colaborador, puesto o ubicación…"
+          [ngModel]="busqueda()"
+          (ngModelChange)="busqueda.set($event)"
+          autocomplete="off"
+        />
+        @if (busqueda()) {
+          <button
+            type="button"
+            class="search__clear"
+            (click)="limpiarBusqueda()"
+            aria-label="Limpiar búsqueda"
+          >
+            ✕
+          </button>
+        }
       </div>
-    } @else {
-      <img
-        class="avatar avatar--img"
-        [src]="antiguedad().fotografia!"
-        [alt]="antiguedad().nombreColaborador"
-        (error)="onImageError()"
-      />
-    }
-  </div>
 
-  <div class="row__info">
-    <p class="row__name">{{ antiguedad().nombreColaborador }}</p>
-    <p class="row__meta">
-      Cumple {{ antiguedad().antiguedadProxima }} años · {{ antiguedad().diasVacaciones }} días de vacaciones
+      <!-- ============ Controles expandir/contraer ============ -->
+      @if (hayResultados()) {
+        <div class="controles">
+          <button type="button" class="control" (click)="expandirTodos()">
+            Expandir todo
+          </button>
+          <button type="button" class="control" (click)="contraerTodos()">
+            Contraer todo
+          </button>
+        </div>
+      }
+    </div>
+  </header>
+
+  
+
+  <!-- ============ Sin resultados ============ -->
+  @if (!hayResultados()) {
+    <p class="state">
+      @if (busqueda()) {
+        No se encontraron colaboradores con esos criterios.
+      } @else {
+        No hay aniversarios en los próximos 60 días.
+      }
     </p>
-  </div>
+  } @else {
+    <!-- ============ Grupos ============ -->
+    <div class="grupos">
+      @for (g of grupos(); track g.id) {
+        @if (g.items.length > 0) {
+          <div class="grupo" [class.grupo--cerrado]="!estaExpandido(g.id)">
+            <button
+              type="button"
+              class="grupo__head"
+              (click)="toggleGrupo(g.id)"
+              [attr.aria-expanded]="estaExpandido(g.id)"
+            >
+              <span class="grupo__chevron">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </span>
 
-   <div class="row__badge">
-    <span class="row__days">{{ antiguedad().diasFaltantes }}</span>
-    <span class="row__days-label">días</span>
-  </div>
-</article>
+              <span class="grupo__info">
+                <span class="grupo__label">{{ g.label }}</span>
+                <span class="grupo__desc">{{ g.descripcion }}</span>
+              </span>
+
+              <span class="grupo__count">{{ g.items.length }}</span>
+            </button>
+
+            @if (estaExpandido(g.id)) {
+              <ul class="grupo__list">
+                @for (a of g.items; track a.id) {
+                  <li class="aniv">
+                    <!-- Avatar -->
+                    <div class="avatar">
+                      @if (showAvatar(a)) {
+                        <span class="avatar__text">{{ iniciales(a.nombreColaborador) }}</span>
+                      } @else {
+                        <img
+                          class="avatar__img"
+                          [src]="a.fotografia!"
+                          [alt]="a.nombreColaborador"
+                          (error)="onImageError(a.id)"
+                        />
+                      }
+                    </div>
+
+                    <!-- Info -->
+                    <div class="aniv__info">
+                      <div class="aniv__row">
+                        <span class="aniv__name">{{ a.nombreColaborador }}</span>
+                        <span class="aniv__fecha">{{ fechaProximoAniversario(a) }}</span>
+                      </div>
+                      <div class="aniv__row aniv__row--meta">
+                        <span class="aniv__puesto">{{ a.puesto }}</span>
+                        <span class="aniv__years">
+                          Cumple {{ a.antiguedadProxima }}
+                          {{ a.antiguedadProxima === 1 ? 'año' : 'años' }}
+                          · {{ a.diasVacaciones }} días
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- Badge de proximidad -->
+                    <div class="aniv__badge">
+                      <span class="aniv__badge-dias">{{ a.diasFaltantes }}</span>
+                      <span class="aniv__badge-label">
+                        {{ a.diasFaltantes === 1 ? 'día' : 'días' }}
+                      </span>
+                    </div>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        }
+      }
+    </div>
+  }
+</section>

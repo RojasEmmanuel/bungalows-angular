@@ -1,6 +1,5 @@
 <section class="anivs">
- 
-  <!-- ===== Estados ===== -->
+
   @if (loading()) {
     <p class="state">Cargando aniversarios…</p>
   } @else if (error()) {
@@ -8,11 +7,10 @@
   } @else if (!hayAniversarios()) {
     <p class="state">Hoy no hay aniversarios.</p>
   } @else {
-    <!-- ===== Lista ===== -->
-    <ul class="anivs__list">
+    <div [class]="gridClase()">
       @for (a of aniversarios(); track a.id) {
-        <li class="aniv">
-          <!-- Avatar -->
+        <article class="aniv">
+          <!-- Avatar grande -->
           <div class="aniv__avatar">
             @if (showAvatar(a)) {
               <div class="avatar">
@@ -30,25 +28,25 @@
 
           <!-- Info -->
           <div class="aniv__info">
-            <p class="aniv__name">{{ a.nombreColaborador }}</p>
+            <h4 class="aniv__name">{{ a.nombreColaborador }}</h4>
             <p class="aniv__meta">
               {{ a.puesto }} · {{ a.ubicacion }}
             </p>
-            <p class="aniv__years">
-              <strong>{{ a.antiguedad }}</strong>
-              {{ a.antiguedad === 1 ? 'año' : 'años' }} en la empresa
-            </p>
-          </div>
 
-          <!-- Badge -->
-          <div class="aniv__badge">
-            <span class="aniv__badge-icon">🎉</span>
-            <span class="aniv__badge-text">
-              {{ a.diasVacaciones }} días
-            </span>
+            <div class="aniv__chips">
+              <span class="chip chip--brand">
+                🎉 {{ a.antiguedad }} {{ a.antiguedad === 1 ? 'año' : 'años' }}
+              </span>
+              <span class="chip">
+                {{ a.diasVacaciones }} días de vacaciones
+              </span>
+              <span class="chip">
+                Ingresó el {{ formatoFecha(a.fechaIngreso) }}
+              </span>
+            </div>
           </div>
-        </li>
+        </article>
       }
-    </ul>
+    </div>
   }
 </section>

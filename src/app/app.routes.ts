@@ -5,6 +5,7 @@ import { Vacaciones } from './vacaciones/vacaciones';
 import { Prestamos } from './prestamos/prestamos';
 import { InicioComponent } from './pages/inicio/inicio';
 import { ColaboradoresComponent } from './pages/colaboradores/colaboradores';
+import { AniversariosProximos } from './pages/aniversarios-proximos/aniversarios-proximos';
 
 export const routes: Routes = [
   {
@@ -41,6 +42,10 @@ export const routes: Routes = [
       {
         path: 'vacaciones',
         loadComponent: () => Vacaciones,
+      },
+      {
+        path: 'aniversarios',
+        loadComponent: () => AniversariosProximos,
       },
       {
         path:'prestamos',

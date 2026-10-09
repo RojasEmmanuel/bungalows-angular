@@ -19,7 +19,6 @@ import { Aniversarios } from '../../components/aniversarios/aniversarios';
   imports: [
     CommonModule,
     UbicacionCardComponent,
-    AntiguedadProximaCardComponent,
     UbicacionFormComponent,
     PuestoForm,          // ← agregar
     ModalComponent,
