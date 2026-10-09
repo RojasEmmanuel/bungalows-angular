@@ -6,7 +6,10 @@
     </button>
   </header>
 
-  <app-vacaciones-table />
+  <app-vacaciones-table
+    (editar)="onEditarVacaciones($event)"
+    (eliminar)="onEliminarVacaciones($event)"
+  />
 </section>
 
 <app-modal
@@ -19,3 +22,28 @@
     (cancelado)="cerrarModal()"
   />
 </app-modal>
+
+<app-modal
+  titulo="Editar vacaciones"
+  [abierto]="modalEditarAbierto()"
+  (cerrar)="cerrarModalEditar()"
+>
+  @if (vacacionesSeleccionadasId(); as id) {
+    <app-vacaciones-edit
+      [vacacionesId]="id"
+      (guardado)="onVacacionesActualizadas()"
+      (cancelado)="cerrarModalEditar()"
+    />
+  }
+</app-modal>
+
+<app-confirm-modal
+  titulo="Eliminar vacaciones"
+  mensaje="Si elimina este registro de vacaciones no se restablecerán los días ocupados como días disponibles al periodo vacacional anual."
+  [detalle]="vacacionesAEliminar()?.nombreColaborador ?? null"
+  textoConfirmar="Eliminar"
+  [abierto]="modalEliminarAbierto()"
+  [procesando]="eliminando()"
+  (confirmar)="confirmarEliminar()"
+  (cancelar)="cerrarModalEliminar()"
+/>

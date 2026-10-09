@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, OnInit } from '@angular/core';
+import { Component, computed, inject, signal, OnInit, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -35,6 +35,10 @@ export class VacacionesTable implements OnInit {
   private readonly enumsService = inject(EnumsService);
   private readonly puestoService = inject(PuestoService);
   private readonly ubicacionService = inject(UbicacionService);
+
+  editar = output<VacacionesResponse>();
+  eliminar = output<VacacionesResponse>();
+
 
   // ---------- Datos crudos ----------
   vacaciones = signal<VacacionesResponse[]>([]);
@@ -224,5 +228,15 @@ export class VacacionesTable implements OnInit {
 
   recargar(): void {
     this.cargarVacaciones();
+  }
+
+  
+
+  onEditar(v: VacacionesResponse): void {
+    this.editar.emit(v);
+  }
+
+  onEliminar(v: VacacionesResponse): void {
+    this.eliminar.emit(v);
   }
 }

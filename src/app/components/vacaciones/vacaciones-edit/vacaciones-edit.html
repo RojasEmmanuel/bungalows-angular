@@ -1,0 +1,83 @@
+@if (cargando()) {
+  <p class="state">Cargando vacaciones…</p>
+} @else {
+  <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    @if (errorGeneral()) {
+      <div class="banner">{{ errorGeneral() }}</div>
+    }
+
+    <!-- ============ Fechas ============ -->
+    <div class="grid grid--2">
+      <div class="field">
+        <label class="field__label" for="ve-inicio">Fecha de inicio</label>
+        <input
+          id="ve-inicio"
+          class="field__input"
+          type="date"
+          formControlName="fechaInicio"
+          [disabled]="guardando()"
+        />
+        @if (errorDe('fechaInicio'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="ve-fin">Fecha de fin</label>
+        <input
+          id="ve-fin"
+          class="field__input"
+          type="date"
+          formControlName="fechaFin"
+          [disabled]="guardando()"
+        />
+        @if (errorDe('fechaFin'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+    </div>
+
+    @if (errorRango) {
+      <p class="field__error field__error--block">
+        La fecha de fin debe ser posterior a la fecha de inicio.
+      </p>
+    }
+
+    <!-- ============ Estatus ============ -->
+    <div class="field">
+      <label class="field__label" for="ve-estatus">Estatus</label>
+      <select
+        id="ve-estatus"
+        class="field__input"
+        formControlName="estatusVacaciones"
+        [disabled]="guardando()"
+      >
+        @for (e of estatusList(); track e.value) {
+          <option [value]="e.value">{{ e.label }}</option>
+        }
+      </select>
+      @if (errorDe('estatusVacaciones'); as msg) {
+        <p class="field__error">{{ msg }}</p>
+      }
+    </div>
+
+    <!-- ============ Acciones ============ -->
+    <div class="actions">
+      <button
+        type="button"
+        class="btn btn--ghost"
+        (click)="cancelar()"
+        [disabled]="guardando()"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        class="btn btn--primary"
+        [disabled]="guardando()"
+      >
+        @if (guardando()) { Guardando… } @else { Guardar cambios }
+      </button>
+    </div>
+  </form>
+}

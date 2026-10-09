@@ -28,4 +28,17 @@ export interface VacacionesSimpleResponse{
     id:number,
     fechaInicio:string,
     fechaFin:string,
+    estatusVacaciones:string
+}
+
+
+export interface VacacionalResponse{
+    id:number,
+    colaboradorNombre:string,
+    colaboradorPuesto:string,
+    colaboradorUbicacion:string,
+    antiguedad:number,
+    diasVacaciones:number,
+    diasOcupados:number,
+    diasDisponible:number
 }
