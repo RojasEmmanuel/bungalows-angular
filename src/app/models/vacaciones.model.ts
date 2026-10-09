@@ -40,5 +40,5 @@ export interface VacacionalResponse{
     antiguedad:number,
     diasVacaciones:number,
     diasOcupados:number,
-    diasDisponible:number
+    diasDisponibles:number
 }

@@ -1,0 +1,104 @@
+<section class="periodos">
+  <!-- ============ Header con búsqueda ============ -->
+  <header class="periodos__head">
+    <div>
+      <h2 class="periodos__title">Periodos vacacionales</h2>
+      <p class="periodos__subtitle">
+        Consulta los días disponibles y ocupados por colaborador.
+      </p>
+    </div>
+
+    <div class="search">
+      <svg class="search__icon" viewBox="0 0 512 512">
+        <path
+          d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+        />
+      </svg>
+      <input
+        class="search__input"
+        type="text"
+        placeholder="Buscar por colaborador…"
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+        autocomplete="off"
+      />
+      @if (hayBusqueda()) {
+        <button
+          type="button"
+          class="search__clear"
+          (click)="limpiarBusqueda()"
+          aria-label="Limpiar búsqueda"
+        >
+          ✕
+        </button>
+      }
+    </div>
+  </header>
+
+  <!-- ============ Estados ============ -->
+  @if (loading()) {
+    <p class="state">Cargando periodos vacacionales…</p>
+  } @else if (error()) {
+    <p class="state state--error">{{ error() }}</p>
+  } @else if (periodosFiltrados().length === 0) {
+    <p class="state">
+      @if (hayBusqueda()) {
+        No se encontraron colaboradores con ese nombre.
+      } @else {
+        No hay periodos vacacionales registrados.
+      }
+    </p>
+  } @else {
+    <!-- ============ Cards ============ -->
+    <div class="cards">
+      @for (p of periodosFiltrados(); track p.id) {
+        <article class="card">
+          <!-- Header con avatar + datos del colaborador -->
+          <header class="card__head">
+            <div class="avatar">
+              <span class="avatar__text">{{ iniciales(p.colaboradorNombre) }}</span>
+            </div>
+
+            <div class="card__info">
+              <h3 class="card__name">{{ p.colaboradorNombre }}</h3>
+              <p class="card__meta">
+                {{ p.colaboradorPuesto }} · {{ p.colaboradorUbicacion }}
+              </p>
+            </div>
+
+            <span class="card__antiguedad">
+              {{ p.antiguedad }} {{ p.antiguedad === 1 ? 'año' : 'años' }}
+            </span>
+          </header>
+
+          <!-- Días: barra + números -->
+          <div class="dias">
+            <div class="dias__bar">
+              <div
+                [class]="progresoClase(p)"
+                [style.width.%]="porcentajeUsado(p)"
+              ></div>
+            </div>
+
+            <div class="dias__stats">
+              <div class="stat">
+                <span class="stat__value">{{ p.diasVacaciones }}</span>
+                <span class="stat__label">Total</span>
+              </div>
+              <div class="stat">
+                <span class="stat__value">{{ p.diasOcupados }}</span>
+                <span class="stat__label">Ocupados</span>
+              </div>
+              <div class="stat">
+                <span class="stat__value stat__value--brand">
+                  {{ p.diasDisponibles }}
+                </span>
+                <span class="stat__label">Disponibles</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

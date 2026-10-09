@@ -1,4 +1,5 @@
 <section class="page">
+  <!-- ============ Header ============ -->
   <header class="page__head">
     <h1 class="page__title">Vacaciones</h1>
     <button type="button" class="btn-new" (click)="abrirModal()">
@@ -6,12 +7,38 @@
     </button>
   </header>
 
-  <app-vacaciones-table
-    (editar)="onEditarVacaciones($event)"
-    (eliminar)="onEliminarVacaciones($event)"
-  />
+  <!-- ============ Tabs ============ -->
+  <nav class="tabs">
+    <button
+      type="button"
+      class="tab"
+      [class.tab--active]="vistaActiva() === 'registros'"
+      (click)="cambiarVista('registros')"
+    >
+      Registros
+    </button>
+    <button
+      type="button"
+      class="tab"
+      [class.tab--active]="vistaActiva() === 'periodos'"
+      (click)="cambiarVista('periodos')"
+    >
+      Periodos vacacionales
+    </button>
+  </nav>
+
+  <!-- ============ Contenido según tab ============ -->
+  @if (vistaActiva() === 'registros') {
+    <app-vacaciones-table
+      (editar)="onEditarVacaciones($event)"
+      (eliminar)="onEliminarVacaciones($event)"
+    />
+  } @else {
+    <app-vacaciones-periodos />
+  }
 </section>
 
+<!-- ============ Modales (siempre presentes) ============ -->
 <app-modal
   titulo="Registrar vacaciones"
   [abierto]="modalCrearAbierto()"

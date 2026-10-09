@@ -4,11 +4,14 @@ import { CommonModule } from '@angular/common';
 import { VacacionesTable } from '../components/vacaciones/vacaciones-table/vacaciones-table';
 import { VacacionesForm } from '../components/vacaciones/vacaciones-form/vacaciones-form';
 import { VacacionesEdit } from '../components/vacaciones/vacaciones-edit/vacaciones-edit';
+import { VacacionesPeriodos } from '../components/vacaciones/vacaciones-periodos/vacaciones-periodos';
 import { ModalComponent } from '../components/modal/modal';
 import { ConfirmModalComponent } from '../components/confirm-modal/confirm-modal';
 
 import { VacacionesService } from '../services/vacaciones.service';
 import { VacacionesResponse } from '../models/vacaciones.model';
+
+type VistaActiva = 'registros' | 'periodos';
 
 @Component({
   selector: 'app-vacaciones',
@@ -18,6 +21,7 @@ import { VacacionesResponse } from '../models/vacaciones.model';
     VacacionesTable,
     VacacionesForm,
     VacacionesEdit,
+    VacacionesPeriodos,
     ModalComponent,
     ConfirmModalComponent,
   ],
@@ -28,6 +32,13 @@ export class Vacaciones {
   private readonly vacacionesService = inject(VacacionesService);
 
   tabla = viewChild(VacacionesTable);
+
+  /** Tab activa */
+  vistaActiva = signal<VistaActiva>('registros');
+
+  cambiarVista(vista: VistaActiva): void {
+    this.vistaActiva.set(vista);
+  }
 
   // ---------- Modal crear ----------
   modalCrearAbierto = signal(false);
@@ -42,6 +53,7 @@ export class Vacaciones {
 
   onCreado(): void {
     this.modalCrearAbierto.set(false);
+    // Recarga la tabla si el tab de registros está activo (o siempre, no molesta)
     this.tabla()?.recargar();
   }
 
