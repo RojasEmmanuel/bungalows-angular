@@ -1,4 +1,21 @@
-<section class="rounded-2xl bg-white p-6">
-    <h2 class="text-xl font-bold text-slate-800">Vacaciones</h2>
-    <p class="mt-2 text-slate-500">Gestión de vacaciones.</p>
+<section class="page">
+  <header class="page__head">
+    <h1 class="page__title">Vacaciones</h1>
+    <button type="button" class="btn-new" (click)="abrirModal()">
+      + Nueva vacación
+    </button>
+  </header>
+
+  <app-vacaciones-table />
 </section>
+
+<app-modal
+  titulo="Registrar vacaciones"
+  [abierto]="modalCrearAbierto()"
+  (cerrar)="cerrarModal()"
+>
+  <app-vacaciones-form
+    (creado)="onCreado()"
+    (cancelado)="cerrarModal()"
+  />
+</app-modal>

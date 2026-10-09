@@ -2,7 +2,8 @@
 
 @theme {
   /* Azul primario y sus derivados (todo sale de #155dfc) */
-  --color-brand:        #155dfc;
+  /*--color-brand:        #155dfc;*/
+  --color-brand:   rgb(19,41,61);
   --color-brand-hover:  #0d4fd6;
   --color-brand-soft:   #e8efff;  
   --color-brand-softer: #f4f7ff;  

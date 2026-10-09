@@ -1,0 +1,123 @@
+@if (cargando()) {
+  <p class="state">Cargando datos…</p>
+} @else {
+  <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    @if (errorGeneral()) {
+      <div class="banner">{{ errorGeneral() }}</div>
+    }
+
+    <!-- ============ Colaborador (dropdown con búsqueda) ============ -->
+    <div class="field field--dropdown">
+      <label class="field__label" for="v-colaborador">Colaborador</label>
+
+      <div class="combo">
+        <input
+          id="v-colaborador"
+          class="field__input"
+          type="text"
+          placeholder="Buscar colaborador…"
+          autocomplete="off"
+          [value]="busquedaColaborador()"
+          (input)="onBusquedaColaborador($event)"
+          (focus)="onFocusBusqueda()"
+          (blur)="onBlurBusqueda()"
+          [disabled]="guardando()"
+        />
+
+        @if (dropdownAbierto() && colaboradoresFiltrados().length > 0) {
+          <ul class="combo__list">
+            @for (c of colaboradoresFiltrados(); track c.id) {
+              <li
+                class="combo__item"
+                (mousedown)="seleccionarColaborador(c)"
+              >
+                <span class="combo__name">{{ c.nombreCompleto }}</span>
+                <span class="combo__meta">{{ c.puesto }} · {{ c.ubicacion }}</span>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      @if (errorDe('colaboradorId'); as msg) {
+        <p class="field__error">{{ msg }}</p>
+      }
+    </div>
+
+    <!-- ============ Fechas ============ -->
+    <div class="grid grid--2">
+      <div class="field">
+        <label class="field__label" for="v-inicio">Fecha de inicio</label>
+        <input
+          id="v-inicio"
+          class="field__input"
+          type="date"
+          formControlName="fechaInicio"
+          [min]="hoy()"
+          [disabled]="guardando()"
+        />
+        @if (errorDe('fechaInicio'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="v-fin">Fecha de fin</label>
+        <input
+          id="v-fin"
+          class="field__input"
+          type="date"
+          formControlName="fechaFin"
+          [min]="manana()"
+          [disabled]="guardando()"
+        />
+        @if (errorDe('fechaFin'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+    </div>
+
+    @if (errorRango) {
+      <p class="field__error field__error--block">
+        La fecha de fin debe ser posterior a la fecha de inicio.
+      </p>
+    }
+
+    <!-- ============ Estatus ============ -->
+    <div class="field">
+      <label class="field__label" for="v-estatus">Estatus</label>
+      <select
+        id="v-estatus"
+        class="field__input"
+        formControlName="estatus"
+        [disabled]="guardando()"
+      >
+        @for (e of estatusList(); track e.value) {
+          <option [value]="e.value">{{ e.label }}</option>
+        }
+      </select>
+      @if (errorDe('estatus'); as msg) {
+        <p class="field__error">{{ msg }}</p>
+      }
+    </div>
+
+    <!-- ============ Acciones ============ -->
+    <div class="actions">
+      <button
+        type="button"
+        class="btn btn--ghost"
+        (click)="cancelar()"
+        [disabled]="guardando()"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        class="btn btn--primary"
+        [disabled]="guardando()"
+      >
+        @if (guardando()) { Guardando… } @else { Registrar vacaciones }
+      </button>
+    </div>
+  </form>
+}

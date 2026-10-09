@@ -1,0 +1,158 @@
+<section class="vacaciones">
+  <!-- ============ Header + búsqueda ============ -->
+  <header class="vacaciones__head">
+    
+
+    <div class="search">
+      <svg class="search__icon" viewBox="0 0 512 512">
+        <path
+          d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+        />
+      </svg>
+      <input
+        class="search__input"
+        type="text"
+        placeholder="Buscar por colaborador…"
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+        autocomplete="off"
+      />
+    </div>
+
+     <div class="filtros">
+    <div class="filtros__group">
+      <label class="filtros__label" for="f-estatus">Estatus</label>
+      <select
+        id="f-estatus"
+        class="filtros__select"
+        [ngModel]="filtroEstatus()"
+        (ngModelChange)="filtroEstatus.set($event)"
+      >
+        <option value="">Todos</option>
+        @for (e of estatusList(); track e.value) {
+          <option [ngValue]="e.value">{{ e.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filtros__group">
+      <label class="filtros__label" for="f-puesto">Puesto</label>
+      <select
+        id="f-puesto"
+        class="filtros__select"
+        [ngModel]="filtroPuesto()"
+        (ngModelChange)="filtroPuesto.set($event)"
+      >
+        <option value="">Todos</option>
+        @for (p of puestos(); track p.id) {
+          <option [ngValue]="p.nombre">{{ p.nombre }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filtros__group">
+      <label class="filtros__label" for="f-ubicacion">Ubicación</label>
+      <select
+        id="f-ubicacion"
+        class="filtros__select"
+        [ngModel]="filtroUbicacion()"
+        (ngModelChange)="filtroUbicacion.set($event)"
+      >
+        <option value="">Todas</option>
+        @for (u of ubicaciones(); track u.id) {
+          <option [ngValue]="u.nombre">{{ u.nombre }}</option>
+        }
+      </select>
+    </div>
+
+    @if (hayFiltrosActivos()) {
+      <button type="button" class="filtros__clear" (click)="limpiarFiltros()">
+        Limpiar filtros
+      </button>
+    }
+
+    <span class="filtros__count">
+      {{ vacacionesFiltradas().length }} de {{ vacaciones().length }}
+    </span>
+  </div>
+  </header>
+
+  <!-- ============ Filtros ============ -->
+ 
+
+  <!-- ============ Estados ============ -->
+  @if (loading()) {
+    <p class="state">Cargando vacaciones…</p>
+  } @else if (error()) {
+    <p class="state state--error">{{ error() }}</p>
+  } @else if (vacacionesFiltradas().length === 0) {
+    <p class="state">No se encontraron vacaciones con esos criterios.</p>
+  } @else {
+    <!-- ============ Tabla ============ -->
+    <div class="table-wrap">
+      <table class="table">
+        <thead class="table__head">
+          <tr>
+            <th class="th th--sortable" (click)="ordenarPor('nombreColaborador')">
+              <span class="th__inner">
+                Colaborador
+                <svg class="sort-icon" [class]="iconClass('nombreColaborador')" viewBox="0 0 24 24">
+                  <path d="M12 5l6 6H6z" />
+                  <path d="M12 19l-6-6h12z" />
+                </svg>
+              </span>
+            </th>
+            <th class="th">Puesto</th>
+            <th class="th">Ubicación</th>
+            <th class="th th--sortable" (click)="ordenarPor('fechaInicio')">
+              <span class="th__inner">
+                Inicio
+                <svg class="sort-icon" [class]="iconClass('fechaInicio')" viewBox="0 0 24 24">
+                  <path d="M12 5l6 6H6z" />
+                  <path d="M12 19l-6-6h12z" />
+                </svg>
+              </span>
+            </th>
+            <th class="th th--sortable" (click)="ordenarPor('fechaFin')">
+              <span class="th__inner">
+                Fin
+                <svg class="sort-icon" [class]="iconClass('fechaFin')" viewBox="0 0 24 24">
+                  <path d="M12 5l6 6H6z" />
+                  <path d="M12 19l-6-6h12z" />
+                </svg>
+              </span>
+            </th>
+            <th class="th th--num">Días</th>
+            <th class="th th--sortable" (click)="ordenarPor('estatus')">
+              <span class="th__inner">
+                Estatus
+                <svg class="sort-icon" [class]="iconClass('estatus')" viewBox="0 0 24 24">
+                  <path d="M12 5l6 6H6z" />
+                  <path d="M12 19l-6-6h12z" />
+                </svg>
+              </span>
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (v of vacacionesFiltradas(); track v.id) {
+            <tr class="tr">
+              <td class="td td--strong">{{ v.nombreColaborador }}</td>
+              <td class="td">{{ v.puesto }}</td>
+              <td class="td td--muted">{{ v.ubicacion }}</td>
+              <td class="td td--muted">{{ v.fechaInicio }}</td>
+              <td class="td td--muted">{{ v.fechaFin }}</td>
+              <td class="td td--num">{{ v.diasOcupados }}</td>
+              <td class="td">
+                <span [class]="estatusClase(v.estatus)">
+                  {{ labelEstatus(v.estatus) }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

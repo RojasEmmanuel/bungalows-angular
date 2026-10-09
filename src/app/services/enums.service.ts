@@ -39,4 +39,8 @@ export class EnumsService {
   getEstatusPrestamo(): Observable<EnumOption[]> {
     return this.http.get<EnumOption[]>(`${this.baseUrl}/estatus-prestamos`);
   }
+
+  getEstatusVacaciones(): Observable<EnumOption[]> {
+    return this.http.get<EnumOption[]>(`${this.baseUrl}/estatus-vacaciones`);
+  }
 }
