@@ -11,6 +11,7 @@ import { UbicacionFormComponent } from '../../components/ubicacion-form/ubicacio
 import { PuestoForm } from '../../components/puesto-form/puesto-form';
 import { ModalComponent } from '../../components/modal/modal';
 import { UbicacionPatch } from '../../components/ubicacion-patch/ubicacion-patch';
+import { Aniversarios } from '../../components/aniversarios/aniversarios';
 
 @Component({
   selector: 'app-inicio',
@@ -22,7 +23,8 @@ import { UbicacionPatch } from '../../components/ubicacion-patch/ubicacion-patch
     UbicacionFormComponent,
     PuestoForm,          // ← agregar
     ModalComponent,
-    UbicacionPatch
+    UbicacionPatch,
+    Aniversarios
   ],
   templateUrl: './inicio.html',
   styleUrl: './inicio.css',

@@ -93,3 +93,9 @@
   color: var(--color-brand);
   border-color: var(--color-brand);
 }
+
+.dashboard__aside {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;   /* ajusta según tu diseño */
+}

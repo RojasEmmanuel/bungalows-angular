@@ -1,0 +1,54 @@
+<section class="anivs">
+ 
+  <!-- ===== Estados ===== -->
+  @if (loading()) {
+    <p class="state">Cargando aniversarios…</p>
+  } @else if (error()) {
+    <p class="state state--error">{{ error() }}</p>
+  } @else if (!hayAniversarios()) {
+    <p class="state">Hoy no hay aniversarios.</p>
+  } @else {
+    <!-- ===== Lista ===== -->
+    <ul class="anivs__list">
+      @for (a of aniversarios(); track a.id) {
+        <li class="aniv">
+          <!-- Avatar -->
+          <div class="aniv__avatar">
+            @if (showAvatar(a)) {
+              <div class="avatar">
+                <span class="avatar__text">{{ iniciales(a.nombreColaborador) }}</span>
+              </div>
+            } @else {
+              <img
+                class="avatar avatar--img"
+                [src]="a.fotografia"
+                [alt]="a.nombreColaborador"
+                (error)="onImageError(a.id)"
+              />
+            }
+          </div>
+
+          <!-- Info -->
+          <div class="aniv__info">
+            <p class="aniv__name">{{ a.nombreColaborador }}</p>
+            <p class="aniv__meta">
+              {{ a.puesto }} · {{ a.ubicacion }}
+            </p>
+            <p class="aniv__years">
+              <strong>{{ a.antiguedad }}</strong>
+              {{ a.antiguedad === 1 ? 'año' : 'años' }} en la empresa
+            </p>
+          </div>
+
+          <!-- Badge -->
+          <div class="aniv__badge">
+            <span class="aniv__badge-icon">🎉</span>
+            <span class="aniv__badge-text">
+              {{ a.diasVacaciones }} días
+            </span>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>

@@ -33,3 +33,14 @@ export interface AntiguedadesProximas {
   fechaIngreso: string;   // "2021-03-12"
   diasVacaciones: number;
 }
+
+export interface Aniversarios{
+    id:number,
+    nombreColaborador:string,
+    puesto:string,
+    ubicacion:string,
+    fotografia:string,
+    fechaIngreso:string,
+    diasVacaciones:number,
+    antiguedad:number
+}

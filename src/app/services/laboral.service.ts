@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AntiguedadesProximas, LaboralPatch, LaboralResponse } from '../models/laboral.model';
+import { AntiguedadesProximas, LaboralPatch, LaboralResponse, Aniversarios } from '../models/laboral.model';
 
 @Injectable({ providedIn: 'root' })
 export class LaboralService {
@@ -18,6 +18,10 @@ export class LaboralService {
 
   getLaboralByColaboradorId(colaboradorId: number): Observable<LaboralResponse> {
     return this.http.get<LaboralResponse>(`${this.baseUrl}/${colaboradorId}`);
+  }
+
+  getAniversarios(): Observable<Aniversarios[]>{
+    return this.http.get<Aniversarios[]>(`${this.baseUrl}/aniversarios`);
   }
 
 }
