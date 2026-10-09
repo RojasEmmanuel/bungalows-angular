@@ -1,9 +1,158 @@
-/* Contenedor con scroll horizontal en pantallas chicas */
+/* =========================================================
+   Card contenedora
+   ========================================================= */
+.table-card {
+  width: 100%;
+  background-color: var(--color-surface);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+/* =========================================================
+   Toolbar: search | filtros
+   ========================================================= */
+.toolbar {
+  display: grid;
+  grid-template-columns: 2fr 5fr;    /* ← search 2, filtros 5 (los 4 selects + botón caben) */
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--color-line);
+  align-items: end;
+}
+
+@media (max-width: 900px) {
+  .toolbar {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   Búsqueda
+   ========================================================= */
+.InputContainer {
+  width: 100%;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+  padding: 0 0.625rem;
+  transition: border-color 0.15s ease;
+}
+.InputContainer:focus-within {
+  border-color: var(--color-brand);
+}
+
+.labelforsearch {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  cursor: text;
+}
+.searchIcon {
+  width: 14px;
+  height: 14px;
+}
+.searchIcon path {
+  fill: var(--color-brand);
+}
+
+.input {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+  color: var(--color-ink);
+  background-color: transparent;
+  caret-color: var(--color-brand);
+}
+.input::placeholder {
+  color: var(--color-ink-soft);
+}
+
+/* =========================================================
+   Filtros: 4 selects + botón, todos en una sola fila
+   ========================================================= */
+.filtros {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;   /* ← 4 selects + botón auto */
+  gap: 0.5rem 0.75rem;
+  align-items: end;
+}
+
+.filtros__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.filtros__label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-soft);
+  line-height: 1;
+  height: 0.6875rem;
+}
+
+.filtros__select {
+  width: 100%;
+  height: 36px;
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  padding: 0 1.75rem 0 0.625rem;
+  font-size: 0.875rem;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--color-brand) 50%),
+    linear-gradient(135deg, var(--color-brand) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) center,
+    calc(100% - 9px) center;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+.filtros__select:focus {
+  border-color: var(--color-brand);
+}
+
+/* Botón limpiar: compacto, alineado con la base de los selects */
+.filtros__clear {
+  width: auto;                 /* ← nunca se estira */
+  height: 36px;
+  padding: 0 1rem;
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+  background-color: var(--color-brand-soft);
+  color: var(--color-brand);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  align-self: end;             /* ← alineado por la base con los selects */
+}
+.filtros__clear:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   Tabla
+   ========================================================= */
 .table-wrap {
   width: 100%;
   overflow-x: auto;
-  border: 1px solid var(--color-line);
-  border-radius: 1rem;
   background-color: var(--color-surface);
 }
 
@@ -14,7 +163,6 @@
   color: var(--color-ink);
 }
 
-/* Cabecera */
 .table__head {
   background-color: var(--color-brand-softer);
 }
@@ -30,16 +178,9 @@
   border-bottom: 1px solid var(--color-line);
   white-space: nowrap;
 }
+.th--num { text-align: right; }
+.th--colab { min-width: 240px; }
 
-.th--num {
-  text-align: right;
-}
-
-.th--colab {
-  min-width: 240px;
-}
-
-/* Filas */
 .tr + .tr .td {
   border-top: 1px solid var(--color-line);
 }
@@ -48,42 +189,35 @@
   padding: 0.75rem 1rem;
   vertical-align: middle;
 }
-
-.td--muted {
-  color: var(--color-ink-soft);
-}
-
+.td--muted { color: var(--color-ink-soft); }
 .td--num {
   text-align: right;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
 }
-
 .td--empty {
   text-align: center;
   padding: 2rem 1rem;
   color: var(--color-ink-soft);
 }
 
-/* Colaborador: avatar + nombre */
+/* Colaborador */
 .td--colab {
   padding-top: 0.625rem;
   padding-bottom: 0.625rem;
 }
-
 .colab {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
-
 .colab__name {
   font-weight: 600;
   color: var(--color-ink);
   white-space: nowrap;
 }
 
-/* Avatar cuadrado redondeado, 40x40 */
+/* Avatar */
 .avatar {
   flex-shrink: 0;
   width: 2.5rem;
@@ -95,7 +229,6 @@
   justify-content: center;
   overflow: hidden;
 }
-
 .avatar__text {
   font-size: 0.875rem;
   font-weight: 700;
@@ -103,14 +236,13 @@
   letter-spacing: 0.02em;
   user-select: none;
 }
-
 .avatar--img {
   object-fit: cover;
   display: block;
   background-color: var(--color-brand-soft);
 }
 
-/* Badge de estado */
+/* Badges y pills */
 .badge {
   display: inline-block;
   padding: 0.125rem 0.625rem;
@@ -121,18 +253,14 @@
   color: var(--color-brand);
   text-transform: capitalize;
 }
-
 .badge--activo {
   background-color: var(--color-brand-soft);
   color: var(--color-brand);
 }
-
 .badge--inactivo {
   background-color: var(--color-brand-softer);
   color: var(--color-ink-soft);
 }
-
-/* Pill de antigüedad */
 .pill {
   display: inline-block;
   padding: 0.125rem 0.5rem;
@@ -143,58 +271,39 @@
   color: var(--color-ink-soft);
 }
 
-
-/* ... todo tu CSS anterior ... */
-
-/* Header sortable */
+/* =========================================================
+   Sort
+   ========================================================= */
 .th--sortable {
   cursor: pointer;
   user-select: none;
 }
-
 .th__inner {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
 }
-
 .sort-icon {
   width: 12px;
   height: 12px;
   flex-shrink: 0;
 }
+.sort-icon path { fill: var(--color-brand); }
+.sort-icon--off { opacity: 0.25; }
+.sort-icon--asc path:last-child { display: none; }
+.sort-icon--desc path:first-child { display: none; }
 
-.sort-icon path {
-  fill: var(--color-brand);
-}
-
-/* Cuando NO está ordenado por esta columna: gris, media opacidad */
-.sort-icon--off {
-  opacity: 0.25;
-}
-
-/* Cuando el orden es ascendente: solo la flecha de arriba visible */
-.sort-icon--asc path:last-child {
-  display: none;
-}
-
-/* Cuando el orden es descendente: solo la flecha de abajo visible */
-.sort-icon--desc path:first-child {
-  display: none;
-}
-
-/* ... tu CSS existente ... */
-
+/* =========================================================
+   Acciones
+   ========================================================= */
 .th--actions {
   text-align: right;
   white-space: nowrap;
 }
-
 .td--actions {
   text-align: right;
   white-space: nowrap;
 }
-
 .btn-ver {
   height: 32px;
   padding: 0 0.75rem;
@@ -206,4 +315,43 @@
   font-weight: 700;
   cursor: pointer;
   font-family: inherit;
+}
+
+/* =========================================================
+   Paginador
+   ========================================================= */
+.pager {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--color-line);
+  font-size: 0.8125rem;
+  color: var(--color-ink-soft);
+  flex-wrap: wrap;
+}
+.pager__btn {
+  height: 32px;
+  min-width: 32px;
+  padding: 0 0.625rem;
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+  background: var(--color-surface);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  color: var(--color-ink);
+}
+.pager__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.pager__page {
+  margin-left: auto;
+}
+.pager__btn--toggle {
+  border-color: var(--color-brand);
+  background-color: var(--color-brand-soft);
+  color: var(--color-brand);
+  font-weight: 600;
 }

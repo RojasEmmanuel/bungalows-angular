@@ -1,127 +1,22 @@
 <section class="colaboradores">
-  <!-- ===== Header con búsqueda ===== -->
   <header class="colaboradores__head">
     <div>
       <h2 class="colaboradores__title">Colaboradores</h2>
       <p class="colaboradores__subtitle">Listado de colaboradores.</p>
     </div>
 
-    <div class="InputContainer">
-      <input
-        id="buscar-colaborador"
-        class="input"
-        type="text"
-        name="busqueda"
-        placeholder="Buscar por nombre..."
-        autocomplete="off"
-        [value]="busqueda()"
-        (input)="onBusqueda($event)"
-      />
-      <label class="labelforsearch" for="buscar-colaborador">
-        <svg class="searchIcon" viewBox="0 0 512 512">
-          <path
-            d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
-          ></path>
-        </svg>
-      </label>
-
-      <!-- Botón nuevo -->
-      <button
-        type="button"
-        class="btn-new"
-        routerLink="/colaboradores/nuevo"
-      >
-        Nuevo
-      </button>
-    </div>
+    <button type="button" class="btn-new" routerLink="/colaboradores/nuevo">
+      Nuevo Colaborador
+    </button>
   </header>
 
-  <!-- ===== Barra de filtros ===== -->
-  <div class="filtros">
-    <div class="filtros__group">
-      <label class="filtros__label" for="f-puesto">Puesto</label>
-      <select
-        id="f-puesto"
-        class="filtros__select"
-        [value]="filtroPuesto()"
-        (change)="onFiltroPuesto($event)"
-      >
-        <option value="">Todos</option>
-        @for (p of opcionesPuesto(); track p) {
-          <option [value]="p">{{ p }}</option>
-        }
-      </select>
-    </div>
-
-    <div class="filtros__group">
-      <label class="filtros__label" for="f-ubicacion">Ubicación</label>
-      <select
-        id="f-ubicacion"
-        class="filtros__select"
-        [value]="filtroUbicacion()"
-        (change)="onFiltroUbicacion($event)"
-      >
-        <option value="">Todas</option>
-        @for (u of opcionesUbicacion(); track u) {
-          <option [value]="u">{{ u }}</option>
-        }
-      </select>
-    </div>
-
-    <div class="filtros__group">
-      <label class="filtros__label" for="f-turno">Turno</label>
-      <select
-        id="f-turno"
-        class="filtros__select"
-        [value]="filtroTurno()"
-        (change)="onFiltroTurno($event)"
-      >
-        <option value="">Todos</option>
-        @for (t of opcionesTurno(); track t) {
-          <option [value]="t">{{ t }}</option>
-        }
-      </select>
-    </div>
-
-    <div class="filtros__group">
-      <label class="filtros__label" for="f-descanso">Día de descanso</label>
-      <select
-        id="f-descanso"
-        class="filtros__select"
-        [value]="filtroDiaDescanso()"
-        (change)="onFiltroDiaDescanso($event)"
-      >
-        <option value="">Todos</option>
-        @for (d of opcionesDiaDescanso(); track d) {
-          <option [value]="d">{{ d }}</option>
-        }
-      </select>
-    </div>
-
-    @if (hayFiltrosActivos()) {
-      <button
-        type="button"
-        class="filtros__clear"
-        (click)="limpiarFiltros()"
-      >
-        Limpiar filtros
-      </button>
-    }
-  </div>
-
-  <!-- ===== Estados / Tabla ===== -->
   @if (loading()) {
     <p class="state">Cargando colaboradores…</p>
   } @else if (error()) {
     <p class="state state--error">{{ error() }}</p>
-  } @else if (colaboradoresFiltrados().length === 0) {
-    <p class="state">No se encontraron colaboradores con esos criterios.</p>
   } @else {
     <app-colaborador-table
-      [colaboradores]="colaboradoresFiltrados()"
-      [sortColumn]="sortColumn()"
-      [sortDirection]="sortDirection()"
-      (sortChange)="ordenarPor($event)"
+      [colaboradores]="colaboradores()"
       (verColaborador)="onVerColaborador($event)"
     />
   }

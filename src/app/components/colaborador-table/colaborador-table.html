@@ -1,94 +1,249 @@
-<div class="table-wrap">
-  <table class="table">
-    <thead class="table__head">
-      <tr>
-        <th class="th th--colab th--sortable" (click)="onSort('nombreCompleto')">
-          <span class="th__inner">
-            Colaborador
-            <svg class="sort-icon" [class]="iconClass('nombreCompleto')" viewBox="0 0 24 24">
-              <path d="M12 5l6 6H6z" />
-              <path d="M12 19l-6-6h12z" />
-            </svg>
-          </span>
-        </th>
-        <th class="th th--sortable" (click)="onSort('edad')">
-          <span class="th__inner">
-            Edad
-            <svg class="sort-icon" [class]="iconClass('edad')" viewBox="0 0 24 24">
-              <path d="M12 5l6 6H6z" />
-              <path d="M12 19l-6-6h12z" />
-            </svg>
-          </span>
-        </th>
-        <th class="th">Puesto</th>
-        <th class="th">Ubicación</th>
-        <th class="th th--sortable" (click)="onSort('antiguedad')">
-          <span class="th__inner">
-            Antigüedad
-            <svg class="sort-icon" [class]="iconClass('antiguedad')" viewBox="0 0 24 24">
-              <path d="M12 5l6 6H6z" />
-              <path d="M12 19l-6-6h12z" />
-            </svg>
-          </span>
-        </th>
-        <th class="th">Ingreso</th>
-        <th class="th th--num">Sueldo</th>
-        <th class="th">Turno</th>
-        <th class="th">Descanso</th>
-        <th class="th">Horario</th>
-        <th class="th th--actions">Acciones</th> <!-- ← NUEVA -->
-      </tr>
-    </thead>
+<div class="table-card">
 
-    <tbody>
-      @for (c of colaboradores(); track c.id) {
-        <tr class="tr">
-          <td class="td td--colab">
-            <div class="colab">
-              @if (showAvatar(c)) {
-                <div class="avatar">
-                  <span class="avatar__text">{{ iniciales(c.nombreCompleto) }}</span>
-                </div>
-              } @else {
-                <img
-                  class="avatar avatar--img"
-                  [src]="c.fotografia"
-                  [alt]="c.nombreCompleto"
-                  (error)="onImageError(c.id)"
-                />
-              }
-              <span class="colab__name">{{ c.nombreCompleto }}</span>
-            </div>
-          </td>
+  <!-- ===== Toolbar: search | filtros ===== -->
+  <div class="toolbar">
 
-          <td class="td td--muted">{{ c.edad }}</td>
-          <td class="td">{{ c.puesto }}</td>
-          <td class="td td--muted">{{ c.ubicacion }}</td>
-          <td class="td"><span class="pill">{{ c.antiguedad }} años</span></td>
-          <td class="td td--muted">{{ c.fechaIngreso }}</td>
-          <td class="td td--num">{{ formatoSueldo(c.sueldo) }}</td>
-          <td class="td">{{ c.turno }}</td>
-          <td class="td td--muted">{{ c.diaDescanso }}</td>
-          <td class="td td--muted">
-            {{ c.entrada?.slice(0, 5) }} – {{ c.salida?.slice(0, 5) }}
-          </td>
-          <td class="td td--actions"> <!-- ← NUEVA -->
-            <button
-              type="button"
-              class="btn-ver"
-              (click)="onVer(c.id)"
-            >
-              Ver
-            </button>
-          </td>
-        </tr>
-      } @empty {
+    <!-- Búsqueda -->
+    <div class="filtros__group">
+      <label class="filtros__label" for="buscar-colaborador">Buscar</label>
+      <div class="InputContainer">
+        <label class="labelforsearch" for="buscar-colaborador">
+          <svg class="searchIcon" viewBox="0 0 512 512" aria-hidden="true">
+            <path
+              d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+            ></path>
+          </svg>
+        </label>
+
+        <input
+          id="buscar-colaborador"
+          class="input"
+          type="text"
+          name="busqueda"
+          placeholder="Buscar por nombre..."
+          autocomplete="off"
+          [value]="busqueda()"
+          (input)="onBusqueda($event)"
+        />
+      </div>
+    </div>
+
+    <!-- Filtros + botón limpiar, todo en un grid de 5 columnas -->
+    <div class="filtros">
+      <div class="filtros__group">
+        <label class="filtros__label" for="f-puesto">Puesto</label>
+        <select
+          id="f-puesto"
+          class="filtros__select"
+          [value]="filtroPuesto()"
+          (change)="onFiltroPuesto($event)"
+        >
+          <option value="">Todos</option>
+          @for (p of opcionesPuesto(); track p) {
+            <option [value]="p">{{ p }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filtros__group">
+        <label class="filtros__label" for="f-ubicacion">Ubicación</label>
+        <select
+          id="f-ubicacion"
+          class="filtros__select"
+          [value]="filtroUbicacion()"
+          (change)="onFiltroUbicacion($event)"
+        >
+          <option value="">Todas</option>
+          @for (u of opcionesUbicacion(); track u) {
+            <option [value]="u">{{ u }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filtros__group">
+        <label class="filtros__label" for="f-turno">Turno</label>
+        <select
+          id="f-turno"
+          class="filtros__select"
+          [value]="filtroTurno()"
+          (change)="onFiltroTurno($event)"
+        >
+          <option value="">Todos</option>
+          @for (t of opcionesTurno(); track t) {
+            <option [value]="t">{{ t }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filtros__group">
+        <label class="filtros__label" for="f-descanso">Día de descanso</label>
+        <select
+          id="f-descanso"
+          class="filtros__select"
+          [value]="filtroDiaDescanso()"
+          (change)="onFiltroDiaDescanso($event)"
+        >
+          <option value="">Todos</option>
+          @for (d of opcionesDiaDescanso(); track d) {
+            <option [value]="d">{{ d }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Botón limpiar: columna propia dentro del grid de filtros -->
+      <button
+        type="button"
+        class="filtros__clear"
+        [disabled]="!hayFiltrosActivos()"
+        (click)="limpiarFiltros()"
+      >
+        Limpiar
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== Tabla ===== -->
+  <div class="table-wrap">
+    <table class="table">
+      <thead class="table__head">
         <tr>
-          <td class="td td--empty" [attr.colspan]="12">
-            No hay colaboradores registrados.
-          </td>
+          <th class="th th--colab th--sortable" (click)="onSort('nombreCompleto')">
+            <span class="th__inner">
+              Colaborador
+              <svg class="sort-icon" [class]="iconClass('nombreCompleto')" viewBox="0 0 24 24">
+                <path d="M12 5l6 6H6z" />
+                <path d="M12 19l-6-6h12z" />
+              </svg>
+            </span>
+          </th>
+          <th class="th th--sortable" (click)="onSort('edad')">
+            <span class="th__inner">
+              Edad
+              <svg class="sort-icon" [class]="iconClass('edad')" viewBox="0 0 24 24">
+                <path d="M12 5l6 6H6z" />
+                <path d="M12 19l-6-6h12z" />
+              </svg>
+            </span>
+          </th>
+          <th class="th">Puesto</th>
+          <th class="th">Ubicación</th>
+          <th class="th th--sortable" (click)="onSort('antiguedad')">
+            <span class="th__inner">
+              Antigüedad
+              <svg class="sort-icon" [class]="iconClass('antiguedad')" viewBox="0 0 24 24">
+                <path d="M12 5l6 6H6z" />
+                <path d="M12 19l-6-6h12z" />
+              </svg>
+            </span>
+          </th>
+          <th class="th">Ingreso</th>
+          <th class="th th--num">Sueldo</th>
+          <th class="th">Turno</th>
+          <th class="th">Descanso</th>
+          <th class="th">Horario</th>
+          <th class="th th--actions">Acciones</th>
         </tr>
-      }
-    </tbody>
-  </table>
+      </thead>
+
+      <tbody>
+        @for (c of pageRows(); track c.id) {
+          <tr class="tr">
+            <td class="td td--colab">
+              <div class="colab">
+                @if (showAvatar(c)) {
+                  <div class="avatar">
+                    <span class="avatar__text">{{ iniciales(c.nombreCompleto) }}</span>
+                  </div>
+                } @else {
+                  <img
+                    class="avatar avatar--img"
+                    [src]="c.fotografia"
+                    [alt]="c.nombreCompleto"
+                    (error)="onImageError(c.id)"
+                  />
+                }
+                <span class="colab__name">{{ c.nombreCompleto }}</span>
+              </div>
+            </td>
+
+            <td class="td td--muted">{{ c.edad }}</td>
+            <td class="td">{{ c.puesto }}</td>
+            <td class="td td--muted">{{ c.ubicacion }}</td>
+            <td class="td"><span class="pill">{{ c.antiguedad }} años</span></td>
+            <td class="td td--muted">{{ c.fechaIngreso }}</td>
+            <td class="td td--num">{{ formatoSueldo(c.sueldo) }}</td>
+            <td class="td">{{ c.turno }}</td>
+            <td class="td td--muted">{{ c.diaDescanso }}</td>
+            <td class="td td--muted">
+              {{ c.entrada?.slice(0, 5) }} – {{ c.salida?.slice(0, 5) }}
+            </td>
+            <td class="td td--actions">
+              <button type="button" class="btn-ver" (click)="onVer(c.id)">
+                Ver
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td class="td td--empty" [attr.colspan]="12">
+              No se encontraron colaboradores con esos criterios.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <!-- ===== Paginador ===== -->
+    @if (colaboradoresFiltrados().length > 0) {
+      <div class="pager">
+        @if (mostrarPaginador()) {
+          <button
+            type="button"
+            class="pager__btn"
+            [disabled]="currentPage() === 1"
+            (click)="prevPage()"
+          >
+            ‹
+          </button>
+
+          <span class="pager__info">
+            {{ rangeStart() }}–{{ rangeEnd() }} de {{ colaboradoresFiltrados().length }}
+          </span>
+
+          <button
+            type="button"
+            class="pager__btn"
+            [disabled]="currentPage() === totalPages()"
+            (click)="nextPage()"
+          >
+            ›
+          </button>
+
+          <span class="pager__page">
+            Página {{ currentPage() }} / {{ totalPages() }}
+          </span>
+
+          <button
+            type="button"
+            class="pager__btn pager__btn--toggle"
+            (click)="toggleMostrarTodos()"
+          >
+            Ver todos
+          </button>
+        } @else {
+          <span class="pager__info">
+            Mostrando los {{ colaboradoresFiltrados().length }} colaboradores
+          </span>
+
+          <button
+            type="button"
+            class="pager__btn pager__btn--toggle"
+            (click)="toggleMostrarTodos()"
+          >
+            Ver paginado
+          </button>
+        }
+      </div>
+    }
+  </div>
 </div>
