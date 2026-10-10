@@ -1,0 +1,68 @@
+<form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  @if (errorGeneral()) {
+    <div class="banner">{{ errorGeneral() }}</div>
+  }
+
+  <!-- Contexto: colaborador y saldo pendiente -->
+  @if (colaboradorNombre()) {
+    <div class="contexto">
+      <p class="contexto__name">{{ colaboradorNombre() }}</p>
+      <p class="contexto__pendiente">
+        Saldo pendiente: <strong>{{ pendienteFormateado() }}</strong>
+      </p>
+    </div>
+  }
+
+  <!-- Monto -->
+  <div class="field">
+    <label class="field__label" for="a-monto">Monto a abonar</label>
+    <input
+      id="a-monto"
+      class="field__input field__input--monto"
+      type="number"
+      min="1"
+      step="0.01"
+      formControlName="monto"
+      placeholder="Ej. 500"
+      [disabled]="guardando()"
+    />
+    @if (errorDe('monto'); as msg) {
+      <p class="field__error">{{ msg }}</p>
+    }
+  </div>
+
+  <!-- Opciones rápidas -->
+  @if (opcionesRapidas().length > 0) {
+    <div class="rapidas">
+      @for (op of opcionesRapidas(); track op.label) {
+        <button
+          type="button"
+          class="rapida"
+          (click)="setMonto(op.valor)"
+          [disabled]="guardando()"
+        >
+          {{ op.label }}
+        </button>
+      }
+    </div>
+  }
+
+  <!-- Acciones -->
+  <div class="actions">
+    <button
+      type="button"
+      class="btn btn--ghost"
+      (click)="cancelar()"
+      [disabled]="guardando()"
+    >
+      Cancelar
+    </button>
+    <button
+      type="submit"
+      class="btn btn--primary"
+      [disabled]="guardando()"
+    >
+      @if (guardando()) { Aplicando… } @else { Aplicar abono }
+    </button>
+  </div>
+</form>

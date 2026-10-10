@@ -27,6 +27,24 @@
       }
     </div>
 
+    <!-- Concepto -->
+    <div class="field">
+      <label class="field__label" for="p-concepto">Concepto</label>
+      <input
+        id="p-concepto"
+        class="field__input"
+        type="text"
+        formControlName="concepto"
+        placeholder="Ej. Préstamo personal, adelanto de nómina…"
+        maxlength="150"
+        autocomplete="off"
+        [disabled]="guardando()"
+      />
+      @if (errorDe('concepto'); as msg) {
+        <p class="field__error">{{ msg }}</p>
+      }
+    </div>
+
     <!-- Monto + fecha -->
     <div class="grid grid--2">
       <div class="field">
@@ -68,7 +86,7 @@
         id="p-obs"
         class="field__input field__input--area"
         formControlName="observaciones"
-        placeholder="Motivo del préstamo, condiciones, etc. (opcional)"
+        placeholder="Detalles adicionales, condiciones, etc. (opcional)"
         rows="3"
         maxlength="300"
         [disabled]="guardando()"

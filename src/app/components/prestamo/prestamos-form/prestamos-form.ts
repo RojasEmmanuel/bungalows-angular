@@ -35,6 +35,10 @@ export class PrestamosForm implements OnInit {
   // ---------- Formulario ----------
   form = this.fb.nonNullable.group({
     colaboradorId: [null as number | null, [Validators.required]],
+    concepto: [
+      '',
+      [Validators.required, Validators.maxLength(150)],
+    ],
     monto: [0, [Validators.required, Validators.min(100)]],
     fechaPrestamo: [this.hoy(), [Validators.required]],
     observaciones: ['', [Validators.maxLength(300)]],
@@ -86,6 +90,7 @@ export class PrestamosForm implements OnInit {
 
     const body: PrestamoRequest = {
       monto: v.monto,
+      concepto: v.concepto.trim(),
       fechaPrestamo: v.fechaPrestamo,
       observaciones: v.observaciones.trim(),
       colaboradorId: v.colaboradorId!,
@@ -110,7 +115,6 @@ export class PrestamosForm implements OnInit {
   }
 
   // ---------- Helpers ----------
-  /** Fecha de hoy en formato YYYY-MM-DD */
   private hoy(): string {
     const d = new Date();
     const yyyy = d.getFullYear();
@@ -122,13 +126,16 @@ export class PrestamosForm implements OnInit {
   private reset(): void {
     this.form.reset({
       colaboradorId: null,
+      concepto: '',
       monto: 0,
       fechaPrestamo: this.hoy(),
       observaciones: '',
     });
   }
 
-  errorDe(campo: 'colaboradorId' | 'monto' | 'fechaPrestamo' | 'observaciones'): string | null {
+  errorDe(
+    campo: 'colaboradorId' | 'concepto' | 'monto' | 'fechaPrestamo' | 'observaciones'
+  ): string | null {
     const control = this.form.get(campo);
     if (!control || !control.touched || control.valid) return null;
 

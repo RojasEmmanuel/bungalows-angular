@@ -1,0 +1,129 @@
+<section class="lista">
+  <!-- ============ Cabecera del colaborador ============ -->
+  <header class="colab">
+    <div class="colab__avatar">
+      @if (mostrarAvatar()) {
+        <span class="colab__avatar-text">{{ iniciales() }}</span>
+      } @else {
+        <img
+          class="colab__avatar-img"
+          [src]="colaboradorFotografia()!"
+          [alt]="colaboradorNombre()"
+          (error)="onFotoError()"
+        />
+      }
+    </div>
+
+    <div class="colab__info">
+      <h3 class="colab__nombre">{{ colaboradorNombre() || 'Colaborador' }}</h3>
+      <p class="colab__meta">
+        {{ colaboradorPuesto() || 'Sin puesto' }} ·
+        {{ colaboradorUbicacion() || 'Sin ubicación' }}
+      </p>
+    </div>
+  </header>
+
+  <!-- ============ Resumen de totales ============ -->
+  @if (!loading() && !error() && prestamos().length > 0) {
+    <div class="resumen">
+      <div class="resumen__item">
+        <span class="resumen__label">Préstamos</span>
+        <span class="resumen__value">{{ totales().total }}</span>
+      </div>
+      <div class="resumen__item">
+        <span class="resumen__label">Total</span>
+        <span class="resumen__value">{{ formatoMonto(totales().montoOriginal) }}</span>
+      </div>
+      <div class="resumen__item">
+        <span class="resumen__label">Pagado</span>
+        <span class="resumen__value">{{ formatoMonto(totales().pagado) }}</span>
+      </div>
+      <div class="resumen__item">
+        <span class="resumen__label">Pendiente</span>
+        <span class="resumen__value resumen__value--brand">
+          {{ formatoMonto(totales().pendiente) }}
+        </span>
+      </div>
+    </div>
+  }
+
+  <!-- ============ Estados ============ -->
+  @if (loading()) {
+    <p class="state">Cargando préstamos…</p>
+  } @else if (error()) {
+    <p class="state state--error">{{ error() }}</p>
+  } @else if (prestamos().length === 0) {
+    <p class="state">Este colaborador no tiene préstamos activos.</p>
+  } @else {
+    <!-- ============ Lista ============ -->
+    <ul class="items">
+      @for (p of prestamos(); track p.id) {
+        <li class="item">
+          <header class="item__head">
+            <div class="item__main">
+              <span class="item__monto">{{ formatoMonto(totalOriginalDe(p)) }}</span>
+              <span [class]="estatusClase(p.estatus)">
+                {{ labelEstatus(p.estatus) }}
+              </span>
+            </div>
+            <span class="item__fecha">{{ p.fechaPrestamo }}</span>
+          </header>
+
+          <div class="item__resumen">
+            <span class="item__resumen-item">
+              Pagado <strong>{{ formatoMonto(p.montoPagado) }}</strong>
+            </span>
+            <span class="item__resumen-item item__resumen-item--pendiente">
+              Pendiente <strong>{{ formatoMonto(p.monto) }}</strong>
+            </span>
+          </div>
+
+          <div class="progress">
+            <div class="progress__fill" [style.width.%]="porcentajePagado(p)"></div>
+          </div>
+
+          @if (p.observaciones) {
+            <p class="item__obs">{{ p.observaciones }}</p>
+          }
+
+          <footer class="item__foot">
+            <button type="button" class="btn btn--ghost" (click)="abrirModalCancelar(p)">
+              Cancelar
+            </button>
+            <button type="button" class="btn btn--primary" (click)="abrirModalAbono(p)">
+              Abonar
+            </button>
+          </footer>
+        </li>
+      }
+    </ul>
+  }
+</section>
+
+<!-- ============ Modal abono ============ -->
+<app-modal
+  titulo="Aplicar abono"
+  [abierto]="modalAbonoAbierto()"
+  (cerrar)="cerrarModalAbono()"
+>
+  @if (prestamoParaAbonar(); as p) {
+    <app-abono-prestamo-form
+      [prestamoId]="p.id"
+      [pendiente]="p.monto"
+      (abonado)="onAbonoAplicado()"
+      (cancelado)="cerrarModalAbono()"
+    />
+  }
+</app-modal>
+
+<!-- ============ Modal cancelar ============ -->
+<app-confirm-modal
+  titulo="Cancelar préstamo"
+  mensaje="¿Seguro que deseas cancelar este préstamo? Esta acción no se puede deshacer."
+  [detalle]="prestamoParaCancelar()?.nombreColaborador ?? null"
+  textoConfirmar="Cancelar préstamo"
+  [abierto]="modalCancelarAbierto()"
+  [procesando]="cancelando()"
+  (confirmar)="confirmarCancelar()"
+  (cancelar)="cerrarModalCancelar()"
+/>

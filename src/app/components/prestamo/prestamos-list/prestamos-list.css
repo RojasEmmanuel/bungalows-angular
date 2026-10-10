@@ -1,0 +1,337 @@
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ============ Cabecera del colaborador ============ */
+.colab {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.colab__avatar {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  background-color: var(--color-brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.colab__avatar-text {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-surface);
+  letter-spacing: 0.03em;
+  user-select: none;
+}
+
+.colab__info {
+  min-width: 0;
+  flex: 1;
+}
+
+.colab__nombre {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.colab__meta {
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+  margin: 0.125rem 0 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============ Resumen de totales ============ */
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background-color: var(--color-brand-softer);
+  border: 1px solid var(--color-line);
+  border-radius: 0.625rem;
+}
+
+.resumen__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.0625rem;
+  min-width: 0;
+}
+
+.resumen__label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-soft);
+}
+
+.resumen__value {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resumen__value--brand {
+  color: var(--color-brand);
+}
+
+/* ============ Estados ============ */
+.state {
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
+  margin: 0;
+  padding: 1rem 0;
+  text-align: center;
+}
+
+.state--error {
+  color: var(--color-brand);
+}
+
+/* ============ Lista ============ */
+.items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 0.625rem;
+}
+
+/* Encabezado */
+.item__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.item__main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.item__monto {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.item__fecha {
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Badge */
+.badge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  background-color: var(--color-brand-soft);
+  color: var(--color-brand);
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.badge--ok {
+  background-color: color-mix(in srgb, var(--color-brand) 15%, white);
+  color: var(--color-brand-hover);
+}
+
+.badge--info {
+  background-color: var(--color-brand-soft);
+  color: var(--color-brand);
+}
+
+.badge--parcial {
+  background-color: color-mix(in srgb, var(--color-brand) 10%, white);
+  color: var(--color-brand);
+}
+
+.badge--danger {
+  background-color: var(--color-brand-softer);
+  color: var(--color-ink-soft);
+}
+
+/* Resumen pagado/pendiente */
+.item__resumen {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+}
+
+.item__resumen-item strong {
+  font-weight: 700;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.item__resumen-item--pendiente strong {
+  color: var(--color-brand);
+}
+
+/* Barra de progreso */
+.progress {
+  width: 100%;
+  height: 3px;
+  border-radius: 9999px;
+  background-color: var(--color-brand-soft);
+  overflow: hidden;
+}
+
+.progress__fill {
+  height: 100%;
+  border-radius: 9999px;
+  background-color: var(--color-brand);
+  transition: width 0.3s ease;
+}
+
+/* Observaciones */
+.item__obs {
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Acciones */
+.item__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 0.625rem;
+  border-top: 1px solid var(--color-line);
+}
+
+.btn {
+  height: 32px;
+  padding: 0 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn--primary {
+  background-color: var(--color-brand);
+  color: var(--color-surface);
+  border-color: var(--color-brand);
+}
+
+.btn--ghost {
+  background-color: transparent;
+  color: var(--color-ink-soft);
+  border-color: var(--color-line);
+}
+
+
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ============ Cabecera del colaborador ============ */
+.colab {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.colab__avatar {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 9999px;
+  background-color: var(--color-brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.colab__avatar-text {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-surface);
+  letter-spacing: 0.03em;
+  user-select: none;
+}
+
+.colab__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background-color: var(--color-brand-soft);
+}
+
+.colab__info {
+  min-width: 0;
+  flex: 1;
+}
+
+.colab__nombre {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.colab__meta {
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+  margin: 0.125rem 0 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* El resto del CSS queda igual al que ya tenías */

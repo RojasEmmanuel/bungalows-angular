@@ -1,0 +1,219 @@
+<section class="prestamos">
+  <!-- ============ Título de la página ============ -->
+  <header class="prestamos__page-head">
+    <div>
+      <h1 class="prestamos__title">Préstamos</h1>
+      <p class="prestamos__subtitle">
+        Administra los préstamos otorgados a los colaboradores.
+      </p>
+    </div>
+  </header>
+
+  <!-- ============ Barra de acciones: search + botón ============ -->
+  <div class="prestamos__toolbar">
+    <div class="search">
+      <svg class="search__icon" viewBox="0 0 512 512">
+        <path
+          d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+        />
+      </svg>
+      <input
+        class="search__input"
+        type="text"
+        placeholder="Buscar colaborador…"
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+        autocomplete="off"
+      />
+      @if (hayFiltrosActivos()) {
+        <button
+          type="button"
+          class="search__clear"
+          (click)="limpiarBusqueda()"
+          aria-label="Limpiar búsqueda"
+        >
+          ✕
+        </button>
+      }
+    </div>
+
+    <button
+      type="button"
+      class="btn-new"
+      (click)="abrirModalNuevoPrestamo()"
+    >
+      + Nuevo préstamo
+    </button>
+  </div>
+
+  <!-- ============ Resumen de totales ============ -->
+  @if (!loading() && !error() && deudas().length > 0) {
+    <div class="resumen">
+      <div class="resumen__item">
+        <span class="resumen__label">Colaboradores</span>
+        <span class="resumen__value">{{ totales().colaboradores }}</span>
+      </div>
+      <div class="resumen__item">
+        <span class="resumen__label">Prestado</span>
+        <span class="resumen__value">{{ formatoMonto(totales().prestado) }}</span>
+      </div>
+      <div class="resumen__item">
+        <span class="resumen__label">Pagado</span>
+        <span class="resumen__value">
+          {{ formatoMonto(totales().pagado) }}
+        </span>
+      </div>
+      <div class="resumen__item">
+        <span class="resumen__label">Pendiente</span>
+        <span class="resumen__value resumen__value--brand">
+          {{ formatoMonto(totales().pendiente) }}
+        </span>
+      </div>
+    </div>
+  }
+
+  <!-- ============ Estados ============ -->
+  @if (loading()) {
+    <p class="state">Cargando deudas…</p>
+  } @else if (error()) {
+    <p class="state state--error">{{ error() }}</p>
+  } @else if (!hayResultados()) {
+    <p class="state">
+      @if (hayFiltrosActivos()) {
+        No se encontraron colaboradores con esos criterios.
+      } @else {
+        No hay deudas activas.
+      }
+    </p>
+  } @else {
+    <!-- ============ Grid de cards ============ -->
+    <div class="cards">
+      @for (d of deudasFiltradas(); track d.colaboradorId) {
+        <article class="card">
+          <header class="card__head">
+            <div class="avatar">
+              @if (showAvatar(d)) {
+                <span class="avatar__text">{{ iniciales(d.colaborador) }}</span>
+              } @else {
+                <img
+                  class="avatar__img"
+                  [src]="d.fotografia"
+                  [alt]="d.colaborador"
+                  (error)="onImageError(d.colaboradorId)"
+                />
+              }
+            </div>
+
+            <div class="card__info">
+              <h3 class="card__name">{{ d.colaborador }}</h3>
+              <p class="card__meta">
+                {{ d.puesto }} · {{ d.ubicacion }}
+              </p>
+            </div>
+
+            <span class="card__badge">
+              {{ d.prestamosActivos }}
+              {{ d.prestamosActivos === 1 ? 'préstamo' : 'préstamos' }}
+            </span>
+          </header>
+
+          <div class="progreso">
+            <div class="progreso__bar">
+              <div
+                [class]="progresoClase(d)"
+                [style.width.%]="porcentajePagado(d)"
+              ></div>
+            </div>
+            <div class="progreso__label">
+              <span>{{ porcentajePagado(d) }}% pagado</span>
+            </div>
+          </div>
+
+          <div class="card__stats">
+            <div class="stat">
+              <span class="stat__label">Prestado</span>
+              <span class="stat__value">{{ formatoMonto(d.prestado) }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat__label">Pagado</span>
+              <span class="stat__value">
+                {{ formatoMonto(d.pagado) }}
+              </span>
+            </div>
+            <div class="stat">
+              <span class="stat__label">Pendiente</span>
+              <span [class]="pendienteClase(d)">
+                {{ formatoMonto(d.pendiente) }}
+              </span>
+            </div>
+          </div>
+
+          <footer class="card__foot">
+            <button
+              type="button"
+              class="btn btn--ghost"
+              (click)="verPrestamos(d)"
+            >
+              Ver préstamos
+            </button>
+
+            <button
+              type="button"
+              class="btn btn--primary"
+              (click)="abrirModalAbono(d)"
+            >
+              Abonar
+            </button>
+          </footer>
+        </article>
+      }
+    </div>
+  }
+</section>
+
+<!-- ============ Modal: Abonar ============ -->
+<app-modal
+  titulo="Aplicar abono"
+  [abierto]="modalAbonoAbierto()"
+  (cerrar)="cerrarModalAbono()"
+>
+  @if (deudaSeleccionada(); as d) {
+    <app-abono-form
+      [colaboradorId]="d.colaboradorId"
+      [colaboradorNombre]="d.colaborador"
+      [pendiente]="d.pendiente"
+      (abonado)="onAbonoAplicado()"
+      (cancelado)="cerrarModalAbono()"
+    />
+  }
+</app-modal>
+
+<!-- ============ Modal: Ver préstamos ============ -->
+<app-modal
+  titulo="Préstamos del colaborador"
+  [abierto]="modalVerPrestamosAbierto()"
+  (cerrar)="cerrarModalVerPrestamos()"
+>
+  @if (colaboradorSeleccionado(); as d) {
+    <app-prestmos-list
+      [colaboradorId]="d.colaboradorId"
+      [colaboradorNombre]="d.colaborador"
+      [colaboradorPuesto]="d.puesto"
+      [colaboradorUbicacion]="d.ubicacion"
+      [colaboradorFotografia]="d.fotografia"
+    />
+  }
+</app-modal>
+
+
+<!-- ============ Modal: Nuevo préstamo ============ -->
+<app-modal
+  titulo="Nuevo préstamo"
+  [abierto]="modalNuevoPrestamoAbierto()"
+  (cerrar)="cerrarModalNuevoPrestamo()"
+>
+  <app-prestamos-form
+    (creado)="onPrestamoCreado()"
+    (cancelado)="cerrarModalNuevoPrestamo()"
+  />
+</app-modal>
