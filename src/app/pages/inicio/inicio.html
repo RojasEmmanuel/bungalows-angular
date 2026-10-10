@@ -39,23 +39,7 @@
   </div>
 
   <aside class="dashboard__aside">
-    
-
-    <!-- Antigüedades próximas -->
-    <div class="aside-section">
-      <header class="section-head">
-        <h2 class="section-head__title">Próximos aniversarios</h2>
-        <span class="section-head__count">
-          {{ antiguedades().length }}
-        </span>
-      </header>
-
-      @if (loadingAntiguedades()) {
-        <p class="state">Cargando antigüedades…</p>
-      } @else if (antiguedades().length === 0) {
-        <p class="state">Sin aniversarios próximos.</p>
-      } 
-    </div>
+    <app-aniversarios-widget />
   </aside>
 </section>
 

@@ -1,0 +1,66 @@
+<button
+  type="button"
+  class="widget"
+  (click)="irAAniversarios()"
+  [attr.aria-label]="'Ver aniversarios'"
+>
+  <!-- ============ Header ============ -->
+  <header class="widget__head">
+    <div class="widget__title-wrap">
+      <h3 class="widget__title">Aniversarios</h3>
+      <p class="widget__subtitle">Colaboradores que cumplen años hoy</p>
+    </div>
+
+    <span class="widget__arrow" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6" />
+      </svg>
+    </span>
+  </header>
+
+  <!-- ============ Estados ============ -->
+  @if (loading()) {
+    <p class="state">Cargando…</p>
+  } @else if (error()) {
+    <p class="state state--error">{{ error() }}</p>
+  } @else {
+    <!-- ============ Cuerpo ============ -->
+    @if (hayAniversariosHoy()) {
+      <!-- Avatares -->
+      <div class="avatares">
+        @for (a of avataresVisibles(); track a.id) {
+          <div class="avatar" [title]="a.nombreColaborador">
+            @if (showAvatar(a)) {
+              <span class="avatar__text">{{ iniciales(a.nombreColaborador) }}</span>
+            } @else {
+              <img
+                class="avatar__img"
+                [src]="a.fotografia!"
+                [alt]="a.nombreColaborador"
+                (error)="onImageError(a.id, $event)"
+              />
+            }
+          </div>
+        }
+
+        @if (avataresExtra() > 0) {
+          <div class="avatar avatar--extra">
+            <span class="avatar__text">+{{ avataresExtra() }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- Mensaje dinámico -->
+      <p class="widget__mensaje">{{ mensaje() }}</p>
+    } @else {
+      <p class="widget__empty">Hoy no hay aniversarios.</p>
+    }
+
+    <!-- Footer con total de próximos -->
+    <p class="widget__footer">
+      <strong>{{ totalProximos() }}</strong>
+      {{ totalProximos() === 1 ? 'aniversario' : 'aniversarios' }} en los
+      próximos 60 días
+    </p>
+  }
+</button>

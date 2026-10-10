@@ -1,17 +1,14 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LaboralService } from '../../services/laboral.service';
 import { UbicacionService } from '../../services/ubicacion.service';
-import { AntiguedadesProximas } from '../../models/laboral.model';
 import { UbicacionDetail, UbicacionResponse } from '../../models/ubicacion.model';
 import { PuestoResponse } from '../../models/puesto.model';
 import { UbicacionCardComponent } from '../../components/ubicacion-card/ubicacion-card';
-import { AntiguedadProximaCardComponent } from '../../components/antiguedad-proxima-card/antiguedad-proxima-card';
 import { UbicacionFormComponent } from '../../components/ubicacion-form/ubicacion-form';
 import { PuestoForm } from '../../components/puesto-form/puesto-form';
 import { ModalComponent } from '../../components/modal/modal';
 import { UbicacionPatch } from '../../components/ubicacion-patch/ubicacion-patch';
-import { Aniversarios } from '../../components/aniversarios/aniversarios';
+import { AniversariosWidget } from '../../components/aniversarios-widget/aniversarios-widget';
 
 @Component({
   selector: 'app-inicio',
@@ -20,33 +17,28 @@ import { Aniversarios } from '../../components/aniversarios/aniversarios';
     CommonModule,
     UbicacionCardComponent,
     UbicacionFormComponent,
-    PuestoForm,          // ← agregar
+    PuestoForm,
     ModalComponent,
     UbicacionPatch,
-    Aniversarios
+    AniversariosWidget,
   ],
   templateUrl: './inicio.html',
   styleUrl: './inicio.css',
 })
 export class InicioComponent implements OnInit {
   private readonly ubicacionService = inject(UbicacionService);
-  private readonly laboralService = inject(LaboralService);
 
   ubicaciones = signal<UbicacionDetail[]>([]);
-  antiguedades = signal<AntiguedadesProximas[]>([]);
-
   loadingUbicaciones = signal(false);
-  loadingAntiguedades = signal(false);
 
   // ---------- Modales ----------
   modalUbicacionAbierto = signal(false);
-  modalPuestoAbierto = signal(false);      
+  modalPuestoAbierto = signal(false);
   modalUbicacionPatchAbierto = signal(false);
-  ubicacionSeleccionadaId = signal<number | null>(null);  
+  ubicacionSeleccionadaId = signal<number | null>(null);
 
   ngOnInit(): void {
     this.cargarUbicaciones();
-    this.cargarAntiguedades();
   }
 
   // ---------- Modal ubicación ----------
@@ -75,8 +67,6 @@ export class InicioComponent implements OnInit {
   onPuestoCreado(p: PuestoResponse): void {
     this.modalPuestoAbierto.set(false);
     console.log('Puesto creado:', p);
-    // Si tuvieras una lista de puestos aquí, la recargarías.
-    // Por ahora no hay lista de puestos en esta página.
   }
 
   // ---------- Cargas ----------
@@ -94,21 +84,7 @@ export class InicioComponent implements OnInit {
     });
   }
 
-  private cargarAntiguedades(): void {
-    this.loadingAntiguedades.set(true);
-    this.laboralService.getAntiguedadesProximas().subscribe({
-      next: (data) => {
-        this.antiguedades.set(data);
-        this.loadingAntiguedades.set(false);
-      },
-      error: (err) => {
-        console.error('Error antigüedades', err);
-        this.loadingAntiguedades.set(false);
-      },
-    });
-  }
-
-
+  // ---------- Modal editar ubicación ----------
   abrirModalEditarUbicacion(u: UbicacionDetail): void {
     this.ubicacionSeleccionadaId.set(u.id);
     this.modalUbicacionPatchAbierto.set(true);
@@ -122,8 +98,6 @@ export class InicioComponent implements OnInit {
   onUbicacionActualizada(_u: UbicacionResponse): void {
     this.modalUbicacionPatchAbierto.set(false);
     this.ubicacionSeleccionadaId.set(null);
-    this.cargarUbicaciones();   // recarga la lista para reflejar los cambios
+    this.cargarUbicaciones();
   }
-
-
 }
