@@ -1,0 +1,139 @@
+<section class="cal">
+  <!-- ============ Header ============ -->
+  <header class="cal__head">
+    <div class="cal__title-wrap">
+      <h3 class="cal__title">Calendario de vacaciones</h3>
+      <p class="cal__subtitle">Periodos agrupados por colaborador</p>
+    </div>
+
+    <div class="cal__actions">
+      <!-- Búsqueda -->
+      <div class="search">
+        <svg class="search__icon" viewBox="0 0 512 512">
+          <path
+            d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+          />
+        </svg>
+        <input
+          class="search__input"
+          type="text"
+          placeholder="Buscar colaborador…"
+          [value]="busqueda()"
+          (input)="onBusqueda($event)"
+          autocomplete="off"
+        />
+        @if (busqueda()) {
+          <button
+            type="button"
+            class="search__clear"
+            (click)="limpiarBusqueda()"
+            aria-label="Limpiar"
+          >
+            ✕
+          </button>
+        }
+      </div>
+
+      <!-- Navegación de fechas -->
+      <div class="rango">
+        <button type="button" class="rango__btn" (click)="anterior()" aria-label="Anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+
+        <span class="rango__label">{{ etiquetaRango() }}</span>
+
+        <button type="button" class="rango__btn" (click)="siguiente()" aria-label="Siguiente">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+
+        <button type="button" class="rango__hoy" (click)="hoy()">Hoy</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ Estados ============ -->
+  @if (loading()) {
+    <p class="state">Cargando vacaciones…</p>
+  } @else if (error()) {
+    <p class="state state--error">{{ error() }}</p>
+  } @else if (!hayResultados()) {
+    <p class="state">No se encontraron vacaciones con esos criterios.</p>
+  } @else {
+    <!-- ============ Calendario ============ -->
+    <div class="cal__scroll">
+      <div class="cal__grid">
+
+        <!-- ============ Header: días ============ -->
+        <div class="cal__header">
+          <div class="cal__col-colab">
+            <span class="cal__col-colab-label">Colaborador</span>
+          </div>
+
+          <div class="cal__col-dias">
+            @for (d of dias(); track d.iso) {
+              <div
+                class="dia"
+                [class.dia--hoy]="d.esHoy"
+              >
+                <span class="dia__mes">{{ d.diaMes }}</span>
+                <span class="dia__semana">{{ d.diaSemana }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- ============ Filas ============ -->
+        <div class="cal__body">
+          @for (fila of filas(); track fila.nombre) {
+            <div class="cal__row">
+              <!-- Colaborador -->
+              <div class="cal__col-colab">
+                <div class="avatar">
+                  <span class="avatar__text">{{ iniciales(fila.nombre) }}</span>
+                </div>
+                <div class="colab__info">
+                  <span class="colab__nombre">{{ fila.nombre }}</span>
+                  <span class="colab__puesto">
+                    {{ fila.puesto }} · {{ fila.ubicacion }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Grid de días -->
+              <div class="cal__col-dias">
+                <!-- Celdas de fondo -->
+                <div class="celdas">
+                  @for (d of dias(); track d.iso) {
+                    <div
+                      class="celda"
+                      [class.celda--hoy]="d.esHoy"
+                    ></div>
+                  }
+                </div>
+
+                <!-- Barras de vacaciones superpuestas -->
+                <div class="barras">
+                  @for (v of fila.vacaciones; track v.id) {
+                    <div
+                      class="bar"
+                      [style]="estiloBarra(v)"
+                      [title]="tooltip(v)"
+                    >
+                      <span class="bar__label">{{ etiquetaEstatus(v) }}</span>
+                      <span class="bar__dias">{{ v.diasOcupados }}d</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+      </div>
+    </div>
+  }
+</section>

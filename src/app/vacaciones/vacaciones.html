@@ -25,6 +25,14 @@
     >
       Periodos vacacionales
     </button>
+    <button
+      type="button"
+      class="tab"
+      [class.tab--active]="vistaActiva() === 'calendario'"
+      (click)="cambiarVista('calendario')"
+    >
+      Calendario
+    </button>
   </nav>
 
   <!-- ============ Contenido según tab ============ -->
@@ -33,8 +41,10 @@
       (editar)="onEditarVacaciones($event)"
       (eliminar)="onEliminarVacaciones($event)"
     />
-  } @else {
+  } @else if (vistaActiva() === 'periodos') {
     <app-vacaciones-periodos />
+  } @else {
+    <app-vacaciones-calendario />
   }
 </section>
 

@@ -1,0 +1,386 @@
+.cal {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ============ Header ============ */
+.cal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-line);
+  flex-wrap: wrap;
+}
+
+.cal__title-wrap {
+  min-width: 0;
+}
+
+.cal__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin: 0;
+}
+
+.cal__subtitle {
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+  margin: 0.125rem 0 0 0;
+}
+
+.cal__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ============ Búsqueda ============ */
+.search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 36px;
+  padding: 0 0.75rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+  min-width: 220px;
+}
+
+.search__icon {
+  width: 13px;
+  height: 13px;
+  fill: var(--color-brand);
+  flex-shrink: 0;
+}
+
+.search__input {
+  flex: 1;
+  height: 100%;
+  border: none;
+  outline: none;
+  font-size: 0.8125rem;
+  color: var(--color-ink);
+  background-color: transparent;
+  caret-color: var(--color-brand);
+  font-family: inherit;
+}
+
+.search__input::placeholder {
+  color: var(--color-ink-soft);
+}
+
+.search__clear {
+  background: transparent;
+  border: none;
+  color: var(--color-ink-soft);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+}
+
+/* ============ Navegación de rango ============ */
+.rango {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 36px;
+  padding: 0 0.375rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+}
+
+.rango__btn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--color-brand);
+  cursor: pointer;
+  border-radius: 0.375rem;
+}
+
+.rango__btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.rango__btn:hover {
+  background-color: var(--color-brand-softer);
+}
+
+.rango__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  padding: 0 0.5rem;
+  white-space: nowrap;
+}
+
+.rango__hoy {
+  height: 28px;
+  padding: 0 0.625rem;
+  border: none;
+  background-color: var(--color-brand-soft);
+  color: var(--color-brand);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* ============ Estados ============ */
+.state {
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
+  margin: 0;
+  padding: 1rem 0;
+  text-align: center;
+}
+
+.state--error {
+  color: var(--color-brand);
+}
+
+/* ============ Calendario ============ */
+.cal__scroll {
+  overflow-x: auto;
+  border: 1px solid var(--color-line);
+  border-radius: 0.75rem;
+  background-color: var(--color-surface);
+}
+
+.cal__grid {
+  min-width: 900px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============ Header con días ============ */
+.cal__header {
+  display: flex;
+  background-color: var(--color-brand-softer);
+  border-bottom: 1px solid var(--color-line);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.cal__col-colab {
+  flex-shrink: 0;
+  width: 220px;
+  padding: 0.625rem 0.875rem;
+  border-right: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  background-color: var(--color-brand-softer);
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+
+.cal__col-colab-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-soft);
+}
+
+.cal__col-dias {
+  flex: 1;
+  position: relative;
+  min-width: 0;
+}
+
+/* ============ Días del header ============ */
+.cal__header .cal__col-dias {
+  display: grid;
+  grid-template-columns: repeat(14, minmax(0, 1fr));
+}
+
+.dia {
+  padding: 0.5rem 0.25rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  border-right: 1px solid var(--color-line);
+}
+
+.dia:last-child {
+  border-right: none;
+}
+
+.dia__mes {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.dia__semana {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-soft);
+}
+
+/* Solo "hoy" se destaca */
+.dia--hoy .dia__mes,
+.dia--hoy .dia__semana {
+  color: var(--color-brand);
+}
+
+/* ============ Filas ============ */
+.cal__body {
+  display: flex;
+  flex-direction: column;
+}
+
+.cal__row {
+  display: flex;
+  border-bottom: 1px solid var(--color-line);
+  min-height: 68px;
+}
+
+.cal__row:last-child {
+  border-bottom: none;
+}
+
+/* Columna de colaborador */
+.colab__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.0625rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.colab__nombre {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.colab__puesto {
+  font-size: 0.6875rem;
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Avatar chico */
+.avatar {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background-color: var(--color-brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar__text {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--color-surface);
+  letter-spacing: 0.03em;
+  user-select: none;
+}
+
+/* ============ Celdas de fondo ============ */
+.celdas {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(14, minmax(0, 1fr));
+}
+
+.celda {
+  border-right: 1px solid var(--color-line);
+}
+
+.celda:last-child {
+  border-right: none;
+}
+
+.celda--hoy {
+  background-color: var(--color-brand-softer);
+}
+
+/* ============ Barras de vacaciones ============ */
+.barras {
+  position: absolute;
+  inset: 0;
+  padding: 0.5rem 0.25rem;
+  pointer-events: none;
+}
+
+.bar {
+  position: absolute;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  cursor: pointer;
+  pointer-events: auto;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 1px solid;
+  /* Los colores (bg, border, text) se aplican desde el estilo inline en el TS */
+}
+
+.bar__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bar__dias {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 720px) {
+  .cal__head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cal__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search {
+    min-width: 0;
+  }
+
+  .rango {
+    justify-content: center;
+  }
+}

@@ -5,13 +5,14 @@ import { VacacionesTable } from '../components/vacaciones/vacaciones-table/vacac
 import { VacacionesForm } from '../components/vacaciones/vacaciones-form/vacaciones-form';
 import { VacacionesEdit } from '../components/vacaciones/vacaciones-edit/vacaciones-edit';
 import { VacacionesPeriodos } from '../components/vacaciones/vacaciones-periodos/vacaciones-periodos';
+import { VacacionesCalendario } from '../components/vacaciones/calendario/calendario';
 import { ModalComponent } from '../components/modal/modal';
 import { ConfirmModalComponent } from '../components/confirm-modal/confirm-modal';
 
 import { VacacionesService } from '../services/vacaciones.service';
 import { VacacionesResponse } from '../models/vacaciones.model';
 
-type VistaActiva = 'registros' | 'periodos';
+type VistaActiva = 'registros' | 'periodos' | 'calendario';
 
 @Component({
   selector: 'app-vacaciones',
@@ -22,6 +23,7 @@ type VistaActiva = 'registros' | 'periodos';
     VacacionesForm,
     VacacionesEdit,
     VacacionesPeriodos,
+    VacacionesCalendario,
     ModalComponent,
     ConfirmModalComponent,
   ],
@@ -53,7 +55,6 @@ export class Vacaciones {
 
   onCreado(): void {
     this.modalCrearAbierto.set(false);
-    // Recarga la tabla si el tab de registros está activo (o siempre, no molesta)
     this.tabla()?.recargar();
   }
 
