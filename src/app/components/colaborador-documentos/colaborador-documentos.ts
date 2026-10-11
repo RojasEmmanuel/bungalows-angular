@@ -1,7 +1,7 @@
 import { Component, inject, input, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-
+import { toast } from 'ngx-sonner';
 import { DocumentoService } from '../../services/documento.service';
 import { UploadDocumentoService } from '../../services/upload/documento-upload.service';
 import {
@@ -129,11 +129,18 @@ export class ColaboradorDocumentos implements OnInit {
             this.documentos.update((lista) => [...lista, doc]);
             this.subiendo.set(false);
             this.modalAbierto.set(false);
+
+            toast.success("Documento subido exitosamente")
           },
           error: (err: HttpErrorResponse) => {
             console.error('Error al registrar documento', err);
             this.errorSubida.set(this.extraerMensajeError(err));
             this.subiendo.set(false);
+
+            const mensaje = this.extraerMensajeError(err);
+            toast.warning("Ha ocurrido un error",{
+              description: mensaje
+            });
           },
         });
       },
@@ -171,10 +178,17 @@ export class ColaboradorDocumentos implements OnInit {
         this.eliminando.set(false);
         this.modalEliminarAbierto.set(false);
         this.documentoAEliminar.set(null);
+
+        toast.success("Documento eliminado");
       },
       error: (err) => {
         console.error('Error al eliminar documento', err);
         this.eliminando.set(false);
+
+        const mensaje = this.extraerMensajeError(err);
+        toast.warning("Ocurrió un error",{
+          description:mensaje
+        });
       },
     });
   }

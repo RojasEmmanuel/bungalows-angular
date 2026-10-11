@@ -16,6 +16,7 @@ import {
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, forkJoin, of } from 'rxjs';
+import { toast } from 'ngx-sonner';
 
 import { VacacionesService } from '../../../services/vacaciones.service';
 import { ColaboradorService } from '../../../services/colaborador.service';
@@ -95,12 +96,19 @@ export class VacacionesForm implements OnInit {
 
         this.colaboradoresFiltrados.set(colaboradores.slice(0, 20));
 
-        // Default del estatus: el primero del catálogo
         this.form.patchValue({
           estatus: estatus[0]?.value ?? '',
         });
 
         this.cargando.set(false);
+      },
+      error: () => {
+        this.errorGeneral.set('No se pudieron cargar los catálogos.');
+        this.cargando.set(false);
+
+        toast.error('Error al cargar datos', {
+          description: 'No se pudieron cargar los colaboradores o los estatus.',
+        });
       },
     });
   }
@@ -132,7 +140,6 @@ export class VacacionesForm implements OnInit {
   }
 
   onBlurBusqueda(): void {
-    // Delay para permitir el click en la opción
     setTimeout(() => this.dropdownAbierto.set(false), 150);
   }
 
@@ -160,11 +167,23 @@ export class VacacionesForm implements OnInit {
         this.guardando.set(false);
         this.creado.emit();
         this.reset();
+
+        const nombre = this.nombreColaboradorSeleccionado();
+        toast.success('Vacaciones registradas', {
+          description: nombre
+            ? `Se registraron las vacaciones de ${nombre}.`
+            : 'Las vacaciones se registraron correctamente.',
+        });
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al crear vacaciones', err);
-        this.errorGeneral.set(this.extraerMensajeError(err));
+        const mensaje = this.extraerMensajeError(err);
+        this.errorGeneral.set(mensaje);
         this.guardando.set(false);
+
+        toast.error('No se pudieron registrar las vacaciones', {
+          description: mensaje,
+        });
       },
     });
   }
@@ -174,10 +193,6 @@ export class VacacionesForm implements OnInit {
   }
 
   // ---------- Validadores ----------
-  /**
-   * Valida que fechaFin sea posterior a fechaInicio.
-   * Aplica también al editar (aunque aquí solo es crear).
-   */
   private rangoFechasValidator(): ValidatorFn {
     return (group: AbstractControl): ValidationErrors | null => {
       const inicio = group.get('fechaInicio')?.value;
@@ -188,7 +203,6 @@ export class VacacionesForm implements OnInit {
     };
   }
 
-  /** Error general del grupo (para mostrar en el banner) */
   get errorRango(): boolean {
     return this.form.hasError('rangoInvalido');
   }
@@ -204,6 +218,14 @@ export class VacacionesForm implements OnInit {
     this.busquedaColaborador.set('');
     this.colaboradoresFiltrados.set(this.colaboradores().slice(0, 20));
     this.dropdownAbierto.set(false);
+  }
+
+  /** Nombre del colaborador seleccionado (para el toast) */
+  private nombreColaboradorSeleccionado(): string {
+    const id = this.form.getRawValue().colaboradorId;
+    if (!id) return '';
+    const colab = this.colaboradores().find((c) => c.id === id);
+    return colab?.nombreCompleto ?? '';
   }
 
   errorDe(

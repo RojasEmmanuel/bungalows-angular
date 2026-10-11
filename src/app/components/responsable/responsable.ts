@@ -1,7 +1,7 @@
 import { Component, inject, input, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-
+import { toast } from 'ngx-sonner';
 import { ResponsableService } from '../../services/responsable.service';
 import { EnumsService } from '../../services/enums.service';
 import {
@@ -171,11 +171,18 @@ export class Responsable implements OnInit {
         this.responsables.update((lista) => [...lista, res]);
         this.guardando.set(false);
         this.modalCrearAbierto.set(false);
+
+        toast.success("Responsable agregado");
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al crear responsable', err);
         this.errorForm.set(this.extraerMensajeError(err));
         this.guardando.set(false);
+
+        const mensaje = this.extraerMensajeError(err);
+        toast.warning("Ocurrió un error",{
+          description:mensaje
+        });
       },
     });
   }
@@ -214,11 +221,18 @@ export class Responsable implements OnInit {
         this.guardando.set(false);
         this.modalEditarAbierto.set(false);
         this.responsableSeleccionado.set(null);
+
+        toast.success("Responsable actualizado");
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al actualizar responsable', err);
         this.errorForm.set(this.extraerMensajeError(err));
         this.guardando.set(false);
+
+        const mensaje = this.extraerMensajeError(err);
+        toast.warning("Ocurrió un error", {
+          description:mensaje
+        });
       },
     });
   }
@@ -236,10 +250,17 @@ export class Responsable implements OnInit {
         this.guardando.set(false);
         this.modalEliminarAbierto.set(false);
         this.responsableSeleccionado.set(null);
+
+        toast.info("Se elimino un responsable");
       },
       error: (err) => {
         console.error('Error al eliminar responsable', err);
         this.guardando.set(false);
+
+        const mensaje = this.extraerMensajeError(err);
+        toast.warning("No se eliminó el responsable",{
+          description:mensaje
+        });
       },
     });
   }

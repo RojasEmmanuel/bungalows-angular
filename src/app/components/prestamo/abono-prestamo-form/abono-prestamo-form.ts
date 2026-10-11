@@ -13,6 +13,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { toast } from 'ngx-sonner';
 
 import { PrestamoService } from '../../../services/prestamo.service';
 
@@ -49,13 +50,7 @@ export class AbonoPrestamoForm {
   errorGeneral = signal<string | null>(null);
 
   // ---------- Computed ----------
-  pendienteFormateado = computed(() =>
-    new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'MXN',
-      maximumFractionDigits: 2,
-    }).format(this.pendiente())
-  );
+  pendienteFormateado = computed(() => this.formatoMonto(this.pendiente()));
 
   opcionesRapidas = computed(() => {
     const p = this.pendiente();
@@ -81,10 +76,14 @@ export class AbonoPrestamoForm {
 
     const monto = this.form.getRawValue().monto;
 
+    // Validación de negocio: no abonar más de lo que se debe
     if (monto > this.pendiente()) {
-      this.errorGeneral.set(
-        `El abono no puede ser mayor al saldo pendiente (${this.pendienteFormateado()}).`
-      );
+      const mensaje = `El abono no puede ser mayor al saldo pendiente (${this.pendienteFormateado()}).`;
+      this.errorGeneral.set(mensaje);
+
+      toast.warning('Monto inválido', {
+        description: mensaje,
+      });
       return;
     }
 
@@ -95,11 +94,20 @@ export class AbonoPrestamoForm {
       next: () => {
         this.guardando.set(false);
         this.abonado.emit(monto);
+
+        toast.success('Abono aplicado', {
+          description: `${this.formatoMonto(monto)} abonados correctamente.`,
+        });
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al aplicar abono', err);
-        this.errorGeneral.set(this.extraerMensajeError(err));
+        const mensaje = this.extraerMensajeError(err);
+        this.errorGeneral.set(mensaje);
         this.guardando.set(false);
+
+        toast.error('No se pudo aplicar el abono', {
+          description: mensaje,
+        });
       },
     });
   }
@@ -117,6 +125,16 @@ export class AbonoPrestamoForm {
       return `El monto mínimo es ${control.getError('min').min}`;
     }
     return 'Campo inválido';
+  }
+
+  // ---------- Helpers ----------
+  private formatoMonto(valor: number | null | undefined): string {
+    if (valor == null) return '—';
+    return new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: 'MXN',
+      maximumFractionDigits: 2,
+    }).format(valor);
   }
 
   private extraerMensajeError(err: HttpErrorResponse): string {

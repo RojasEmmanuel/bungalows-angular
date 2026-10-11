@@ -16,6 +16,7 @@ import {
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, of } from 'rxjs';
+import { toast } from 'ngx-sonner';
 
 import { UbicacionService } from '../../services/ubicacion.service';
 import { UploadUbicacionService } from '../../services/upload/ubicacion-upload.service';
@@ -63,16 +64,11 @@ export class UbicacionPatch implements OnInit, OnDestroy {
   errorGeneral = signal<string | null>(null);
 
   // ---------- Computed ----------
-  /** URL a mostrar: preview local (si hay archivo nuevo) o la actual del backend */
   imagenActual = computed(() => this.previewUrl() ?? this.imagenPath());
-
   hayImagen = computed(() => !!this.imagenActual());
-
   hayArchivoNuevo = computed(() => this.archivo() !== null);
-
   nombreArchivo = computed(() => this.archivo()?.name ?? '');
 
-  /** Iniciales para el fallback del avatar */
   iniciales = computed(() => {
     const nombre = this.form.getRawValue().nombre?.trim() ?? '';
     if (!nombre) return '?';
@@ -100,11 +96,15 @@ export class UbicacionPatch implements OnInit, OnDestroy {
       .pipe(
         catchError((err: HttpErrorResponse) => {
           console.error('Error al cargar ubicación', err);
-          this.errorGeneral.set(
+          const mensaje =
             err.status === 404
               ? 'No se encontró la ubicación.'
-              : 'No se pudo cargar la información de la ubicación.'
-          );
+              : 'No se pudo cargar la información de la ubicación.';
+          this.errorGeneral.set(mensaje);
+
+          // ❌ Notificación de error
+          toast.error('Error al cargar ubicación', { description: mensaje });
+
           return of(null);
         })
       )
@@ -128,14 +128,20 @@ export class UbicacionPatch implements OnInit, OnDestroy {
 
     const tiposOk = ['image/jpeg', 'image/png', 'image/webp'];
     if (!tiposOk.includes(file.type)) {
-      this.errorGeneral.set('Formato no permitido. Usa JPG, PNG o WEBP.');
+      const mensaje = 'Formato no permitido. Usa JPG, PNG o WEBP.';
+      this.errorGeneral.set(mensaje);
       input.value = '';
+
+      toast.warning('Formato no permitido', { description: mensaje });
       return;
     }
     const maxMB = 5;
     if (file.size > maxMB * 1024 * 1024) {
-      this.errorGeneral.set(`La imagen no debe pesar más de ${maxMB} MB.`);
+      const mensaje = `La imagen no debe pesar más de ${maxMB} MB.`;
+      this.errorGeneral.set(mensaje);
       input.value = '';
+
+      toast.warning('Imagen demasiado grande', { description: mensaje });
       return;
     }
 
@@ -186,8 +192,11 @@ export class UbicacionPatch implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error al subir imagen', err);
-        this.errorGeneral.set('No se pudo subir la imagen. Intenta de nuevo.');
+        const mensaje = 'No se pudo subir la imagen. Intenta de nuevo.';
+        this.errorGeneral.set(mensaje);
         this.subiendoImagen.set(false);
+
+        toast.error('Error al subir la imagen', { description: mensaje });
       },
     });
   }
@@ -203,15 +212,26 @@ export class UbicacionPatch implements OnInit, OnDestroy {
       imagenPath: this.imagenPath(),
     };
 
+    const nombreUbicacion = body.nombre;
+
     this.ubicacionService.actualizarUbicacion(body).subscribe({
       next: (res) => {
         this.guardando.set(false);
         this.guardado.emit(res);
+
+        toast.success('Ubicación actualizada', {
+          description: `${nombreUbicacion} se actualizó correctamente.`,
+        });
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al actualizar ubicación', err);
-        this.errorGeneral.set(this.extraerMensajeError(err));
+        const mensaje = this.extraerMensajeError(err);
+        this.errorGeneral.set(mensaje);
         this.guardando.set(false);
+
+        toast.error('No se pudo actualizar la ubicación', {
+          description: mensaje,
+        });
       },
     });
   }

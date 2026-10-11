@@ -15,6 +15,7 @@ import {
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
+import { toast } from 'ngx-sonner';
 
 import { ColaboradorService } from '../../services/colaborador.service';
 import { PuestoService } from '../../services/puesto.service';
@@ -315,11 +316,19 @@ export class ColaboradorForm implements OnInit, OnDestroy {
         this.fotografiaPath.set(res.path);
         this.subiendoFoto.set(false);
         this.crearColaborador();
+
+        toast.success("Fotografía subida exitosamente");
       },
       error: (err) => {
         console.error('Error al subir foto', err);
         this.errorGeneral.set('No se pudo subir la foto. Intenta de nuevo.');
         this.subiendoFoto.set(false);
+
+        const mensaje = this.extraerMensajeError(err);
+
+        toast.warning("Ocurrió un error",{
+          description: mensaje
+        })
       },
     });
   }
@@ -359,11 +368,19 @@ export class ColaboradorForm implements OnInit, OnDestroy {
         this.guardando.set(false);
         this.creado.emit(res);
         this.reset();
+
+        toast.success("Colaborador registrado exitosamente")
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al crear colaborador', err);
         this.errorGeneral.set(this.extraerMensajeError(err));
         this.guardando.set(false);
+
+        const mensaje = this.extraerMensajeError(err);
+        
+        toast.warning("Ha ocurrido un error", {
+          description: mensaje
+        })
       },
     });
   }

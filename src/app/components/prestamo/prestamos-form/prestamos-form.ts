@@ -7,6 +7,7 @@ import {
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, of } from 'rxjs';
+import { toast } from 'ngx-sonner';
 
 import { PrestamoService } from '../../../services/prestamo.service';
 import { ColaboradorService } from '../../../services/colaborador.service';
@@ -101,11 +102,20 @@ export class PrestamosForm implements OnInit {
         this.guardando.set(false);
         this.creado.emit(res);
         this.reset();
+
+        toast.success('Préstamo registrado', {
+          description: `${this.formatoMonto(res.monto)} a favor de ${res.nombreColaborador}.`,
+        });
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al crear préstamo', err);
+        const mensaje = this.extraerMensajeError(err);
         this.errorGeneral.set(this.extraerMensajeError(err));
         this.guardando.set(false);
+
+        toast.error('No se pudo registrar el préstamo', {
+          description: mensaje,
+        });
       },
     });
   }
@@ -132,6 +142,18 @@ export class PrestamosForm implements OnInit {
       observaciones: '',
     });
   }
+
+
+  private formatoMonto(valor: number | null | undefined): string {
+    if (valor == null) return '—';
+    return new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: 'MXN',
+      maximumFractionDigits: 2,
+    }).format(valor);
+  }
+
+
 
   errorDe(
     campo: 'colaboradorId' | 'concepto' | 'monto' | 'fechaPrestamo' | 'observaciones'

@@ -13,6 +13,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { toast } from 'ngx-sonner';
 
 import { UbicacionService } from '../../services/ubicacion.service';
 import { UploadUbicacionService } from '../../services/upload/ubicacion-upload.service';
@@ -38,7 +39,7 @@ export class UbicacionFormComponent implements OnDestroy {
   // ---------- Formulario ----------
   form = this.fb.nonNullable.group({
     nombre: [
-      '',  // ← valor inicial (falta)
+      '',
       [
         Validators.required,
         Validators.minLength(3),
@@ -72,14 +73,20 @@ export class UbicacionFormComponent implements OnDestroy {
     // Validaciones cliente (el backend valida igual)
     const tiposOk = ['image/jpeg', 'image/png', 'image/webp'];
     if (!tiposOk.includes(file.type)) {
-      this.errorGeneral.set('Formato no permitido. Usa JPG, PNG o WEBP.');
+      const mensaje = 'Formato no permitido. Usa JPG, PNG o WEBP.';
+      this.errorGeneral.set(mensaje);
       input.value = '';
+
+      toast.warning('Formato no permitido', { description: mensaje });
       return;
     }
     const maxMB = 5;
     if (file.size > maxMB * 1024 * 1024) {
-      this.errorGeneral.set(`La imagen no debe pesar más de ${maxMB} MB.`);
+      const mensaje = `La imagen no debe pesar más de ${maxMB} MB.`;
+      this.errorGeneral.set(mensaje);
       input.value = '';
+
+      toast.warning('Imagen demasiado grande', { description: mensaje });
       return;
     }
 
@@ -127,8 +134,11 @@ export class UbicacionFormComponent implements OnDestroy {
       },
       error: (err) => {
         console.error('Error al subir imagen', err);
-        this.errorGeneral.set('No se pudo subir la imagen. Intenta de nuevo.');
+        const mensaje = 'No se pudo subir la imagen. Intenta de nuevo.';
+        this.errorGeneral.set(mensaje);
         this.subiendoImagen.set(false);
+
+        toast.error('Error al subir la imagen', { description: mensaje });
       },
     });
   }
@@ -142,16 +152,27 @@ export class UbicacionFormComponent implements OnDestroy {
       imagenPath: this.imagenPath(),
     };
 
+    const nombreUbicacion = body.nombre;
+
     this.ubicacionService.crearUbicacion(body).subscribe({
       next: (res) => {
         this.guardando.set(false);
         this.creada.emit(res);
         this.reset();
+
+        toast.success('Ubicación creada', {
+          description: `${nombreUbicacion} se registró correctamente.`,
+        });
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al crear ubicación', err);
-        this.errorGeneral.set(this.extraerMensajeError(err));
+        const mensaje = this.extraerMensajeError(err);
+        this.errorGeneral.set(mensaje);
         this.guardando.set(false);
+
+        toast.error('No se pudo crear la ubicación', {
+          description: mensaje,
+        });
       },
     });
   }
@@ -167,7 +188,6 @@ export class UbicacionFormComponent implements OnDestroy {
     this.imagenPath.set(null);
   }
 
-  /** Extrae el mensaje de error del backend (Bean Validation) */
   private extraerMensajeError(err: HttpErrorResponse): string {
     const body = err.error;
     if (body?.errors && typeof body.errors === 'object') {
@@ -179,7 +199,6 @@ export class UbicacionFormComponent implements OnDestroy {
     return 'No se pudo crear la ubicación. Intenta de nuevo.';
   }
 
-  /** Mensaje de error por campo, para el template */
   mostrarError(campo: 'nombre' | 'direccion'): string | null {
     const control = this.form.get(campo);
     if (!control || !control.touched || control.valid) return null;

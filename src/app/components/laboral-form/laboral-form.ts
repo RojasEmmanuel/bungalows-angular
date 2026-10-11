@@ -14,6 +14,7 @@ import {
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, forkJoin, of } from 'rxjs';
+import { toast } from 'ngx-sonner';
 
 import { LaboralService } from '../../services/laboral.service';
 import { PuestoService } from '../../services/puesto.service';
@@ -172,11 +173,18 @@ export class LaboralForm implements OnInit {
       next: (res) => {
         this.guardando.set(false);
         this.guardado.emit(res);
+
+        toast.success("Datos laborales actualizados exitosamente");
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al actualizar datos laborales', err);
         this.errorGeneral.set(this.extraerMensajeError(err));
         this.guardando.set(false);
+
+        const mensaje = this.extraerMensajeError(err);
+        toast.warning("Ocurrió un error", {
+          description:mensaje
+        });
       },
     });
   }

@@ -14,7 +14,7 @@ import {
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
-
+import { toast } from 'ngx-sonner';
 import { DireccionService } from '../../services/direccion.service';
 import { EnumsService } from '../../services/enums.service';
 import { DireccionPatch, DireccionResponse } from '../../models/direccion.model';
@@ -159,11 +159,17 @@ export class DireccionForm implements OnInit {
       next: (res) => {
         this.guardando.set(false);
         this.guardado.emit(res);
+        toast.success("Dirección actualizada exitosamente");
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al actualizar dirección', err);
         this.errorGeneral.set(this.extraerMensajeError(err));
         this.guardando.set(false);
+
+        const mensaje = this.extraerMensajeError(err);
+        toast.warning("Ocurrió un error", {
+          description:mensaje
+        });
       },
     });
   }

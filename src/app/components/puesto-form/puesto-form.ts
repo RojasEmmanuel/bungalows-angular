@@ -6,7 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-
+import { toast } from 'ngx-sonner';
 import { PuestoService } from '../../services/puesto.service';
 import { PuestoRequest, PuestoResponse } from '../../models/puesto.model';
 
@@ -54,11 +54,18 @@ export class PuestoForm {
         this.guardando.set(false);
         this.creado.emit(res);
         this.form.reset({ nombre: '', descripcion: '' });
+
+        toast.success('Puesto creado exitosamente')
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al crear puesto', err);
         this.errorGeneral.set(this.extraerMensajeError(err));
         this.guardando.set(false);
+        const mensaje = this.extraerMensajeError(err);
+
+        toast.error('No se pudo registrar el puesto', {
+          description: mensaje,
+        });
       },
     });
   }

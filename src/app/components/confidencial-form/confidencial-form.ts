@@ -14,7 +14,7 @@ import {
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, of } from 'rxjs';
-
+import { toast } from 'ngx-sonner';
 import { ConfidencialService } from '../../services/confidencial.service';
 import {
   ConfidencialPatch,
@@ -138,11 +138,18 @@ export class ConfidencialForm implements OnInit {
       next: (res) => {
         this.guardando.set(false);
         this.guardado.emit(res);
+
+        toast.success("Información completaria actualizada exitosamente")
       },
       error: (err: HttpErrorResponse) => {
-        console.error('Error al actualizar datos confidenciales', err);
+        console.error("Error al actualizar datos confidenciales", err);
         this.errorGeneral.set(this.extraerMensajeError(err));
         this.guardando.set(false);
+
+        const mensaje = this.extraerMensajeError(err);
+        toast.warning("Ha ocurrido un error", {
+          description:mensaje
+        });
       },
     });
   }

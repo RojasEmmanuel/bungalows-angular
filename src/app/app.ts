@@ -1,8 +1,9 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { NgxSonnerToaster } from 'ngx-sonner';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, NgxSonnerToaster],
   selector: 'app-raiz', // como se manda a llamar el componente en el index.html
   styleUrl: './app.css', // el estilo
   templateUrl: './app.html',// la plantilla

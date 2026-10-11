@@ -16,7 +16,7 @@ import {
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, forkJoin, of } from 'rxjs';
-
+import { toast } from 'ngx-sonner';
 import { ColaboradorService } from '../../services/colaborador.service';
 import { EnumsService } from '../../services/enums.service';
 import { UploadColaboradorService } from '../../services/upload/colaborador-upload.service';
@@ -258,11 +258,18 @@ export class ColaboradorDatos implements OnInit, OnDestroy {
       next: (res) => {
         this.guardando.set(false);
         this.guardado.emit(res);
+
+        toast.success("Datos actualizados exitosamente");
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al actualizar colaborador', err);
         this.errorGeneral.set(this.extraerMensajeError(err));
         this.guardando.set(false);
+
+        const mensaje = this.extraerMensajeError(err);
+        toast.warning('Ha ocurrido un error', {
+          description: mensaje
+        });
       },
     });
   }

@@ -4,6 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms'; 
 import { ContactoService } from '../../services/contacto.service';
 import { EnumsService } from '../../services/enums.service';
+import { toast } from 'ngx-sonner';
 import {
   ContactoRequest,
   ContactoResponse,
@@ -160,11 +161,18 @@ export class ColaboradorContactos implements OnInit {
         this.contactos.update((lista) => [...lista, res]);
         this.guardando.set(false);
         this.modalCrearAbierto.set(false);
+
+        toast.success("Contacto agregado");
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al crear contacto', err);
         this.errorForm.set(this.extraerMensajeError(err));
         this.guardando.set(false);
+
+        const mensaje = this.extraerMensajeError(err);
+        toast.warning("No se registró el contacto", {
+          description:mensaje
+        });
       },
     });
   }
@@ -207,11 +215,19 @@ export class ColaboradorContactos implements OnInit {
         this.guardando.set(false);
         this.modalEditarAbierto.set(false);
         this.contactoSeleccionado.set(null);
+
+        toast.success("Contacto actualizado correctamente");
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al actualizar contacto', err);
         this.errorForm.set(this.extraerMensajeError(err));
         this.guardando.set(false);
+
+        const mensaje = this.extraerMensajeError(err);
+
+        toast.warning("Ocurrió un error ",{
+          description:mensaje
+        });
       },
     });
   }
@@ -231,11 +247,19 @@ export class ColaboradorContactos implements OnInit {
         this.guardando.set(false);
         this.modalEliminarAbierto.set(false);
         this.contactoSeleccionado.set(null);
+
+        toast.info("Contact eliminado");
       },
       error: (err) => {
         console.error('Error al eliminar contacto', err);
         this.guardando.set(false);
         // Podrías mostrar un toast aquí
+
+        const mensaje = this.extraerMensajeError(err);
+
+        toast.warning("Ocurrió un error",{
+          description:mensaje
+        });
       },
     });
   }
