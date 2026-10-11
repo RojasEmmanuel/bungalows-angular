@@ -3,15 +3,18 @@
   display: flex;
   flex-direction: column;
   gap: 0.875rem;
-  padding: 1rem;
+  padding: 1.125rem;
   background-color: var(--color-surface);
   border: 1px solid var(--color-line);
-  border-radius: 0.75rem;
+  border-radius: 0.875rem;
   cursor: pointer;
   text-align: left;
   font-family: inherit;
   transition: border-color 0.15s ease;
+  position: relative;
+  overflow: hidden;
 }
+
 
 .widget:hover {
   border-color: var(--color-brand);
@@ -23,7 +26,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.5rem;
-  padding-bottom: 0.625rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--color-line);
 }
 
@@ -48,10 +51,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  background-color: var(--color-brand-soft);
   color: var(--color-brand);
   flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.widget:hover .widget__arrow {
+  transform: translateX(2px);
 }
 
 .widget__arrow svg {
@@ -71,24 +81,57 @@
   color: var(--color-brand);
 }
 
-/* ============ Avatares ============ */
-.avatares {
+/* ============ Sección "hoy" ============ */
+.hoy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: 0.75rem;
+  background-color: var(--color-brand-softer);
+  border-radius: 0.625rem;
+}
+
+.hoy--vacio {
+  align-items: center;
+  text-align: center;
+  gap: 0.375rem;
+  padding: 1rem 0.75rem;
+}
+
+.hoy__icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background-color: var(--color-surface);
+  color: var(--color-ink-soft);
+}
+
+.hoy__icono svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Avatares */
+.hoy__avatares {
   display: flex;
   align-items: center;
   padding-left: 0.25rem;
 }
 
 .avatar {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 9999px;
   background-color: var(--color-brand);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border: 2px solid var(--color-surface);
-  margin-left: -0.5rem;   /* solapados tipo "stack" */
+  border: 2px solid var(--color-brand-softer);
+  margin-left: -0.5rem;
   flex-shrink: 0;
 }
 
@@ -97,7 +140,7 @@
 }
 
 .avatar__text {
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--color-surface);
   letter-spacing: 0.03em;
@@ -113,16 +156,18 @@
 }
 
 .avatar--extra {
-  background-color: var(--color-brand-soft);
+  background-color: var(--color-surface);
   color: var(--color-brand);
+  border-color: var(--color-brand-soft);
 }
 
 .avatar--extra .avatar__text {
   color: var(--color-brand);
+  font-size: 0.6875rem;
 }
 
-/* ============ Mensaje dinámico ============ */
-.widget__mensaje {
+/* Mensaje dinámico */
+.hoy__mensaje {
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--color-ink);
@@ -130,22 +175,71 @@
   line-height: 1.4;
 }
 
-.widget__empty {
+.hoy__mensaje--vacio {
+  font-weight: 500;
+  color: var(--color-ink-soft);
+}
+
+/* ============ Footer destacado: próximos ============ */
+.proximos {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  background-color: var(--color-brand);
+  border-radius: 0.625rem;
+  color: var(--color-surface);
+}
+
+.proximos__icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--color-surface);
+  flex-shrink: 0;
+}
+
+.proximos__icono svg {
+  width: 16px;
+  height: 16px;
+}
+
+.proximos__info {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.proximos__numero {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-surface);
+}
+
+.proximos__label {
   font-size: 0.8125rem;
-  color: var(--color-ink-soft);
-  margin: 0;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.2;
 }
 
-/* ============ Footer ============ */
-.widget__footer {
-  font-size: 0.75rem;
-  color: var(--color-ink-soft);
-  margin: 0;
-  padding-top: 0.625rem;
-  border-top: 1px solid var(--color-line);
-}
-
-.widget__footer strong {
-  color: var(--color-brand);
+.proximos__periodo {
+  font-size: 0.6875rem;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.15);
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
