@@ -13,6 +13,7 @@ interface NavItem {
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './layout.html',
+  styleUrl:'./layout.css'
 })
 export class LayoutComponent {
   readonly navItems = signal<NavItem[]>([
@@ -29,4 +30,14 @@ export class LayoutComponent {
     role: 'Administrador',
     avatar: 'https://avatars.githubusercontent.com/u/20044882?v=4',
   });
+
+  sidebarAbierto = signal(false);
+
+  toggleSidebar(): void {
+    this.sidebarAbierto.update((v) => !v);
+  }
+
+  cerrarSidebar(): void {
+    this.sidebarAbierto.set(false);
+  }
 }
