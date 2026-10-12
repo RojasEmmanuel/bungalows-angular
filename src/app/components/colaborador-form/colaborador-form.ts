@@ -31,7 +31,6 @@ import { PuestoResponse } from '../../models/puesto.model';
 import { UbicacionResponse } from '../../models/ubicacion.model';
 import { EnumOption } from '../../models/enum-option.model';
 
-/** Configuración de cada paso del wizard */
 interface PasoConfig {
   label: string;
   descripcion: string;
@@ -163,6 +162,13 @@ export class ColaboradorForm implements OnInit, OnDestroy {
   nombreArchivo = computed(() => this.archivo()?.name ?? '');
   enviando = computed(() => this.subiendoFoto() || this.guardando());
 
+  /** ¿El paso N tiene algún campo inválido? (para marcar en el stepper) */
+  pasoInvalido = (index: number): boolean => {
+    const paso = this.pasos[index];
+    if (!paso) return false;
+    return paso.campos.some((c) => this.form.get(c)?.invalid);
+  };
+
   // ---------- Ciclo de vida ----------
   ngOnInit(): void {
     this.cargarCatalogos();
@@ -187,15 +193,7 @@ export class ColaboradorForm implements OnInit, OnDestroy {
       estatusList: this.enumsService.getEstatusColaborador(),
       estados: this.enumsService.getEstados(),
     }).subscribe({
-      next: (res: {
-        puestos: PuestoResponse[];
-        ubicaciones: UbicacionResponse[];
-        estadosCivil: EnumOption[];
-        turnos: EnumOption[];
-        diasLaborales: EnumOption[];
-        estatusList: EnumOption[];
-        estados: EnumOption[];
-      }) => {
+      next: (res) => {
         this.puestos.set(res.puestos);
         this.ubicaciones.set(res.ubicaciones);
         this.estadosCivil.set(res.estadosCivil);
@@ -222,32 +220,28 @@ export class ColaboradorForm implements OnInit, OnDestroy {
     });
   }
 
-  // ---------- Navegación del wizard ----------
+  // ---------- Navegación libre del wizard ----------
+  /** Avanza sin validar (el usuario puede moverse libremente) */
   siguiente(): void {
-    if (!this.pasoEsValido()) {
-      this.marcarPasoTocado();
-      return;
-    }
     if (this.esUltimoPaso()) return;
     this.pasoActual.update((p) => p + 1);
   }
 
+  /** Retrocede sin validar */
   atras(): void {
     if (this.esPrimerPaso()) return;
     this.pasoActual.update((p) => p - 1);
   }
 
-  /** Valida todos los campos del paso actual */
-  private pasoEsValido(): boolean {
-    return this.pasoConfig().campos.every((c) => {
-      const ctrl = this.form.get(c);
-      return !ctrl || ctrl.valid;
-    });
+  /** Salto directo a un paso desde el stepper */
+  irAPaso(index: number): void {
+    if (index < 0 || index >= this.totalPasos) return;
+    this.pasoActual.set(index);
   }
 
-  /** Marca como touched todos los campos del paso actual */
-  private marcarPasoTocado(): void {
-    this.pasoConfig().campos.forEach((c) => {
+  /** Marca todos los campos del paso actual como touched (usado al validar) */
+  private marcarPasoTocado(index: number): void {
+    this.pasos[index]?.campos.forEach((c) => {
       this.form.get(c)?.markAsTouched();
     });
   }
@@ -291,11 +285,19 @@ export class ColaboradorForm implements OnInit, OnDestroy {
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      // Salta al primer paso inválido
+
+      // Salta al primer paso inválido y marca solo ese paso como tocado
       const idx = this.pasos.findIndex((p) =>
         p.campos.some((c) => this.form.get(c)?.invalid)
       );
-      if (idx >= 0) this.pasoActual.set(idx);
+      if (idx >= 0) {
+        this.pasoActual.set(idx);
+        this.marcarPasoTocado(idx);
+      }
+
+      toast.warning('Revisa los campos marcados', {
+        description: 'Hay información pendiente en el formulario.',
+      });
       return;
     }
 
@@ -317,7 +319,7 @@ export class ColaboradorForm implements OnInit, OnDestroy {
         this.subiendoFoto.set(false);
         this.crearColaborador();
 
-        toast.success("Fotografía subida exitosamente");
+        toast.success('Fotografía subida exitosamente');
       },
       error: (err) => {
         console.error('Error al subir foto', err);
@@ -325,10 +327,7 @@ export class ColaboradorForm implements OnInit, OnDestroy {
         this.subiendoFoto.set(false);
 
         const mensaje = this.extraerMensajeError(err);
-
-        toast.warning("Ocurrió un error",{
-          description: mensaje
-        })
+        toast.warning('Ocurrió un error', { description: mensaje });
       },
     });
   }
@@ -369,7 +368,7 @@ export class ColaboradorForm implements OnInit, OnDestroy {
         this.creado.emit(res);
         this.reset();
 
-        toast.success("Colaborador registrado exitosamente")
+        toast.success('Colaborador registrado exitosamente');
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al crear colaborador', err);
@@ -377,10 +376,7 @@ export class ColaboradorForm implements OnInit, OnDestroy {
         this.guardando.set(false);
 
         const mensaje = this.extraerMensajeError(err);
-        
-        toast.warning("Ha ocurrido un error", {
-          description: mensaje
-        })
+        toast.warning('Ha ocurrido un error', { description: mensaje });
       },
     });
   }
