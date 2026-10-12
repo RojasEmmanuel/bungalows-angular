@@ -20,7 +20,14 @@
   } @else {
     <ul class="empresas__list">
       @for (e of empresas(); track e.id) {
-        <li class="empresa">
+        <li
+          class="empresa"
+          role="button"
+          tabindex="0"
+          (click)="onEmpresaClick(e)"
+          (keydown.enter)="onEmpresaClick(e)"
+          (keydown.space)="onEmpresaClick(e); $event.preventDefault()"
+        >
           <div class="empresa__logo">
             @if (tieneLogo(e)) {
               <img
@@ -42,7 +49,10 @@
               {{ e.responsable || 'Sin responsable' }}
             </p>
 
-            <div class="empresa__progreso" [title]="e.faltantes.length ? 'Faltan: ' + e.faltantes.join(', ') : 'Registro completo'">
+            <div
+              class="empresa__progreso"
+              [title]="e.faltantes.length ? 'Faltan: ' + e.faltantes.join(', ') : 'Registro completo'"
+            >
               <div class="empresa__bar">
                 <div
                   class="empresa__bar-fill"

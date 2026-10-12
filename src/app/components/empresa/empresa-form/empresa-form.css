@@ -1,173 +1,201 @@
+/* =========================================================
+   Formulario de empresa — adaptado al @theme del proyecto
+   Sin scrolls horizontales. Un campo por fila.
+   ========================================================= */
+
 .form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 1.25rem;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
-.banner {
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: #fee2e2;
-  color: #991b1b;
-  font-size: 0.875rem;
-  border: 1px solid #fecaca;
+/* ---------- Fieldset ---------- */
+.fieldset {
+  border: 1px solid var(--color-line);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem 1.25rem;
+  margin: 0;
+  background-color: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
-/* Grid de 2 columnas; el logo ocupa 1, los inputs 1 cada uno */
-.form__grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px 20px;
-  align-items: start;
+.fieldset__legend {
+  padding: 0 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-ink-soft);
 }
 
+/* ---------- Campos ---------- */
 .field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0.35rem;
   min-width: 0;
-}
-
-.field--full {
-  grid-column: 1 / -1;
-}
-
-.field--logo {
-  grid-row: span 2;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .field__label {
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.875rem;
+  font-weight: 500;
   color: var(--color-ink);
+}
+
+.req {
+  color: var(--color-brand);
+}
+
+.opt {
+  color: var(--color-ink-soft);
+  font-weight: 400;
+  font-size: 0.75rem;
 }
 
 .field__input {
   width: 100%;
-  padding: 10px 12px;
-  border-radius: 8px;
+  max-width: 100%;
+  padding: 0.55rem 0.75rem;
   border: 1px solid var(--color-line);
-  background: var(--color-surface);
-  color: var(--color-ink);
+  border-radius: 0.5rem;
   font-size: 0.9rem;
-  outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+/* Registro fiscal / patronal: monoespaciado para leer códigos largos */
+#e-rfc,
+#e-patronal {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  letter-spacing: 0.02em;
+}
+
+.field__input::placeholder {
+  color: var(--color-ink-soft);
+  opacity: 0.6;
 }
 
 .field__input:focus {
+  outline: none;
   border-color: var(--color-brand);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand) 20%, transparent);
+  box-shadow: 0 0 0 3px var(--color-brand-soft);
 }
 
-.field__input--error {
-  border-color: #ef4444;
-}
-
-.field__input--error:focus {
-  box-shadow: 0 0 0 3px color-mix(in srgb, #ef4444 20%, transparent);
+.field__input:disabled {
+  background-color: var(--color-brand-softer);
+  color: var(--color-ink-soft);
+  cursor: not-allowed;
 }
 
 .field__error {
-  margin: 0;
   font-size: 0.78rem;
-  color: #b91c1c;
-}
-
-.field__hint {
+  color: var(--color-brand-hover);
   margin: 0;
-  font-size: 0.75rem;
-  color: var(--color-ink-soft);
 }
 
 /* ---------- Logo ---------- */
 .logo {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  gap: 1rem;
   align-items: center;
-  padding: 14px;
-  border: 1px dashed var(--color-line);
-  border-radius: 10px;
-  background: var(--color-brand-softer);
+  flex-wrap: wrap;
 }
 
 .logo__preview {
-  width: 84px;
-  height: 84px;
-  border-radius: 12px;
-  overflow: hidden;
+  width: 88px;
+  height: 88px;
+  border-radius: 0.75rem;
+  border: 1px dashed var(--color-line);
+  background-color: var(--color-brand-softer);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-surface);
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
-.logo__img {
+.logo__preview img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.logo__avatar {
-  width: 100%;
-  height: 100%;
-  background: var(--color-brand);
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.logo__iniciales {
+  font-size: 1.5rem;
   font-weight: 700;
-  font-size: 1.4rem;
+  color: var(--color-ink-soft);
 }
 
-.logo__actions {
+.logo__info {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  align-items: center;
-  width: 100%;
+  gap: 0.5rem;
+  min-width: 0;
+  flex: 1;
 }
 
-.filepick {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 14px;
-  border-radius: 8px;
-  background: var(--color-brand-soft);
+.logo__nombre {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-ink);
+  word-break: break-all;
+}
+
+.logo__acciones {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.logo__hint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+}
+
+/* ---------- Banner ---------- */
+.banner {
+  background-color: var(--color-brand-soft);
   color: var(--color-brand-hover);
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease;
+  border: 1px solid var(--color-brand);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
 }
 
-.filepick:hover {
-  background: color-mix(in srgb, var(--color-brand) 18%, transparent);
-}
-
-.filepick__input {
-  display: none;
-}
-
-/* ---------- Botones ---------- */
+/* ---------- Acciones ---------- */
 .actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  padding-top: 8px;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
   border-top: 1px solid var(--color-line);
+  flex-wrap: wrap;
 }
 
 .btn {
-  padding: 10px 18px;
-  border-radius: 8px;
-  font-size: 0.88rem;
-  font-weight: 600;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  font-size: 0.9rem;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: background-color 0.15s, opacity 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .btn:disabled {
@@ -176,36 +204,26 @@
 }
 
 .btn--primary {
-  background: var(--color-brand);
+  background-color: var(--color-brand);
   color: #ffffff;
 }
-
 .btn--primary:hover:not(:disabled) {
-  background: var(--color-brand-hover);
+  background-color: var(--color-brand-hover);
 }
 
 .btn--ghost {
-  background: transparent;
+  background-color: transparent;
+  border-color: var(--color-line);
   color: var(--color-ink);
+}
+.btn--ghost:hover:not(:disabled) {
+  background-color: var(--color-brand-softer);
+}
+
+.btn--danger {
+  color: var(--color-brand-hover);
   border-color: var(--color-line);
 }
-
-.btn--ghost:hover:not(:disabled) {
-  background: var(--color-brand-softer);
-}
-
-.btn--sm {
-  padding: 6px 12px;
-  font-size: 0.78rem;
-}
-
-/* ---------- Responsive ---------- */
-@media (max-width: 640px) {
-  .form__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .field--logo {
-    grid-row: auto;
-  }
+.btn--danger:hover:not(:disabled) {
+  background-color: var(--color-brand-soft);
 }

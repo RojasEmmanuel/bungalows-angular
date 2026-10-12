@@ -29,20 +29,25 @@
     } @else {
       <div class="grid">
         @for (u of ubicaciones(); track u.id) {
-        <app-ubicacion-card
-          [ubicacion]="u"
-          (editar)="abrirModalEditarUbicacion($event)"
-        />
-}
+          <app-ubicacion-card
+            [ubicacion]="u"
+            (editar)="abrirModalEditarUbicacion($event)"
+          />
+        }
       </div>
     }
   </div>
 
   <aside class="dashboard__aside">
     <app-aniversarios-widget />
-     <app-empresa-list (crear)="abrirModalEmpresa()" />
+    <app-empresa-list
+      (crear)="abrirModalEmpresa()"
+      (editar)="onEmpresaEditar($event)"
+    />
   </aside>
 </section>
+
+<!-- ============ Modales ============ -->
 
 <app-modal
   titulo="Nueva ubicación"
@@ -66,7 +71,6 @@
   />
 </app-modal>
 
-
 <app-modal
   titulo="Editar ubicación"
   [abierto]="modalUbicacionPatchAbierto()"
@@ -81,7 +85,6 @@
   }
 </app-modal>
 
-
 <app-modal
   titulo="Nueva empresa"
   [abierto]="modalEmpresaAbierto()"
@@ -91,4 +94,18 @@
     (creada)="onEmpresaCreada()"
     (cancelada)="cerrarModalEmpresa()"
   />
+</app-modal>
+
+<app-modal
+  titulo="Editar empresa"
+  [abierto]="modalEmpresaEditAbierto()"
+  (cerrar)="cerrarModalEmpresaEdit()"
+>
+  @if (empresaEditId(); as id) {
+    <app-empresa-edit
+      [empresaId]="id"
+      (guardado)="onEmpresaActualizada()"
+      (cancelado)="cerrarModalEmpresaEdit()"
+    />
+  }
 </app-modal>

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed, output } from '@angular/core';
+import { Component, inject, OnInit, signal, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { toast } from 'ngx-sonner';
@@ -22,7 +22,7 @@ interface EmpresaConProgreso extends empresaResponse {
 })
 export class EmpresaList implements OnInit {
   private readonly empresaService = inject(empresaService);
-  
+
   empresas = signal<EmpresaConProgreso[]>([]);
   cargando = signal(false);
   error = signal<string | null>(null);
@@ -36,6 +36,11 @@ export class EmpresaList implements OnInit {
     { key: 'direccion', label: 'Dirección' },
     { key: 'logoPath', label: 'Logo' },
   ];
+
+  // ---------- Outputs ----------
+  crear = output<void>();
+  /** Se emite al hacer click en una empresa: el padre abre el modal de edición */
+  editar = output<number>();
 
   ngOnInit(): void {
     this.cargarEmpresas();
@@ -84,7 +89,6 @@ export class EmpresaList implements OnInit {
     return { ...e, progreso, faltantes };
   }
 
-  /** Iniciales para el avatar cuando no hay logo */
   iniciales(e: empresaResponse): string {
     const nombre = e.nombreLegal?.trim() ?? '';
     if (!nombre) return '?';
@@ -93,14 +97,12 @@ export class EmpresaList implements OnInit {
     return (partes[0][0] + partes[1][0]).toUpperCase();
   }
 
-  /** Determina si el logo es usable (no vacío ni "no disponible") */
   tieneLogo(e: empresaResponse): boolean {
     const p = e.logoPath?.trim();
     if (!p) return false;
     return p.toLowerCase() !== 'no disponible';
   }
 
-  /** Color de la barra según progreso */
   colorProgreso(p: number): string {
     if (p >= 80) return 'ok';
     if (p >= 50) return 'mid';
@@ -108,21 +110,20 @@ export class EmpresaList implements OnInit {
   }
 
   onLogoError(e: EmpresaConProgreso): void {
-    // Si el logo falla al cargar, lo tratamos como si no existiera
     e.logoPath = '';
     this.empresas.update((arr) =>
       arr.map((x) => (x.id === e.id ? { ...x, ...this.calcularProgreso(e) } : x))
     );
   }
 
-  crear = output<void>();
-  
-
   onCrearClick(): void {
     this.crear.emit();
   }
 
-  /** Recarga las empresas (útil tras crear una) */
+  onEmpresaClick(e: EmpresaConProgreso): void {
+    this.editar.emit(e.id);
+  }
+
   recargar(): void {
     this.cargarEmpresas();
   }

@@ -1,0 +1,149 @@
+@if (cargando()) {
+  <p class="state">Cargando datos de la empresa…</p>
+} @else {
+  <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
+    @if (errorGeneral()) {
+      <div class="banner">{{ errorGeneral() }}</div>
+    }
+
+    <!-- ============ Información general (solo lectura) ============ -->
+    <section class="info">
+      <header class="info__head">
+        <h4 class="info__title">Información general</h4>
+        <span class="info__note">Solo lectura</span>
+      </header>
+
+      <div class="info__row">
+        <span class="info__label">Nombre legal</span>
+        <span class="info__value">{{ empresa()?.nombreLegal || '—' }}</span>
+      </div>
+
+      <div class="info__row">
+        <span class="info__label">Responsable</span>
+        <span class="info__value">{{ empresa()?.responsable || '—' }}</span>
+      </div>
+
+      <div class="info__row">
+        <span class="info__label">Registro fiscal</span>
+        <span class="info__value info__value--mono">
+          {{ empresa()?.registroFiscal || '—' }}
+        </span>
+      </div>
+    </section>
+
+    <!-- ============ Datos editables ============ -->
+    <fieldset class="fieldset">
+      <legend class="fieldset__legend">Datos editables</legend>
+
+      <div class="field">
+        <label class="field__label" for="ee-direccion">
+          Dirección <span class="opt">(opcional)</span>
+        </label>
+        <input
+          id="ee-direccion"
+          class="field__input"
+          type="text"
+          formControlName="direccion"
+          [disabled]="enviando()"
+          autocomplete="street-address"
+        />
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="ee-patronal">
+          Registro patronal <span class="opt">(opcional)</span>
+        </label>
+        <input
+          id="ee-patronal"
+          class="field__input field__input--mono"
+          type="text"
+          formControlName="registroPatronal"
+          [disabled]="enviando()"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+    </fieldset>
+
+    <!-- ============ Logo ============ -->
+    <fieldset class="fieldset">
+      <legend class="fieldset__legend">Logo <span class="opt">(opcional)</span></legend>
+
+      <div class="logo">
+        <div class="logo__preview">
+          @if (tieneLogoVisible()) {
+            <img
+              [src]="urlLogo()"
+              alt="Logo de la empresa"
+              (error)="onLogoError()"
+            />
+          } @else {
+            <span class="logo__iniciales">{{ iniciales() }}</span>
+          }
+        </div>
+
+        <div class="logo__info">
+          @if (hayArchivo()) {
+            <p class="logo__nombre">{{ nombreArchivo() }}</p>
+          } @else if (tieneLogoVisible()) {
+            <p class="logo__nombre">Logo actual cargado</p>
+          } @else {
+            <p class="logo__nombre">Sin logo</p>
+          }
+
+          <div class="logo__acciones">
+            <label class="btn btn--ghost">
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                (change)="onArchivoSeleccionado($event)"
+                [disabled]="enviando()"
+                hidden
+              />
+              {{ hayArchivo() ? 'Cambiar archivo' : 'Seleccionar archivo' }}
+            </label>
+
+            @if (hayArchivo() || tieneLogoVisible()) {
+              <button
+                type="button"
+                class="btn btn--ghost"
+                (click)="quitarLogo()"
+                [disabled]="enviando()"
+              >
+                Quitar
+              </button>
+            }
+          </div>
+
+          <p class="logo__hint">JPG, PNG o WEBP · máx. 5 MB</p>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- ============ Acciones ============ -->
+    <div class="actions">
+      <button
+        type="button"
+        class="btn btn--ghost"
+        (click)="cancelar()"
+        [disabled]="enviando()"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        class="btn btn--primary"
+        [disabled]="enviando() || form.invalid"
+      >
+        @if (subiendoLogo()) {
+          Subiendo logo…
+        } @else if (guardando()) {
+          Guardando…
+        } @else {
+          Guardar cambios
+        }
+      </button>
+    </div>
+  </form>
+}

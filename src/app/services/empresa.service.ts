@@ -19,4 +19,12 @@ export class empresaService{
     crearEmpresa(body: empresaRequest):Observable<void>{
         return this.http.post<void>(this.baseUrl, body);
     }
+
+    getEmpresaById(id: number):Observable<empresaResponse>{
+        return this.http.get<empresaResponse>(`${this.baseUrl}/${id}`);
+    }
+
+    actualizarEmpresa(id: number, body: empresaPatch): Observable<void> {
+        return this.http.patch<void>(this.baseUrl, body);
+    }
 }

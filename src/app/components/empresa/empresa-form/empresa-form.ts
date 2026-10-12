@@ -16,8 +16,15 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { toast } from 'ngx-sonner';
 
 import { empresaService } from '../../../services/empresa.service';
-import { UploadLogoEmpresaService } from '../../../services/upload/logo-empresa.service'; 
+import { UploadLogoEmpresaService } from '../../../services/upload/logo-empresa.service';
 import { empresaRequest } from '../../../models/empresa.model';
+
+type CampoEmpresa =
+  | 'nombreLegal'
+  | 'responsable'
+  | 'registroFiscal'
+  | 'direccion'
+  | 'registroPatronal';
 
 @Component({
   selector: 'app-empresa-form',
@@ -36,48 +43,17 @@ export class EmpresaForm implements OnDestroy {
   /** Emite cuando el usuario cancela */
   cancelada = output<void>();
 
-  // ---------- Formulario ----------
+  // ---------- Formulario (espejo del DTO EmpresaRequest) ----------
   form = this.fb.nonNullable.group({
-    nombreLegal: [
-      '',
-      [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(120),
-      ],
-    ],
-    responsable: [
-      '',
-      [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(80),
-      ],
-    ],
-    registroFiscal: [
-      '',
-      [
-        Validators.required,
-        Validators.minLength(8),
-        Validators.maxLength(20),
-      ],
-    ],
-    direccion: [
-      '',
-      [
-        Validators.required,
-        Validators.minLength(5),
-        Validators.maxLength(200),
-      ],
-    ],
-    registroPatronal: [
-      '',
-      [
-        Validators.required,
-        Validators.minLength(8),
-        Validators.maxLength(20),
-      ],
-    ],
+    nombreLegal: ['', [Validators.required]],       // @NotBlank
+    responsable: ['', [
+      Validators.required,                          // @NotBlank
+      Validators.minLength(3),                      // @Length min=3
+      Validators.maxLength(200),                    // @Length max=200
+    ]],
+    registroFiscal: ['', [Validators.required]],    // @NotBlank
+    direccion: [''],                                // opcional
+    registroPatronal: [''],                         // opcional
   });
 
   // ---------- Estado del logo ----------
@@ -85,7 +61,7 @@ export class EmpresaForm implements OnDestroy {
   previewUrl = signal<string | null>(null);
   logoPath = signal<string | null>(null);
 
-  // ---------- Estados de UI ----------
+  // ---------- Estados UI ----------
   subiendoLogo = signal(false);
   guardando = signal(false);
   errorGeneral = signal<string | null>(null);
@@ -116,6 +92,7 @@ export class EmpresaForm implements OnDestroy {
       toast.warning('Formato no permitido', { description: mensaje });
       return;
     }
+
     const maxMB = 5;
     if (file.size > maxMB * 1024 * 1024) {
       const mensaje = `El logo no debe pesar más de ${maxMB} MB.`;
@@ -184,9 +161,9 @@ export class EmpresaForm implements OnDestroy {
       nombreLegal: v.nombreLegal.trim(),
       responsable: v.responsable.trim(),
       registroFiscal: v.registroFiscal.trim(),
-      direccion: v.direccion.trim(),
-      registroPatronal: v.registroPatronal.trim(),
-      logoPath: this.logoPath() ?? 'no disponible',
+      direccion: this.nullSiVacio(v.direccion),
+      registroPatronal: this.nullSiVacio(v.registroPatronal),
+      logoPath: this.logoPath(),
     };
 
     const nombreEmpresa = body.nombreLegal;
@@ -205,10 +182,7 @@ export class EmpresaForm implements OnDestroy {
         const mensaje = this.extraerMensajeError(err);
         this.errorGeneral.set(mensaje);
         this.guardando.set(false);
-
-        toast.error('No se pudo crear la empresa', {
-          description: mensaje,
-        });
+        toast.error('No se pudo crear la empresa', { description: mensaje });
       },
     });
   }
@@ -218,6 +192,11 @@ export class EmpresaForm implements OnDestroy {
   }
 
   // ---------- Helpers ----------
+  private nullSiVacio(valor: string | null | undefined): string | null {
+    const v = (valor ?? '').trim();
+    return v.length === 0 ? null : v;
+  }
+
   private reset(): void {
     this.form.reset({
       nombreLegal: '',
@@ -233,44 +212,34 @@ export class EmpresaForm implements OnDestroy {
   private extraerMensajeError(err: HttpErrorResponse): string {
     const body = err.error;
     if (body?.errors && typeof body.errors === 'object') {
-      const mensajes = Object.values(body.errors) as string[];
-      return mensajes.join(', ');
+      return (Object.values(body.errors) as string[]).join(', ');
     }
     if (body?.message) return body.message;
     if (err.status === 0) return 'Sin conexión con el servidor.';
     return 'No se pudo crear la empresa. Intenta de nuevo.';
   }
 
-  mostrarError(
-    campo:
-      | 'nombreLegal'
-      | 'responsable'
-      | 'registroFiscal'
-      | 'direccion'
-      | 'registroPatronal'
-  ): string | null {
+  mostrarError(campo: CampoEmpresa): string | null {
     const control = this.form.get(campo);
     if (!control || !control.touched || control.valid) return null;
 
     if (control.hasError('required')) {
-      switch (campo) {
-        case 'nombreLegal':
-          return 'Debe ingresar el nombre legal';
-        case 'responsable':
-          return 'Debe ingresar el responsable';
-        case 'registroFiscal':
-          return 'Debe ingresar el registro fiscal';
-        case 'direccion':
-          return 'Debe ingresar la dirección';
-        case 'registroPatronal':
-          return 'Debe ingresar el registro patronal';
-      }
+      const etiquetas: Record<CampoEmpresa, string> = {
+        nombreLegal: 'el nombre legal',
+        responsable: 'el responsable',
+        registroFiscal: 'el registro fiscal',
+        direccion: 'la dirección',
+        registroPatronal: 'el registro patronal',
+      };
+      return `Debe ingresar ${etiquetas[campo]}`;
     }
     if (control.hasError('minlength')) {
-      return 'El valor es demasiado corto';
+      const req = control.getError('minlength').requiredLength;
+      return `Debe tener al menos ${req} caracteres`;
     }
     if (control.hasError('maxlength')) {
-      return 'El valor es demasiado largo';
+      const req = control.getError('maxlength').requiredLength;
+      return `No debe exceder ${req} caracteres`;
     }
     return null;
   }
