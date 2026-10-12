@@ -7,6 +7,7 @@ export interface UbicacionDetail {
   imagenPath: string;
   totalColaboradores: number;
   colaboradoresActivos: number;
+  empresaId: number | null;
 }
 
 /** Body que espera POST /api/ubicaciones */
@@ -14,6 +15,7 @@ export interface UbicacionRequest {
   nombre: string;
   direccion: string;
   imagenPath: string | null;
+  empresaId:number
 }
 
 /** Respuesta del POST /api/ubicaciones */
@@ -23,6 +25,7 @@ export interface UbicacionResponse {
   slug: string;
   direccion: string;
   imagenPath: string;
+  empresaId: number ;
 }
 
 /** Respuesta del POST /api/uploads/ubicaciones */
@@ -34,5 +37,6 @@ export interface UbicacionPatch{
   id:number,
   nombre:string,
   direccion:string,
-  imagenPath:string | null
+  imagenPath:string | null,
+  empresaId:number
 }

@@ -15,11 +15,13 @@ import {
   Validators,
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { catchError, of } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
 import { toast } from 'ngx-sonner';
 
 import { UbicacionService } from '../../services/ubicacion.service';
 import { UploadUbicacionService } from '../../services/upload/ubicacion-upload.service';
+import { empresaService } from '../../services/empresa.service'; // Ajusta la ruta
+import { empresaResponse } from '../../models/empresa.model'; // Ajusta la ruta
 import {
   UbicacionPatch as UbicacionPatchModel,
   UbicacionResponse,
@@ -36,6 +38,7 @@ export class UbicacionPatch implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly ubicacionService = inject(UbicacionService);
   private readonly uploadService = inject(UploadUbicacionService);
+  private readonly empresaService = inject(empresaService);
 
   /** ID de la ubicación (obligatorio) */
   ubicacionId = input.required<number>();
@@ -50,12 +53,17 @@ export class UbicacionPatch implements OnInit, OnDestroy {
       [Validators.required, Validators.minLength(3), Validators.maxLength(50)],
     ],
     direccion: ['', [Validators.required]],
+    empresaId: [null as number | null, [Validators.required]],
   });
 
   // ---------- Imagen ----------
   archivo = signal<File | null>(null);
   previewUrl = signal<string | null>(null);
   imagenPath = signal<string | null>(null);
+
+  // ---------- Empresas ----------
+  empresas = signal<empresaResponse[]>([]);
+  cargandoEmpresas = signal(false);
 
   // ---------- UI ----------
   cargando = signal(false);
@@ -79,7 +87,7 @@ export class UbicacionPatch implements OnInit, OnDestroy {
 
   // ---------- Ciclo de vida ----------
   ngOnInit(): void {
-    this.cargarUbicacion();
+    this.cargarDatos();
   }
 
   ngOnDestroy(): void {
@@ -87,13 +95,13 @@ export class UbicacionPatch implements OnInit, OnDestroy {
     if (url) URL.revokeObjectURL(url);
   }
 
-  private cargarUbicacion(): void {
+  private cargarDatos(): void {
     this.cargando.set(true);
     this.errorGeneral.set(null);
+    this.cargandoEmpresas.set(true);
 
-    this.ubicacionService
-      .getUbicacionById(this.ubicacionId())
-      .pipe(
+    forkJoin({
+      ubicacion: this.ubicacionService.getUbicacionById(this.ubicacionId()).pipe(
         catchError((err: HttpErrorResponse) => {
           console.error('Error al cargar ubicación', err);
           const mensaje =
@@ -101,23 +109,34 @@ export class UbicacionPatch implements OnInit, OnDestroy {
               ? 'No se encontró la ubicación.'
               : 'No se pudo cargar la información de la ubicación.';
           this.errorGeneral.set(mensaje);
-
-          // ❌ Notificación de error
           toast.error('Error al cargar ubicación', { description: mensaje });
-
           return of(null);
         })
-      )
-      .subscribe((data) => {
-        if (data) {
-          this.form.patchValue({
-            nombre: data.nombre ?? '',
-            direccion: data.direccion ?? '',
+      ),
+      empresas: this.empresaService.getEmpresas().pipe(
+        catchError((err: HttpErrorResponse) => {
+          console.error('Error al cargar empresas', err);
+          toast.error('Error al cargar empresas', {
+            description: 'No se pudieron cargar las empresas.',
           });
-          this.imagenPath.set(data.imagenPath ?? null);
-        }
-        this.cargando.set(false);
-      });
+          return of([] as empresaResponse[]);
+        })
+      ),
+    }).subscribe(({ ubicacion, empresas }) => {
+      this.empresas.set(empresas);
+      this.cargandoEmpresas.set(false);
+
+      if (ubicacion) {
+        this.form.patchValue({
+          nombre: ubicacion.nombre ?? '',
+          direccion: ubicacion.direccion ?? '',
+          empresaId: ubicacion.empresaId ?? null,
+        });
+        this.imagenPath.set(ubicacion.imagenPath ?? null);
+      }
+
+      this.cargando.set(false);
+    });
   }
 
   // ---------- Imagen ----------
@@ -131,7 +150,6 @@ export class UbicacionPatch implements OnInit, OnDestroy {
       const mensaje = 'Formato no permitido. Usa JPG, PNG o WEBP.';
       this.errorGeneral.set(mensaje);
       input.value = '';
-
       toast.warning('Formato no permitido', { description: mensaje });
       return;
     }
@@ -140,7 +158,6 @@ export class UbicacionPatch implements OnInit, OnDestroy {
       const mensaje = `La imagen no debe pesar más de ${maxMB} MB.`;
       this.errorGeneral.set(mensaje);
       input.value = '';
-
       toast.warning('Imagen demasiado grande', { description: mensaje });
       return;
     }
@@ -195,7 +212,6 @@ export class UbicacionPatch implements OnInit, OnDestroy {
         const mensaje = 'No se pudo subir la imagen. Intenta de nuevo.';
         this.errorGeneral.set(mensaje);
         this.subiendoImagen.set(false);
-
         toast.error('Error al subir la imagen', { description: mensaje });
       },
     });
@@ -210,6 +226,7 @@ export class UbicacionPatch implements OnInit, OnDestroy {
       nombre: v.nombre.trim(),
       direccion: v.direccion.trim(),
       imagenPath: this.imagenPath(),
+      empresaId: v.empresaId!,
     };
 
     const nombreUbicacion = body.nombre;
@@ -241,14 +258,14 @@ export class UbicacionPatch implements OnInit, OnDestroy {
   }
 
   // ---------- Errores ----------
-  errorDe(campo: 'nombre' | 'direccion'): string | null {
+  errorDe(campo: 'nombre' | 'direccion' | 'empresaId'): string | null {
     const control = this.form.get(campo);
     if (!control || !control.touched || control.valid) return null;
 
     if (control.hasError('required')) {
-      return campo === 'nombre'
-        ? 'Debe ingresar un nombre'
-        : 'Debe ingresar una dirección';
+      if (campo === 'nombre') return 'Debe ingresar un nombre';
+      if (campo === 'direccion') return 'Debe ingresar una dirección';
+      if (campo === 'empresaId') return 'Debe seleccionar una empresa';
     }
     if (control.hasError('minlength')) {
       return 'El nombre debe tener mínimo 3 caracteres';

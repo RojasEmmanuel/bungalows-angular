@@ -10,7 +10,7 @@ export class DocumentoService {
 
   getDocumentosByColaboradorId(colaboradorId: number): Observable<DocumentoResponse[]> {
     return this.http.get<DocumentoResponse[]>(`${this.baseUrl}/${colaboradorId}`);
-    }
+  }
 
   crearDocumento(body: DocumentoRequest): Observable<DocumentoResponse> {
     return this.http.post<DocumentoResponse>(this.baseUrl, body);

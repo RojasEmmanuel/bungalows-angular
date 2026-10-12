@@ -39,6 +39,28 @@
     }
   </div>
 
+  <!-- Empresa -->
+  <div class="field">
+    <label class="field__label" for="empresaId">Empresa</label>
+    <select
+      id="empresaId"
+      class="field__input"
+      formControlName="empresaId"
+      [class.field__input--error]="mostrarError('empresaId')"
+      [disabled]="cargandoEmpresas()"
+    >
+      <option [ngValue]="null" disabled>
+        {{ cargandoEmpresas() ? 'Cargando empresas…' : 'Seleccione una empresa' }}
+      </option>
+      @for (empresa of empresas(); track empresa.id) {
+        <option [ngValue]="empresa.id">{{ empresa.nombreLegal }}</option>
+      }
+    </select>
+    @if (mostrarError('empresaId'); as msg) {
+      <p class="field__error">{{ msg }}</p>
+    }
+  </div>
+
   <!-- Imagen -->
   <div class="field">
     <label class="field__label">Imagen (opcional)</label>

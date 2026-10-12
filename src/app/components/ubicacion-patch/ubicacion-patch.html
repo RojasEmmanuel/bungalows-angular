@@ -91,6 +91,28 @@
       }
     </div>
 
+    <!-- Empresa -->
+    <div class="field">
+      <label class="field__label" for="u-empresaId">Empresa</label>
+      <select
+        id="u-empresaId"
+        class="field__input"
+        formControlName="empresaId"
+        [class.field__input--error]="errorDe('empresaId')"
+        [disabled]="guardando() || cargandoEmpresas()"
+      >
+        <option [ngValue]="null">
+          {{ cargandoEmpresas() ? 'Cargando empresas…' : 'Seleccione una empresa' }}
+        </option>
+        @for (empresa of empresas(); track empresa.id) {
+          <option [ngValue]="empresa.id">{{ empresa.nombreLegal }}</option>
+        }
+      </select>
+      @if (errorDe('empresaId'); as msg) {
+        <p class="field__error">{{ msg }}</p>
+      }
+    </div>
+
     <!-- Acciones -->
     <div class="actions">
       <button

@@ -3,6 +3,7 @@ import {
   computed,
   inject,
   OnDestroy,
+  OnInit,
   output,
   signal,
 } from '@angular/core';
@@ -18,6 +19,8 @@ import { toast } from 'ngx-sonner';
 import { UbicacionService } from '../../services/ubicacion.service';
 import { UploadUbicacionService } from '../../services/upload/ubicacion-upload.service';
 import { UbicacionResponse } from '../../models/ubicacion.model';
+import { empresaService } from '../../services/empresa.service';
+import { empresaResponse } from '../../models/empresa.model'; // Ajusta la ruta
 
 @Component({
   selector: 'app-ubicacion-form',
@@ -26,10 +29,11 @@ import { UbicacionResponse } from '../../models/ubicacion.model';
   templateUrl: './ubicacion-form.html',
   styleUrl: './ubicacion-form.css',
 })
-export class UbicacionFormComponent implements OnDestroy {
+export class UbicacionFormComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly ubicacionService = inject(UbicacionService);
   private readonly uploadService = inject(UploadUbicacionService);
+  private readonly empresaService = inject(empresaService);
 
   /** Emite cuando se crea la ubicación */
   creada = output<UbicacionResponse>();
@@ -47,6 +51,7 @@ export class UbicacionFormComponent implements OnDestroy {
       ],
     ],
     direccion: ['', [Validators.required]],
+    empresaId: [null as number | null, [Validators.required]],
   });
 
   // ---------- Estado de la imagen ----------
@@ -58,11 +63,35 @@ export class UbicacionFormComponent implements OnDestroy {
   subiendoImagen = signal(false);
   guardando = signal(false);
   errorGeneral = signal<string | null>(null);
+  empresas = signal<empresaResponse[]>([]);
+  cargandoEmpresas = signal(false);
 
   // ---------- Computed ----------
   hayArchivo = computed(() => this.archivo() !== null);
   nombreArchivo = computed(() => this.archivo()?.name ?? '');
   enviando = computed(() => this.subiendoImagen() || this.guardando());
+
+  // ---------- Ciclo de vida ----------
+  ngOnInit(): void {
+    this.cargarEmpresas();
+  }
+
+  private cargarEmpresas(): void {
+    this.cargandoEmpresas.set(true);
+    this.empresaService.getEmpresas().subscribe({
+      next: (empresas) => {
+        this.empresas.set(empresas);
+        this.cargandoEmpresas.set(false);
+      },
+      error: (err) => {
+        console.error('Error al cargar empresas', err);
+        this.cargandoEmpresas.set(false);
+        toast.error('Error al cargar empresas', {
+          description: 'No se pudieron cargar las empresas. Intenta de nuevo.',
+        });
+      },
+    });
+  }
 
   // ---------- Imagen ----------
   onArchivoSeleccionado(event: Event): void {
@@ -70,13 +99,11 @@ export class UbicacionFormComponent implements OnDestroy {
     const file = input.files?.[0];
     if (!file) return;
 
-    // Validaciones cliente (el backend valida igual)
     const tiposOk = ['image/jpeg', 'image/png', 'image/webp'];
     if (!tiposOk.includes(file.type)) {
       const mensaje = 'Formato no permitido. Usa JPG, PNG o WEBP.';
       this.errorGeneral.set(mensaje);
       input.value = '';
-
       toast.warning('Formato no permitido', { description: mensaje });
       return;
     }
@@ -85,7 +112,6 @@ export class UbicacionFormComponent implements OnDestroy {
       const mensaje = `La imagen no debe pesar más de ${maxMB} MB.`;
       this.errorGeneral.set(mensaje);
       input.value = '';
-
       toast.warning('Imagen demasiado grande', { description: mensaje });
       return;
     }
@@ -115,7 +141,6 @@ export class UbicacionFormComponent implements OnDestroy {
 
     this.errorGeneral.set(null);
 
-    // 1) Si hay archivo, súbelo primero
     if (this.archivo()) {
       this.subirImagenYCrear();
     } else {
@@ -137,7 +162,6 @@ export class UbicacionFormComponent implements OnDestroy {
         const mensaje = 'No se pudo subir la imagen. Intenta de nuevo.';
         this.errorGeneral.set(mensaje);
         this.subiendoImagen.set(false);
-
         toast.error('Error al subir la imagen', { description: mensaje });
       },
     });
@@ -150,6 +174,7 @@ export class UbicacionFormComponent implements OnDestroy {
       nombre: this.form.getRawValue().nombre,
       direccion: this.form.getRawValue().direccion,
       imagenPath: this.imagenPath(),
+      empresaId: this.form.getRawValue().empresaId!,
     };
 
     const nombreUbicacion = body.nombre;
@@ -183,7 +208,7 @@ export class UbicacionFormComponent implements OnDestroy {
 
   // ---------- Helpers ----------
   private reset(): void {
-    this.form.reset({ nombre: '', direccion: '' });
+    this.form.reset({ nombre: '', direccion: '', empresaId: null });
     this.quitarArchivo();
     this.imagenPath.set(null);
   }
@@ -199,14 +224,14 @@ export class UbicacionFormComponent implements OnDestroy {
     return 'No se pudo crear la ubicación. Intenta de nuevo.';
   }
 
-  mostrarError(campo: 'nombre' | 'direccion'): string | null {
+  mostrarError(campo: 'nombre' | 'direccion' | 'empresaId'): string | null {
     const control = this.form.get(campo);
     if (!control || !control.touched || control.valid) return null;
 
     if (control.hasError('required')) {
-      return campo === 'nombre'
-        ? 'Debe ingresar un nombre'
-        : 'Debe ingresar una dirección';
+      if (campo === 'nombre') return 'Debe ingresar un nombre';
+      if (campo === 'direccion') return 'Debe ingresar una dirección';
+      if (campo === 'empresaId') return 'Debe seleccionar una empresa';
     }
     if (control.hasError('minlength')) {
       return 'El nombre debe tener mínimo 3 caracteres';
