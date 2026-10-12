@@ -1,0 +1,62 @@
+<section class="empresas">
+  <header class="empresas__head">
+    <h3 class="empresas__title">Empresas</h3>
+
+    <button
+      type="button"
+      class="btn-new btn-new--ghost"
+      (click)="onCrearClick()"
+    >
+      Nueva
+    </button>
+  </header>
+
+  @if (cargando()) {
+    <p class="state">Cargando empresas…</p>
+  } @else if (error()) {
+    <p class="state state--error">{{ error() }}</p>
+  } @else if (empresas().length === 0) {
+    <p class="state">No hay empresas registradas.</p>
+  } @else {
+    <ul class="empresas__list">
+      @for (e of empresas(); track e.id) {
+        <li class="empresa">
+          <div class="empresa__logo">
+            @if (tieneLogo(e)) {
+              <img
+                class="empresa__img"
+                [src]="e.logoPath"
+                [alt]="e.nombreLegal"
+                (error)="onLogoError(e)"
+              />
+            } @else {
+              <div class="empresa__avatar">
+                <span class="empresa__avatar-text">{{ iniciales(e) }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="empresa__info">
+            <p class="empresa__nombre">{{ e.nombreLegal }}</p>
+            <p class="empresa__responsable">
+              {{ e.responsable || 'Sin responsable' }}
+            </p>
+
+            <div class="empresa__progreso" [title]="e.faltantes.length ? 'Faltan: ' + e.faltantes.join(', ') : 'Registro completo'">
+              <div class="empresa__bar">
+                <div
+                  class="empresa__bar-fill"
+                  [class.empresa__bar-fill--ok]="colorProgreso(e.progreso) === 'ok'"
+                  [class.empresa__bar-fill--mid]="colorProgreso(e.progreso) === 'mid'"
+                  [class.empresa__bar-fill--low]="colorProgreso(e.progreso) === 'low'"
+                  [style.width.%]="e.progreso"
+                ></div>
+              </div>
+              <span class="empresa__pct">{{ e.progreso }}%</span>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>

@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UbicacionService } from '../../services/ubicacion.service';
 import { UbicacionDetail, UbicacionResponse } from '../../models/ubicacion.model';
@@ -9,6 +9,8 @@ import { PuestoForm } from '../../components/puesto-form/puesto-form';
 import { ModalComponent } from '../../components/modal/modal';
 import { UbicacionPatch } from '../../components/ubicacion-patch/ubicacion-patch';
 import { AniversariosWidget } from '../../components/aniversarios-widget/aniversarios-widget';
+import { EmpresaList } from '../../components/empresa/empresa-list/empresa-list';
+import { EmpresaForm } from '../../components/empresa/empresa-form/empresa-form';
 
 @Component({
   selector: 'app-inicio',
@@ -21,6 +23,8 @@ import { AniversariosWidget } from '../../components/aniversarios-widget/anivers
     ModalComponent,
     UbicacionPatch,
     AniversariosWidget,
+    EmpresaList,
+    EmpresaForm
   ],
   templateUrl: './inicio.html',
   styleUrl: './inicio.css',
@@ -99,5 +103,23 @@ export class InicioComponent implements OnInit {
     this.modalUbicacionPatchAbierto.set(false);
     this.ubicacionSeleccionadaId.set(null);
     this.cargarUbicaciones();
+  }
+
+
+
+  modalEmpresaAbierto = signal(false);
+  empresaListRef = viewChild(EmpresaList); 
+
+  abrirModalEmpresa(): void {
+    this.modalEmpresaAbierto.set(true);
+  }
+
+  cerrarModalEmpresa(): void {
+    this.modalEmpresaAbierto.set(false);
+  }
+
+  onEmpresaCreada(): void {
+    this.modalEmpresaAbierto.set(false);
+    this.empresaListRef()?.recargar();
   }
 }

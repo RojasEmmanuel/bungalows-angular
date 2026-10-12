@@ -40,6 +40,7 @@
 
   <aside class="dashboard__aside">
     <app-aniversarios-widget />
+     <app-empresa-list (crear)="abrirModalEmpresa()" />
   </aside>
 </section>
 
@@ -78,4 +79,16 @@
       (cancelado)="cerrarModalEditarUbicacion()"
     />
   }
+</app-modal>
+
+
+<app-modal
+  titulo="Nueva empresa"
+  [abierto]="modalEmpresaAbierto()"
+  (cerrar)="cerrarModalEmpresa()"
+>
+  <app-empresa-form
+    (creada)="onEmpresaCreada()"
+    (cancelada)="cerrarModalEmpresa()"
+  />
 </app-modal>

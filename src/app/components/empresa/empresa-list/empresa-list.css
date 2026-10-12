@@ -1,0 +1,144 @@
+.empresas {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--color-ink) 6%, transparent);
+}
+
+
+.empresas__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.state {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font-size: 0.875rem;
+}
+
+.state--error {
+  color: #b91c1c;
+}
+
+.empresas__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.empresa {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 10px;
+  transition: background 0.15s ease;
+}
+
+.empresa:hover {
+  background: var(--color-brand-softer);
+}
+
+.empresa__logo {
+  flex-shrink: 0;
+}
+
+.empresa__img {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: var(--color-surface);
+}
+
+/* Avatar sin borde, fondo con el color de la marca */
+.empresa__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--color-brand);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.empresa__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.empresa__nombre {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.empresa__responsable {
+  margin: 2px 0 6px;
+  font-size: 0.8rem;
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.empresa__progreso {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.empresa__bar {
+  flex: 1;
+  height: 6px;
+  background: var(--color-brand-soft);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.empresa__bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.empresa__bar-fill--ok {
+  background: var(--color-brand);
+}
+
+.empresa__bar-fill--mid {
+  background: #f59e0b;
+}
+
+.empresa__bar-fill--low {
+  background: #ef4444;
+}
+
+.empresa__pct {
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+  font-variant-numeric: tabular-nums;
+  min-width: 32px;
+  text-align: right;
+}
+
+.empresas__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
