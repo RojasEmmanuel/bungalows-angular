@@ -8,11 +8,12 @@ import {
   DocumentoRequest,
   DocumentoResponse,
 } from '../../models/documento.model';
+import { EmptyStateComponent } from '../empty-state/empty-state';
 
 @Component({
   selector: 'app-colaborador-documentos',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EmptyStateComponent],
   templateUrl: './colaborador-documentos.html',
   styleUrl: './colaborador-documentos.css',
 })
@@ -49,17 +50,19 @@ export class ColaboradorDocumentos implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.documentoService.getDocumentosByColaboradorId(this.colaboradorId()).subscribe({
-      next: (data) => {
-        this.documentos.set(data);
-        this.loading.set(false);
-      },
-      error: (err: HttpErrorResponse) => {
-        console.error('Error al cargar documentos', err);
-        this.error.set('No se pudieron cargar los documentos.');
-        this.loading.set(false);
-      },
-    });
+    this.documentoService
+      .getDocumentosByColaboradorId(this.colaboradorId())
+      .subscribe({
+        next: (data) => {
+          this.documentos.set(data);
+          this.loading.set(false);
+        },
+        error: (err: HttpErrorResponse) => {
+          console.error('Error al cargar documentos', err);
+          this.error.set('No se pudieron cargar los documentos.');
+          this.loading.set(false);
+        },
+      });
   }
 
   // ---------- Modal crear ----------
@@ -130,7 +133,7 @@ export class ColaboradorDocumentos implements OnInit {
             this.subiendo.set(false);
             this.modalAbierto.set(false);
 
-            toast.success("Documento subido exitosamente")
+            toast.success('Documento subido exitosamente');
           },
           error: (err: HttpErrorResponse) => {
             console.error('Error al registrar documento', err);
@@ -138,9 +141,7 @@ export class ColaboradorDocumentos implements OnInit {
             this.subiendo.set(false);
 
             const mensaje = this.extraerMensajeError(err);
-            toast.warning("Ha ocurrido un error",{
-              description: mensaje
-            });
+            toast.warning('Ha ocurrido un error', { description: mensaje });
           },
         });
       },
@@ -179,16 +180,14 @@ export class ColaboradorDocumentos implements OnInit {
         this.modalEliminarAbierto.set(false);
         this.documentoAEliminar.set(null);
 
-        toast.success("Documento eliminado");
+        toast.success('Documento eliminado');
       },
       error: (err) => {
         console.error('Error al eliminar documento', err);
         this.eliminando.set(false);
 
         const mensaje = this.extraerMensajeError(err);
-        toast.warning("Ocurrió un error",{
-          description:mensaje
-        });
+        toast.warning('Ocurrió un error', { description: mensaje });
       },
     });
   }

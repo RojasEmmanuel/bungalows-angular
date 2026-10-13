@@ -6,11 +6,12 @@ import { forkJoin } from 'rxjs';
 
 import { LaboralService } from '../../services/laboral.service';
 import { Aniversarios, AntiguedadesProximas } from '../../models/laboral.model';
+import { EmptyStateComponent } from '../empty-state/empty-state';
 
 @Component({
   selector: 'app-aniversarios-widget',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EmptyStateComponent],
   templateUrl: './aniversarios-widget.html',
   styleUrl: './aniversarios-widget.css',
 })

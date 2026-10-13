@@ -1,23 +1,49 @@
 <section class="responsables">
-  <header class="responsables__head">
-    <div>
-      <h3 class="responsables__title">Responsables</h3>
-      <p class="responsables__subtitle">Contactos de emergencia del colaborador.</p>
-    </div>
 
-    <button type="button" class="btn-new" (click)="abrirModalCrear()">
-      + Agregar
-    </button>
-  </header>
+  <!-- ===== Loading / Error: mostramos header ===== -->
+  @if (loading() || error()) {
+    <header class="responsables__head">
+      <div>
+        <h3 class="responsables__title">Responsables</h3>
+        <p class="responsables__subtitle">Contactos de emergencia del colaborador.</p>
+      </div>
+      <button type="button" class="btn-new" (click)="abrirModalCrear()">
+        + Agregar
+      </button>
+    </header>
 
-  <!-- ===== Lista ===== -->
-  @if (loading()) {
-    <p class="state">Cargando responsables…</p>
-  } @else if (error()) {
-    <p class="state state--error">{{ error() }}</p>
-  } @else if (responsables().length === 0) {
-    <p class="state">No hay responsables registrados.</p>
-  } @else {
+    @if (loading()) {
+      <p class="state">Cargando responsables…</p>
+    } @else {
+      <p class="state state--error">{{ error() }}</p>
+    }
+  }
+
+  <!-- ===== Sin datos: empty state a pantalla completa ===== -->
+  @else if (responsables().length === 0) {
+    <app-empty-state
+      image="responsable-empty.svg"
+      title="Sin responsables registrados"
+      description="Agrega un contacto de emergencia para este colaborador."
+      actionLabel="Agregar responsable"
+      [imageSize]="140"
+      (action)="abrirModalCrear()"
+      [compact]="true"
+    />
+  }
+
+  <!-- ===== Con datos: header + lista ===== -->
+  @else {
+    <header class="responsables__head">
+      <div>
+        <h3 class="responsables__title">Responsables</h3>
+        <p class="responsables__subtitle">Contactos de emergencia del colaborador.</p>
+      </div>
+      <button type="button" class="btn-new" (click)="abrirModalCrear()">
+        + Agregar
+      </button>
+    </header>
+
     <ul class="resp-list">
       @for (r of responsables(); track r.id) {
         <li class="resp">
@@ -59,7 +85,9 @@
       }
     </ul>
   }
+
 </section>
+
 
 <!-- ==================== MODAL CREAR ==================== -->
 @if (modalCrearAbierto()) {
@@ -84,9 +112,9 @@
         }
 
         <div class="field">
-          <label class="field__label" for="r-nombre">Nombre completo</label>
+          <label class="field__label" for="rc-nombre">Nombre completo</label>
           <input
-            id="r-nombre"
+            id="rc-nombre"
             class="field__input"
             type="text"
             placeholder="Ej. María Rojas"
@@ -97,24 +125,24 @@
         </div>
 
         <div class="field">
-            <label class="field__label" for="r-parentesco">Parentesco</label>
-            <select
-                id="r-parentesco"
-                class="field__input"
-                [value]="formParentesco()"
-                (change)="onParentescoChange($event)"
-                [disabled]="guardando()"
-            >
-                @for (p of parentescos(); track p.value) {
-                <option [value]="p.value">{{ p.label }}</option>
-                }
-            </select>
+          <label class="field__label" for="rc-parentesco">Parentesco</label>
+          <select
+            id="rc-parentesco"
+            class="field__input"
+            [value]="formParentesco()"
+            (change)="onParentescoChange($event)"
+            [disabled]="guardando()"
+          >
+            @for (p of parentescos(); track p.value) {
+              <option [value]="p.value">{{ p.label }}</option>
+            }
+          </select>
         </div>
 
         <div class="field">
-          <label class="field__label" for="r-telefono">Teléfono</label>
+          <label class="field__label" for="rc-telefono">Teléfono</label>
           <input
-            id="r-telefono"
+            id="rc-telefono"
             class="field__input"
             type="tel"
             inputmode="tel"
@@ -147,6 +175,7 @@
     </div>
   </div>
 }
+
 
 <!-- ==================== MODAL EDITAR ==================== -->
 @if (modalEditarAbierto()) {
@@ -182,19 +211,19 @@
           />
         </div>
 
-       <div class="field">
-            <label class="field__label" for="re-parentesco">Parentesco</label>
-            <select
-                id="re-parentesco"
-                class="field__input"
-                [value]="formParentesco()"
-                (change)="onParentescoChange($event)"
-                [disabled]="guardando()"
-            >
-                @for (p of parentescos(); track p.value) {
-                <option [value]="p.value">{{ p.label }}</option>
-                }
-            </select>
+        <div class="field">
+          <label class="field__label" for="re-parentesco">Parentesco</label>
+          <select
+            id="re-parentesco"
+            class="field__input"
+            [value]="formParentesco()"
+            (change)="onParentescoChange($event)"
+            [disabled]="guardando()"
+          >
+            @for (p of parentescos(); track p.value) {
+              <option [value]="p.value">{{ p.label }}</option>
+            }
+          </select>
         </div>
 
         <div class="field">
@@ -233,6 +262,7 @@
   </div>
 }
 
+
 <!-- ==================== MODAL ELIMINAR ==================== -->
 @if (modalEliminarAbierto()) {
   <div class="modal-backdrop" (click)="cerrarModalEliminar()">
@@ -257,7 +287,7 @@
 
         @if (responsableSeleccionado(); as r) {
           <div class="confirm-box">
-            <span class="confirm-box__tipo">{{ r.parentesco }}</span>
+            <span class="confirm-box__tipo">{{ labelParentesco(r.parentesco) }}</span>
             <span class="confirm-box__valor">{{ r.nombre }}</span>
             <span class="confirm-box__extra">{{ r.telefono }}</span>
           </div>

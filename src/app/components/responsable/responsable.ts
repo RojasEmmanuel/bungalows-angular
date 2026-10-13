@@ -10,11 +10,12 @@ import {
   ResponsablePatch,
 } from '../../models/responsable.model';
 import { EnumOption } from '../../models/enum-option.model';
+import { EmptyStateComponent } from '../empty-state/empty-state';
 
 @Component({
   selector: 'app-responsable',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EmptyStateComponent],
   templateUrl: './responsable.html',
   styleUrl: './responsable.css',
 })
@@ -172,7 +173,7 @@ export class Responsable implements OnInit {
         this.guardando.set(false);
         this.modalCrearAbierto.set(false);
 
-        toast.success("Responsable agregado");
+        toast.success('Responsable agregado');
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al crear responsable', err);
@@ -180,9 +181,7 @@ export class Responsable implements OnInit {
         this.guardando.set(false);
 
         const mensaje = this.extraerMensajeError(err);
-        toast.warning("Ocurrió un error",{
-          description:mensaje
-        });
+        toast.warning('Ocurrió un error', { description: mensaje });
       },
     });
   }
@@ -222,7 +221,7 @@ export class Responsable implements OnInit {
         this.modalEditarAbierto.set(false);
         this.responsableSeleccionado.set(null);
 
-        toast.success("Responsable actualizado");
+        toast.success('Responsable actualizado');
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al actualizar responsable', err);
@@ -230,9 +229,7 @@ export class Responsable implements OnInit {
         this.guardando.set(false);
 
         const mensaje = this.extraerMensajeError(err);
-        toast.warning("Ocurrió un error", {
-          description:mensaje
-        });
+        toast.warning('Ocurrió un error', { description: mensaje });
       },
     });
   }
@@ -251,25 +248,19 @@ export class Responsable implements OnInit {
         this.modalEliminarAbierto.set(false);
         this.responsableSeleccionado.set(null);
 
-        toast.info("Se elimino un responsable");
+        toast.info('Se eliminó un responsable');
       },
       error: (err) => {
         console.error('Error al eliminar responsable', err);
         this.guardando.set(false);
 
         const mensaje = this.extraerMensajeError(err);
-        toast.warning("No se eliminó el responsable",{
-          description:mensaje
-        });
+        toast.warning('No se eliminó el responsable', { description: mensaje });
       },
     });
   }
 
   // ---------- Helpers ----------
-  /**
-   * Normaliza el valor del parentesco del backend para que coincida con un
-   * `value` del catálogo. Acepta "MADRE" o "Madre" y devuelve "MADRE".
-   */
   private normalizarParentesco(valor: string | null | undefined): string {
     const opciones = this.parentescos();
     if (!valor) return opciones[0]?.value ?? '';
@@ -285,7 +276,6 @@ export class Responsable implements OnInit {
     return opciones[0]?.value ?? '';
   }
 
-  /** Label legible del parentesco */
   labelParentesco(value: string): string {
     const opt = this.parentescos().find((p) => p.value === value);
     return opt?.label ?? value;

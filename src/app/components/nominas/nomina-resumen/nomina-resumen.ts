@@ -1,8 +1,10 @@
 // nomina-resumen/nomina-resumen.component.ts
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PercepcionRequest, DeduccionRequest } from '../../../models/nomina.model'; 
+import { PercepcionRequest, DeduccionRequest } from '../../../models/nomina.model';
 import { LaboralNominaResponse } from '../../../models/laboral.model';
+import { EnumOption } from '../../../models/enum-option.model';
+import { formatearPeriodo } from '../../../utils/date-format.util';
 
 @Component({
   selector: 'app-nomina-resumen',
@@ -10,91 +12,180 @@ import { LaboralNominaResponse } from '../../../models/laboral.model';
   imports: [CommonModule],
   template: `
     <section class="rounded-2xl bg-white p-6" style="border:1px solid var(--color-line)">
-      <h2 class="text-xl font-bold" style="color: var(--color-ink)">Resumen de Nómina</h2>
+
+      <!-- Encabezado -->
+      <header class="flex items-start justify-between pb-4"
+              style="border-bottom:1px solid var(--color-line)">
+        <div>
+          <h2 class="text-lg font-bold tracking-tight" style="color: var(--color-ink)">
+            Recibo de Nómina
+          </h2>
+          <p class="mt-0.5 text-xs uppercase tracking-wider"
+             style="color: var(--color-ink-soft)">
+            Comprobante interno
+          </p>
+        </div>
+        @if (periodoTexto) {
+          <div class="text-right max-w-xs">
+            <p class="text-xs uppercase tracking-wider" style="color: var(--color-ink-soft)">
+              Periodo
+            </p>
+            <p class="text-sm font-medium" style="color: var(--color-ink)">
+              {{ periodoTexto }}
+            </p>
+            <p class="text-xs mt-0.5" style="color: var(--color-brand)">
+              {{ periodo.dias }} días
+            </p>
+          </div>
+        }
+      </header>
 
       @if (!laboral) {
-        <p class="mt-4 text-sm" style="color: var(--color-ink-soft)">
-          Selecciona un colaborador para ver su información.
+        <p class="mt-6 text-sm" style="color: var(--color-ink-soft)">
+          Selecciona un colaborador para generar el recibo.
         </p>
       } @else {
+
         <!-- Datos del colaborador -->
-        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-          <p style="color: var(--color-ink-soft)">Nombre: <span style="color:var(--color-ink)">{{ laboral.nombreColaborador }}</span></p>
-          <p style="color: var(--color-ink-soft)">RFC: <span style="color:var(--color-ink)">{{ laboral.rfc }}</span></p>
-          <p style="color: var(--color-ink-soft)">CURP: <span style="color:var(--color-ink)">{{ laboral.curp }}</span></p>
-          <p style="color: var(--color-ink-soft)">NSS: <span style="color:var(--color-ink)">{{ laboral.nss }}</span></p>
-          <p style="color: var(--color-ink-soft)">Ingreso: <span style="color:var(--color-ink)">{{ laboral.fechaIngreso }}</span></p>
-          <p style="color: var(--color-ink-soft)">Jornada: <span style="color:var(--color-ink)">{{ laboral.jornada }}</span></p>
-          <p style="color: var(--color-ink-soft)">Puesto: <span style="color:var(--color-ink)">{{ laboral.puesto }}</span></p>
-          <p style="color: var(--color-ink-soft)">Ubicación: <span style="color:var(--color-ink)">{{ laboral.ubicacion }}</span></p>
-          <p style="color: var(--color-ink-soft)">Sueldo: <span style="color:var(--color-ink)">{{ laboral.sueldo | number:'1.2-2' }}</span></p>
-        </div>
+        <section class="mt-5">
+          <h3 class="text-xs font-semibold uppercase tracking-wider mb-3"
+              style="color: var(--color-ink-soft)">
+            Datos del colaborador
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-sm">
+            @for (fila of [
+              { k: 'Nombre',    v: laboral.nombreColaborador },
+              { k: 'RFC',       v: laboral.rfc },
+              { k: 'CURP',      v: laboral.curp },
+              { k: 'NSS',       v: laboral.nss },
+              { k: 'Ingreso',   v: laboral.fechaIngreso },
+              { k: 'Jornada',   v: laboral.jornada },
+              { k: 'Puesto',    v: laboral.puesto },
+              { k: 'Ubicación', v: laboral.ubicacion }
+            ]; track fila.k) {
+              <div class="flex items-baseline justify-between gap-3 pb-1"
+                   style="border-bottom:1px dashed var(--color-line)">
+                <span class="text-xs uppercase tracking-wide"
+                      style="color: var(--color-ink-soft)">{{ fila.k }}</span>
+                <span class="font-medium text-right" style="color: var(--color-ink)">
+                  {{ fila.v }}
+                </span>
+              </div>
+            }
+          </div>
+
+          <div class="mt-4 flex items-center justify-between rounded-lg px-4 py-3"
+               style="background: var(--color-brand-soft)">
+            <span class="text-xs font-semibold uppercase tracking-wider"
+                  style="color: var(--color-ink-soft)">Sueldo base</span>
+            <span class="text-base font-bold tabular-nums" style="color: var(--color-brand)">
+              {{ laboral.sueldo | number:'1.2-2' }}
+            </span>
+          </div>
+        </section>
+
+        <!-- Percepciones / Deducciones -->
+        <section class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+
+          <!-- Percepciones -->
+          <div class="rounded-xl p-4"
+               style="border:1px solid var(--color-line); background: var(--color-brand-softer)">
+            <div class="flex items-center justify-between pb-2"
+                 style="border-bottom:1px solid var(--color-line)">
+              <h3 class="text-xs font-semibold uppercase tracking-wider"
+                  style="color: var(--color-ink-soft)">Percepciones</h3>
+              <span class="text-xs tabular-nums" style="color: var(--color-ink-soft)">
+                {{ percepciones.length }} concepto(s)
+              </span>
+            </div>
+
+            @if (percepciones.length === 0) {
+              <p class="mt-3 text-xs" style="color: var(--color-ink-soft)">
+                Sin percepciones registradas.
+              </p>
+            } @else {
+              <ul class="mt-2">
+                @for (p of percepciones; track $index) {
+                  <li class="flex items-center justify-between gap-3 py-2 text-sm"
+                      style="border-top:1px solid var(--color-line)">
+                    <span class="truncate" style="color: var(--color-ink)">{{ p.concepto }}</span>
+                    <span class="tabular-nums font-medium" style="color: var(--color-ink)">
+                      {{ p.monto | number:'1.2-2' }}
+                    </span>
+                  </li>
+                }
+              </ul>
+
+              <div class="mt-2 pt-2 flex justify-between text-sm font-semibold"
+                   style="border-top:1px solid var(--color-line); color: var(--color-ink)">
+                <span>Subtotal</span>
+                <span class="tabular-nums">{{ totalPercepciones | number:'1.2-2' }}</span>
+              </div>
+            }
+          </div>
+
+          <!-- Deducciones -->
+          <div class="rounded-xl p-4"
+               style="border:1px solid var(--color-line); background: var(--color-brand-softer)">
+            <div class="flex items-center justify-between pb-2"
+                 style="border-bottom:1px solid var(--color-line)">
+              <h3 class="text-xs font-semibold uppercase tracking-wider"
+                  style="color: var(--color-ink-soft)">Deducciones</h3>
+              <span class="text-xs tabular-nums" style="color: var(--color-ink-soft)">
+                {{ deducciones.length }} concepto(s)
+              </span>
+            </div>
+
+            @if (deducciones.length === 0) {
+              <p class="mt-3 text-xs" style="color: var(--color-ink-soft)">
+                Sin deducciones registradas.
+              </p>
+            } @else {
+              <ul class="mt-2">
+                @for (d of deducciones; track $index) {
+                  <li class="flex items-center justify-between gap-3 py-2 text-sm"
+                      style="border-top:1px solid var(--color-line)">
+                    <span class="truncate" style="color: var(--color-ink)">
+                      {{ labelDeduccion(d.tipo) }}
+                    </span>
+                    <span class="tabular-nums font-medium" style="color: var(--color-ink)">
+                      {{ d.monto | number:'1.2-2' }}
+                    </span>
+                  </li>
+                }
+              </ul>
+
+              <div class="mt-2 pt-2 flex justify-between text-sm font-semibold"
+                   style="border-top:1px solid var(--color-line); color: var(--color-ink)">
+                <span>Subtotal</span>
+                <span class="tabular-nums">{{ totalDeducciones | number:'1.2-2' }}</span>
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- Neto a pagar -->
+        <section class="mt-6 rounded-xl px-5 py-4 flex items-center justify-between"
+                 style="background: var(--color-brand); color:#fff">
+          <div>
+            <p class="text-xs uppercase tracking-wider" style="opacity:.85">Neto a pagar</p>
+            <p class="text-xs mt-0.5" style="opacity:.7">
+              {{ percepciones.length }} percepción(es) · {{ deducciones.length }} deducción(es)
+            </p>
+          </div>
+          <span class="text-2xl font-bold tabular-nums">
+            {{ neto | number:'1.2-2' }}
+          </span>
+        </section>
+
+        <!-- Pie -->
+        <footer class="mt-4 text-[11px] uppercase tracking-wider"
+                style="color: var(--color-ink-soft)">
+          Documento generado automáticamente
+        </footer>
+
       }
-
-      <!-- Periodo -->
-      <div class="mt-6">
-        <h3 class="text-base font-semibold" style="color: var(--color-ink)">Periodo</h3>
-        @if (periodo.inicio && periodo.fin) {
-          <p class="mt-2 text-sm" style="color: var(--color-ink-soft)">
-            {{ periodo.inicio }} — {{ periodo.fin }}
-            <span class="ml-2" style="color: var(--color-brand)">({{ periodo.dias }} días)</span>
-          </p>
-        } @else {
-          <p class="mt-2 text-sm" style="color: var(--color-ink-soft)">Sin periodo definido.</p>
-        }
-      </div>
-
-      <!-- Percepciones -->
-      <div class="mt-6">
-        <h3 class="text-base font-semibold" style="color: var(--color-ink)">Percepciones</h3>
-        @if (percepciones.length === 0) {
-          <p class="mt-2 text-sm" style="color: var(--color-ink-soft)">Sin percepciones.</p>
-        } @else {
-          <ul class="mt-2 space-y-1">
-            @for (p of percepciones; track $index) {
-              <li class="flex justify-between text-sm px-3 py-2 rounded-lg"
-                  style="background: var(--color-brand-softer); color: var(--color-ink)">
-                <span>{{ p.concepto }}</span>
-                <span>{{ p.monto | number:'1.2-2' }}</span>
-              </li>
-            }
-          </ul>
-        }
-      </div>
-
-      <!-- Deducciones -->
-      <div class="mt-6">
-        <h3 class="text-base font-semibold" style="color: var(--color-ink)">Deducciones</h3>
-        @if (deducciones.length === 0) {
-          <p class="mt-2 text-sm" style="color: var(--color-ink-soft)">Sin deducciones.</p>
-        } @else {
-          <ul class="mt-2 space-y-1">
-            @for (d of deducciones; track $index) {
-              <li class="flex justify-between text-sm px-3 py-2 rounded-lg"
-                  style="background: var(--color-brand-softer); color: var(--color-ink)">
-                <span>{{ d.tipo }}</span>
-                <span>{{ d.monto | number:'1.2-2' }}</span>
-              </li>
-            }
-          </ul>
-        }
-      </div>
-
-      <!-- Totales -->
-      <div class="mt-6 pt-4" style="border-top:1px solid var(--color-line)">
-        <div class="flex justify-between text-sm" style="color: var(--color-ink-soft)">
-          <span>Total percepciones</span>
-          <span style="color: var(--color-ink)">{{ totalPercepciones | number:'1.2-2' }}</span>
-        </div>
-        <div class="flex justify-between text-sm mt-1" style="color: var(--color-ink-soft)">
-          <span>Total deducciones</span>
-          <span style="color: var(--color-ink)">{{ totalDeducciones | number:'1.2-2' }}</span>
-        </div>
-        <div class="flex justify-between text-base font-semibold mt-2" style="color: var(--color-ink)">
-          <span>Neto</span>
-          <span>{{ neto | number:'1.2-2' }}</span>
-        </div>
-      </div>
     </section>
   `,
 })
@@ -103,6 +194,19 @@ export class NominaResumenComponent {
   @Input() periodo: { inicio: string; fin: string; dias: number } = { inicio: '', fin: '', dias: 0 };
   @Input() percepciones: PercepcionRequest[] = [];
   @Input() deducciones: DeduccionRequest[] = [];
+  @Input() tiposDeducciones: EnumOption[] = [];
+
+  private get tiposMap(): Map<string, string> {
+    return new Map(this.tiposDeducciones.map((t) => [t.value, t.label]));
+  }
+
+  get periodoTexto(): string {
+    return formatearPeriodo(this.periodo.inicio, this.periodo.fin);
+  }
+
+  labelDeduccion(value: string): string {
+    return this.tiposMap.get(value) ?? value;
+  }
 
   get totalPercepciones(): number {
     return this.percepciones.reduce((acc, p) => acc + Number(p.monto || 0), 0);

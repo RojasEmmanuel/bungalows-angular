@@ -1,7 +1,7 @@
 import { Component, computed, inject, input, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { ContactoService } from '../../services/contacto.service';
 import { EnumsService } from '../../services/enums.service';
 import { toast } from 'ngx-sonner';
@@ -11,11 +11,12 @@ import {
   ContactoPatch,
 } from '../../models/contacto.model';
 import { EnumOption } from '../../models/enum-option.model';
+import { EmptyStateComponent } from '../empty-state/empty-state';
 
 @Component({
   selector: 'app-colaborador-contactos',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule, EmptyStateComponent],
   templateUrl: './colaborador-contacto.html',
   styleUrl: './colaborador-contacto.css',
 })
@@ -64,17 +65,19 @@ export class ColaboradorContactos implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.contactoService.getContactosByColaboradorId(this.colaboradorId()).subscribe({
-      next: (data) => {
-        this.contactos.set(data);
-        this.loading.set(false);
-      },
-      error: (err: HttpErrorResponse) => {
-        console.error('Error al cargar contactos', err);
-        this.error.set('No se pudieron cargar los contactos.');
-        this.loading.set(false);
-      },
-    });
+    this.contactoService
+      .getContactosByColaboradorId(this.colaboradorId())
+      .subscribe({
+        next: (data) => {
+          this.contactos.set(data);
+          this.loading.set(false);
+        },
+        error: (err: HttpErrorResponse) => {
+          console.error('Error al cargar contactos', err);
+          this.error.set('No se pudieron cargar los contactos.');
+          this.loading.set(false);
+        },
+      });
   }
 
   private cargarTiposContacto(): void {
@@ -162,7 +165,7 @@ export class ColaboradorContactos implements OnInit {
         this.guardando.set(false);
         this.modalCrearAbierto.set(false);
 
-        toast.success("Contacto agregado");
+        toast.success('Contacto agregado');
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al crear contacto', err);
@@ -170,9 +173,7 @@ export class ColaboradorContactos implements OnInit {
         this.guardando.set(false);
 
         const mensaje = this.extraerMensajeError(err);
-        toast.warning("No se registró el contacto", {
-          description:mensaje
-        });
+        toast.warning('No se registró el contacto', { description: mensaje });
       },
     });
   }
@@ -207,16 +208,14 @@ export class ColaboradorContactos implements OnInit {
       next: () => {
         this.contactos.update((lista) =>
           lista.map((c) =>
-            c.id === original.id
-              ? { ...c, tipo, contacto }
-              : c
+            c.id === original.id ? { ...c, tipo, contacto } : c
           )
         );
         this.guardando.set(false);
         this.modalEditarAbierto.set(false);
         this.contactoSeleccionado.set(null);
 
-        toast.success("Contacto actualizado correctamente");
+        toast.success('Contacto actualizado correctamente');
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al actualizar contacto', err);
@@ -224,10 +223,7 @@ export class ColaboradorContactos implements OnInit {
         this.guardando.set(false);
 
         const mensaje = this.extraerMensajeError(err);
-
-        toast.warning("Ocurrió un error ",{
-          description:mensaje
-        });
+        toast.warning('Ocurrió un error', { description: mensaje });
       },
     });
   }
@@ -248,18 +244,14 @@ export class ColaboradorContactos implements OnInit {
         this.modalEliminarAbierto.set(false);
         this.contactoSeleccionado.set(null);
 
-        toast.info("Contact eliminado");
+        toast.info('Contacto eliminado');
       },
       error: (err) => {
         console.error('Error al eliminar contacto', err);
         this.guardando.set(false);
-        // Podrías mostrar un toast aquí
 
         const mensaje = this.extraerMensajeError(err);
-
-        toast.warning("Ocurrió un error",{
-          description:mensaje
-        });
+        toast.warning('Ocurrió un error', { description: mensaje });
       },
     });
   }

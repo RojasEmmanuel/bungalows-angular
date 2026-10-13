@@ -1,0 +1,50 @@
+<div
+  class="flex flex-col items-center justify-center text-center w-full"
+  [class.py-10]="!compact"
+  [class.px-4]="!compact"
+  [class.py-4]="compact"
+>
+  @if (image) {
+    <img
+      [src]="image"
+      [alt]="title || 'Sin datos'"
+      class="select-none pointer-events-none"
+      [class.mb-3]="!compact"
+      [class.mb-2]="compact"
+      [style.width.px]="compact ? 72 : imageSize"
+      [style.height.px]="compact ? 72 : imageSize"
+    />
+  }
+
+  @if (title) {
+    <h3
+      class="font-semibold"
+      [class.text-base]="!compact"
+      [class.text-sm]="compact"
+      style="color: var(--color-ink)"
+    >
+      {{ title }}
+    </h3>
+  }
+
+  @if (description && !compact) {
+    <p class="mt-1 text-sm max-w-sm" style="color: var(--color-ink-soft)">
+      {{ description }}
+    </p>
+  }
+
+  @if (actionLabel) {
+    <button
+      type="button"
+      (click)="action.emit()"
+      [class.mt-5]="!compact"
+      [class.mt-3]="compact"
+      class="rounded-lg px-4 py-2 text-sm font-medium"
+      style="background: var(--color-brand); color:#fff"
+    >
+      {{ actionLabel }}
+    </button>
+  }
+
+  <ng-content></ng-content>
+</div>

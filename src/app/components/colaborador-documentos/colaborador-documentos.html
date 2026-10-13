@@ -1,23 +1,48 @@
 <section class="docs">
-  <header class="docs__head">
-    <div>
-      <h3 class="docs__title">Documentación</h3>
-      <p class="docs__subtitle">Archivos y documentos del colaborador.</p>
-    </div>
 
-    <button type="button" class="btn-new" (click)="abrirModal()">
-      Nuevo
-    </button>
-  </header>
+  <!-- ===== Loading / Error: mostramos header ===== -->
+  @if (loading() || error()) {
+    <header class="docs__head">
+      <div>
+        <h3 class="docs__title">Documentación</h3>
+        <p class="docs__subtitle">Archivos y documentos del colaborador.</p>
+      </div>
+      <button type="button" class="btn-new" (click)="abrirModal()">
+        Nuevo
+      </button>
+    </header>
 
-  <!-- ===== Lista ===== -->
-  @if (loading()) {
-    <p class="state">Cargando documentos…</p>
-  } @else if (error()) {
-    <p class="state state--error">{{ error() }}</p>
-  } @else if (documentos().length === 0) {
-    <p class="state">No hay documentos registrados.</p>
-  } @else {
+    @if (loading()) {
+      <p class="state">Cargando documentos…</p>
+    } @else {
+      <p class="state state--error">{{ error() }}</p>
+    }
+  }
+
+  <!-- ===== Sin datos: empty state a pantalla completa ===== -->
+  @else if (documentos().length === 0) {
+    <app-empty-state
+      image="documentos-empty.svg"
+      title="Sin documentos registrados"
+      description="Sube el primer archivo o documento del colaborador."
+      actionLabel="Subir documento"
+      (action)="abrirModal()"
+      [compact]="true"
+    />
+  }
+
+  <!-- ===== Con datos: header + lista ===== -->
+  @else {
+    <header class="docs__head">
+      <div>
+        <h3 class="docs__title">Documentación</h3>
+        <p class="docs__subtitle">Archivos y documentos del colaborador.</p>
+      </div>
+      <button type="button" class="btn-new" (click)="abrirModal()">
+        Nuevo
+      </button>
+    </header>
+
     <ul class="doc-list">
       @for (d of documentos(); track d.id) {
         <li class="doc">
@@ -65,6 +90,7 @@
     </ul>
   }
 </section>
+
 
 <!-- ============ MODAL CREAR ============ -->
 @if (modalAbierto()) {
@@ -153,6 +179,7 @@
     </div>
   </div>
 }
+
 
 <!-- ============ MODAL ELIMINAR ============ -->
 @if (modalEliminarAbierto()) {

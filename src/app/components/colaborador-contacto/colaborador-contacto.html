@@ -1,23 +1,48 @@
 <section class="contactos">
-  <header class="contactos__head">
-    <div>
-      <h3 class="contactos__title">Contactos</h3>
-      <p class="contactos__subtitle">Medios de contacto del colaborador.</p>
-    </div>
 
-    <button type="button" class="btn-new" (click)="abrirModalCrear()">
-      Nuevo
-    </button>
-  </header>
+  <!-- ===== Loading / Error: mostramos header ===== -->
+  @if (loading() || error()) {
+    <header class="contactos__head">
+      <div>
+        <h3 class="contactos__title">Contactos</h3>
+        <p class="contactos__subtitle">Medios de contacto del colaborador.</p>
+      </div>
+      <button type="button" class="btn-new" (click)="abrirModalCrear()">
+        Nuevo
+      </button>
+    </header>
 
-  <!-- ===== Lista ===== -->
-  @if (loading()) {
-    <p class="state">Cargando contactos…</p>
-  } @else if (error()) {
-    <p class="state state--error">{{ error() }}</p>
-  } @else if (contactos().length === 0) {
-    <p class="state">No hay contactos registrados.</p>
-  } @else {
+    @if (loading()) {
+      <p class="state">Cargando contactos…</p>
+    } @else {
+      <p class="state state--error">{{ error() }}</p>
+    }
+  }
+
+  <!-- ===== Sin datos: empty state a pantalla completa ===== -->
+  @else if (contactos().length === 0) {
+    <app-empty-state
+      image="contacto-empty.svg"
+      title="Sin contactos registrados"
+      description="Registra un medio de contacto para este colaborador."
+      actionLabel="Agregar contacto"
+      (action)="abrirModalCrear()"
+      [compact]="true"
+    />
+  }
+
+  <!-- ===== Con datos: header + lista ===== -->
+  @else {
+    <header class="contactos__head">
+      <div>
+        <h3 class="contactos__title">Contactos</h3>
+        <p class="contactos__subtitle">Medios de contacto del colaborador.</p>
+      </div>
+      <button type="button" class="btn-new" (click)="abrirModalCrear()">
+        Nuevo
+      </button>
+    </header>
+
     <ul class="contact-list">
       @for (c of contactos(); track c.id) {
         <li class="contact">
@@ -47,6 +72,7 @@
     </ul>
   }
 </section>
+
 
 <!-- ==================== MODAL CREAR ==================== -->
 @if (modalCrearAbierto()) {
@@ -121,6 +147,7 @@
   </div>
 }
 
+
 <!-- ==================== MODAL EDITAR ==================== -->
 @if (modalEditarAbierto()) {
   <div class="modal-backdrop" (click)="cerrarModalEditar()">
@@ -192,6 +219,7 @@
     </div>
   </div>
 }
+
 
 <!-- ==================== MODAL ELIMINAR ==================== -->
 @if (modalEliminarAbierto()) {
