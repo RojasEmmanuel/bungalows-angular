@@ -13,6 +13,7 @@ import { EmpresaList } from '../../components/empresa/empresa-list/empresa-list'
 import { EmpresaForm } from '../../components/empresa/empresa-form/empresa-form';
 import { EmpresaEdit } from '../../components/empresa/empresa-edit/empresa-edit';
 import { empresaResponse } from '../../models/empresa.model';
+import { EmptyStateComponent } from '../../components/empty-state/empty-state';
 
 @Component({
   selector: 'app-inicio',
@@ -28,6 +29,7 @@ import { empresaResponse } from '../../models/empresa.model';
     EmpresaList,
     EmpresaForm,
     EmpresaEdit,
+    EmptyStateComponent,
   ],
   templateUrl: './inicio.html',
   styleUrl: './inicio.css',

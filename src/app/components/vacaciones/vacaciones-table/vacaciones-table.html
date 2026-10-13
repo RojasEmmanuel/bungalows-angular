@@ -1,94 +1,114 @@
 <section class="vacaciones">
-  <!-- ============ Header + búsqueda ============ -->
-  <header class="vacaciones__head">
-    
 
-    <div class="search">
-      <svg class="search__icon" viewBox="0 0 512 512">
-        <path
-          d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+  <!-- ============ Header + búsqueda + filtros ============ -->
+  <!-- Solo se muestra si hay datos o está cargando -->
+  @if (loading() || vacaciones().length > 0) {
+    <header class="vacaciones__head">
+
+      <div class="search">
+        <svg class="search__icon" viewBox="0 0 512 512">
+          <path
+            d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+          />
+        </svg>
+        <input
+          class="search__input"
+          type="text"
+          placeholder="Buscar por colaborador…"
+          [ngModel]="busqueda()"
+          (ngModelChange)="busqueda.set($event)"
+          autocomplete="off"
         />
-      </svg>
-      <input
-        class="search__input"
-        type="text"
-        placeholder="Buscar por colaborador…"
-        [ngModel]="busqueda()"
-        (ngModelChange)="busqueda.set($event)"
-        autocomplete="off"
-      />
-    </div>
+      </div>
 
-     <div class="filtros">
-    <div class="filtros__group">
-      <label class="filtros__label" for="f-estatus">Estatus</label>
-      <select
-        id="f-estatus"
-        class="filtros__select"
-        [ngModel]="filtroEstatus()"
-        (ngModelChange)="filtroEstatus.set($event)"
-      >
-        <option value="">Todos</option>
-        @for (e of estatusList(); track e.value) {
-          <option [ngValue]="e.value">{{ e.label }}</option>
+      <div class="filtros">
+        <div class="filtros__group">
+          <label class="filtros__label" for="f-estatus">Estatus</label>
+          <select
+            id="f-estatus"
+            class="filtros__select"
+            [ngModel]="filtroEstatus()"
+            (ngModelChange)="filtroEstatus.set($event)"
+          >
+            <option value="">Todos</option>
+            @for (e of estatusList(); track e.value) {
+              <option [ngValue]="e.value">{{ e.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="filtros__group">
+          <label class="filtros__label" for="f-puesto">Puesto</label>
+          <select
+            id="f-puesto"
+            class="filtros__select"
+            [ngModel]="filtroPuesto()"
+            (ngModelChange)="filtroPuesto.set($event)"
+          >
+            <option value="">Todos</option>
+            @for (p of puestos(); track p.id) {
+              <option [ngValue]="p.nombre">{{ p.nombre }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="filtros__group">
+          <label class="filtros__label" for="f-ubicacion">Ubicación</label>
+          <select
+            id="f-ubicacion"
+            class="filtros__select"
+            [ngModel]="filtroUbicacion()"
+            (ngModelChange)="filtroUbicacion.set($event)"
+          >
+            <option value="">Todas</option>
+            @for (u of ubicaciones(); track u.id) {
+              <option [ngValue]="u.nombre">{{ u.nombre }}</option>
+            }
+          </select>
+        </div>
+
+        @if (hayFiltrosActivos()) {
+          <button type="button" class="filtros__clear" (click)="limpiarFiltros()">
+            Limpiar filtros
+          </button>
         }
-      </select>
-    </div>
 
-    <div class="filtros__group">
-      <label class="filtros__label" for="f-puesto">Puesto</label>
-      <select
-        id="f-puesto"
-        class="filtros__select"
-        [ngModel]="filtroPuesto()"
-        (ngModelChange)="filtroPuesto.set($event)"
-      >
-        <option value="">Todos</option>
-        @for (p of puestos(); track p.id) {
-          <option [ngValue]="p.nombre">{{ p.nombre }}</option>
-        }
-      </select>
-    </div>
-
-    <div class="filtros__group">
-      <label class="filtros__label" for="f-ubicacion">Ubicación</label>
-      <select
-        id="f-ubicacion"
-        class="filtros__select"
-        [ngModel]="filtroUbicacion()"
-        (ngModelChange)="filtroUbicacion.set($event)"
-      >
-        <option value="">Todas</option>
-        @for (u of ubicaciones(); track u.id) {
-          <option [ngValue]="u.nombre">{{ u.nombre }}</option>
-        }
-      </select>
-    </div>
-
-    @if (hayFiltrosActivos()) {
-      <button type="button" class="filtros__clear" (click)="limpiarFiltros()">
-        Limpiar filtros
-      </button>
-    }
-
-    <span class="filtros__count">
-      {{ vacacionesFiltradas().length }} de {{ vacaciones().length }}
-    </span>
-  </div>
-  </header>
-
-  <!-- ============ Filtros ============ -->
- 
+        <span class="filtros__count">
+          {{ vacacionesFiltradas().length }} de {{ vacaciones().length }}
+        </span>
+      </div>
+    </header>
+  }
 
   <!-- ============ Estados ============ -->
   @if (loading()) {
     <p class="state">Cargando vacaciones…</p>
   } @else if (error()) {
     <p class="state state--error">{{ error() }}</p>
-  } @else if (vacacionesFiltradas().length === 0) {
-    <p class="state">No se encontraron vacaciones con esos criterios.</p>
-  } @else {
-    <!-- ============ Tabla ============ -->
+  }
+
+  <!-- ============ Sin registros en absoluto: empty extendido ============ -->
+  @else if (vacaciones().length === 0) {
+    <app-empty-state
+      image="vacaciones-empty.svg"
+      title="Sin vacaciones registradas"
+      description="Aún no hay solicitudes de vacaciones. Cuando se registre una, aparecerá aquí con su estatus y días ocupados."
+    />
+  }
+
+  <!-- ============ Filtros sin resultados: empty simple ============ -->
+  @else if (vacacionesFiltradas().length === 0) {
+    <app-empty-state
+      image="vacaciones-empty.svg"
+      title="Sin resultados"
+      description="No se encontraron vacaciones que coincidan con los filtros aplicados."
+      actionLabel="Limpiar filtros"
+      (action)="limpiarFiltros()"
+    />
+  }
+
+  <!-- ============ Tabla ============ -->
+  @else {
     <div class="table-wrap">
       <table class="table">
         <thead class="table__head">

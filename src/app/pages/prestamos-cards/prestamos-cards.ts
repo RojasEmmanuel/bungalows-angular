@@ -9,11 +9,20 @@ import { AbonoForm } from '../../components/prestamo/abono-form/abono-form';
 import { ModalComponent } from '../../components/modal/modal';
 import { PrestamosForm } from '../../components/prestamo/prestamos-form/prestamos-form';
 import { PrestamosList } from '../../components/prestamo/prestamos-list/prestamos-lis';
+import { EmptyStateComponent } from '../../components/empty-state/empty-state';
 
 @Component({
   selector: 'app-prestamos-cards',
   standalone: true,
-  imports: [CommonModule, FormsModule, AbonoForm, ModalComponent, PrestamosList, PrestamosForm],
+  imports: [
+    CommonModule,
+    FormsModule,
+    AbonoForm,
+    ModalComponent,
+    PrestamosList,
+    PrestamosForm,
+    EmptyStateComponent,
+  ],
   templateUrl: './prestamos-cards.html',
   styleUrl: './prestamos-cards.css',
 })
@@ -24,8 +33,7 @@ export class PrestamosCards implements OnInit {
   deudas = signal<DeudaResponse[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
-    modalNuevoPrestamoAbierto = signal(false);
-
+  modalNuevoPrestamoAbierto = signal(false);
 
   // ---------- Búsqueda ----------
   busqueda = signal('');
@@ -97,7 +105,6 @@ export class PrestamosCards implements OnInit {
     this.cargarDeudas();
   }
 
-
   // ---------- Avatar ----------
   iniciales(nombre: string | null | undefined): string {
     const limpio = nombre?.trim() ?? '';
@@ -136,10 +143,6 @@ export class PrestamosCards implements OnInit {
     return Math.min(100, Math.round((pagado / d.prestado) * 100));
   }
 
- 
-
-  // ---------- Helpers ----------
-
   progresoClase(d: DeudaResponse): string {
     const pct = this.porcentajePagado(d);
     if (pct >= 100) return 'progreso__fill progreso__fill--full';
@@ -147,14 +150,15 @@ export class PrestamosCards implements OnInit {
     return 'progreso__fill progreso__fill--low';
   }
 
-
   pendienteClase(d: DeudaResponse): string {
     const pendiente = d.pendiente ?? 0;
     return pendiente > 0 ? 'stat__value stat__value--brand' : 'stat__value';
   }
 
+  // ---------- Modal abono ----------
   modalAbonoAbierto = signal(false);
   deudaSeleccionada = signal<DeudaResponse | null>(null);
+
   abrirModalAbono(d: DeudaResponse): void {
     this.deudaSeleccionada.set(d);
     this.modalAbonoAbierto.set(true);
@@ -168,10 +172,11 @@ export class PrestamosCards implements OnInit {
   onAbonoAplicado(): void {
     this.modalAbonoAbierto.set(false);
     this.deudaSeleccionada.set(null);
-    this.recargar();   // recarga las deudas para ver el saldo actualizado
+    this.recargar();
   }
 
-   modalVerPrestamosAbierto = signal(false);
+  // ---------- Modal ver préstamos ----------
+  modalVerPrestamosAbierto = signal(false);
   colaboradorSeleccionado = signal<DeudaResponse | null>(null);
 
   verPrestamos(d: DeudaResponse): void {
@@ -182,12 +187,11 @@ export class PrestamosCards implements OnInit {
   cerrarModalVerPrestamos(): void {
     this.modalVerPrestamosAbierto.set(false);
     this.colaboradorSeleccionado.set(null);
-    // Al cerrar, recargamos por si hubo cambios desde el listado interno
     this.recargar();
   }
 
-
-   abrirModalNuevoPrestamo(): void {
+  // ---------- Modal nuevo préstamo ----------
+  abrirModalNuevoPrestamo(): void {
     this.modalNuevoPrestamoAbierto.set(true);
   }
 

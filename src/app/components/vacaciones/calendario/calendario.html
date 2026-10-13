@@ -1,69 +1,93 @@
 <section class="cal">
+
   <!-- ============ Header ============ -->
-  <header class="cal__head">
-    <div class="cal__title-wrap">
-      <h3 class="cal__title">Calendario de vacaciones</h3>
-      <p class="cal__subtitle">Periodos agrupados por colaborador</p>
-    </div>
+  <!-- Solo se muestra si hay datos o está cargando -->
+  @if (loading() || vacaciones().length > 0) {
+    <header class="cal__head">
+      <div class="cal__title-wrap">
+        <h3 class="cal__title">Calendario de vacaciones</h3>
+        <p class="cal__subtitle">Periodos agrupados por colaborador</p>
+      </div>
 
-    <div class="cal__actions">
-      <!-- Búsqueda -->
-      <div class="search">
-        <svg class="search__icon" viewBox="0 0 512 512">
-          <path
-            d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+      <div class="cal__actions">
+        <!-- Búsqueda -->
+        <div class="search">
+          <svg class="search__icon" viewBox="0 0 512 512">
+            <path
+              d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+            />
+          </svg>
+          <input
+            class="search__input"
+            type="text"
+            placeholder="Buscar colaborador…"
+            [value]="busqueda()"
+            (input)="onBusqueda($event)"
+            autocomplete="off"
           />
-        </svg>
-        <input
-          class="search__input"
-          type="text"
-          placeholder="Buscar colaborador…"
-          [value]="busqueda()"
-          (input)="onBusqueda($event)"
-          autocomplete="off"
-        />
-        @if (busqueda()) {
-          <button
-            type="button"
-            class="search__clear"
-            (click)="limpiarBusqueda()"
-            aria-label="Limpiar"
-          >
-            ✕
+          @if (busqueda()) {
+            <button
+              type="button"
+              class="search__clear"
+              (click)="limpiarBusqueda()"
+              aria-label="Limpiar"
+            >
+              ✕
+            </button>
+          }
+        </div>
+
+        <!-- Navegación de fechas -->
+        <div class="rango">
+          <button type="button" class="rango__btn" (click)="anterior()" aria-label="Anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
           </button>
-        }
+
+          <span class="rango__label">{{ etiquetaRango() }}</span>
+
+          <button type="button" class="rango__btn" (click)="siguiente()" aria-label="Siguiente">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+
+          <button type="button" class="rango__hoy" (click)="hoy()">Hoy</button>
+        </div>
       </div>
-
-      <!-- Navegación de fechas -->
-      <div class="rango">
-        <button type="button" class="rango__btn" (click)="anterior()" aria-label="Anterior">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </button>
-
-        <span class="rango__label">{{ etiquetaRango() }}</span>
-
-        <button type="button" class="rango__btn" (click)="siguiente()" aria-label="Siguiente">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </button>
-
-        <button type="button" class="rango__hoy" (click)="hoy()">Hoy</button>
-      </div>
-    </div>
-  </header>
+    </header>
+  }
 
   <!-- ============ Estados ============ -->
   @if (loading()) {
     <p class="state">Cargando vacaciones…</p>
   } @else if (error()) {
     <p class="state state--error">{{ error() }}</p>
-  } @else if (!hayResultados()) {
-    <p class="state">No se encontraron vacaciones con esos criterios.</p>
-  } @else {
-    <!-- ============ Calendario ============ -->
+  }
+
+  <!-- ============ Sin registros en absoluto: empty extendido ============ -->
+  @else if (vacaciones().length === 0) {
+    <app-empty-state
+      image="calendar.svg"
+      title="Sin vacaciones en el calendario"
+      description="Aún no hay periodos vacacionales registrados. Cuando los colaboradores soliciten vacaciones, aparecerán aquí sobre la línea de tiempo."
+    />
+  }
+
+  <!-- ============ Búsqueda sin resultados: empty simple ============ -->
+  @else if (!hayResultados()) {
+    <app-empty-state
+      image="calendar.svg"
+      title="Sin resultados"
+      description="No se encontraron colaboradores que coincidan con tu búsqueda."
+      actionLabel="Limpiar búsqueda"
+      (action)="limpiarBusqueda()"
+    />
+  }
+
+  <!-- ============ Calendario ============ -->
+  @else {
     <div class="cal__scroll">
       <div class="cal__grid">
 

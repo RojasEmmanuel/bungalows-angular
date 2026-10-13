@@ -5,6 +5,7 @@ import { toast } from 'ngx-sonner';
 
 import { empresaService } from '../../../services/empresa.service';
 import { empresaResponse } from '../../../models/empresa.model';
+import { EmptyStateComponent } from '../../empty-state/empty-state';
 
 interface EmpresaConProgreso extends empresaResponse {
   /** 0–100 */
@@ -16,7 +17,7 @@ interface EmpresaConProgreso extends empresaResponse {
 @Component({
   selector: 'app-empresa-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EmptyStateComponent],
   templateUrl: './empresa-list.html',
   styleUrl: './empresa-list.css',
 })

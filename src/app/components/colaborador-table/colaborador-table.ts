@@ -1,5 +1,7 @@
 import { Component, computed, effect, input, output, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ColaboradorTable } from '../../models/colaborador.model';
+import { EmptyStateComponent } from '../../components/empty-state/empty-state';
 
 type SortColumn = 'nombreCompleto' | 'edad' | 'antiguedad' | null;
 type SortDirection = 'asc' | 'desc';
@@ -7,6 +9,7 @@ type SortDirection = 'asc' | 'desc';
 @Component({
   selector: 'app-colaborador-table',
   standalone: true,
+  imports: [CommonModule, EmptyStateComponent],
   templateUrl: './colaborador-table.html',
   styleUrl: './colaborador-table.css',
 })
@@ -32,7 +35,6 @@ export class ColaboradorTableComponent {
   readonly currentPage = signal(1);
   readonly mostrarTodos = signal(false);
 
-  /** Tamaño de página efectivo: si mostrarTodos, es "infinito". */
   private readonly pageSizeEfectivo = computed(() =>
     this.mostrarTodos() ? Number.MAX_SAFE_INTEGER : this.pageSize()
   );
@@ -120,7 +122,6 @@ export class ColaboradorTableComponent {
     )
   );
 
-  /** El paginador normal se oculta cuando "ver todos" está activo. */
   readonly mostrarPaginador = computed(() => !this.mostrarTodos());
 
   // ---------- ¿Hay filtros activos? ----------
@@ -133,8 +134,10 @@ export class ColaboradorTableComponent {
       !!this.filtroDiaDescanso()
   );
 
+  // ---------- ¿Hay colaboradores en absoluto? ----------
+  readonly hayColaboradores = computed(() => this.colaboradores().length > 0);
+
   constructor() {
-    // Resetear la página cuando cambian filtros, orden, datos o modo "ver todos"
     effect(() => {
       this.busqueda();
       this.filtroPuesto();

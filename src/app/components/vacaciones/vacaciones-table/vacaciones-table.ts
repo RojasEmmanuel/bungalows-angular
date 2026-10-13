@@ -13,6 +13,7 @@ import { VacacionesResponse } from '../../../models/vacaciones.model';
 import { EnumOption } from '../../../models/enum-option.model';
 import { PuestoResponse } from '../../../models/puesto.model';
 import { UbicacionResponse } from '../../../models/ubicacion.model';
+import { EmptyStateComponent } from '../../empty-state/empty-state';
 
 type SortColumn =
   | 'nombreColaborador'
@@ -26,7 +27,7 @@ type SortDirection = 'asc' | 'desc';
 @Component({
   selector: 'app-vacaciones-table',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, EmptyStateComponent],
   templateUrl: './vacaciones-table.html',
   styleUrl: './vacaciones-table.css',
 })
@@ -38,7 +39,6 @@ export class VacacionesTable implements OnInit {
 
   editar = output<VacacionesResponse>();
   eliminar = output<VacacionesResponse>();
-
 
   // ---------- Datos crudos ----------
   vacaciones = signal<VacacionesResponse[]>([]);
@@ -64,7 +64,6 @@ export class VacacionesTable implements OnInit {
   vacacionesFiltradas = computed(() => {
     let lista = this.vacaciones();
 
-    // Filtro por nombre de colaborador
     const term = this.busqueda().trim().toLowerCase();
     if (term) {
       lista = lista.filter((v) =>
@@ -72,25 +71,19 @@ export class VacacionesTable implements OnInit {
       );
     }
 
-    // Filtro por estatus (case-insensitive: "Pagado" vs "PAGADO")
     if (this.filtroEstatus()) {
       const f = this.filtroEstatus().toLowerCase();
-      lista = lista.filter(
-        (v) => (v.estatus ?? '').toLowerCase() === f
-      );
+      lista = lista.filter((v) => (v.estatus ?? '').toLowerCase() === f);
     }
 
-    // Filtro por puesto
     if (this.filtroPuesto()) {
       lista = lista.filter((v) => v.puesto === this.filtroPuesto());
     }
 
-    // Filtro por ubicación
     if (this.filtroUbicacion()) {
       lista = lista.filter((v) => v.ubicacion === this.filtroUbicacion());
     }
 
-    // Ordenamiento
     const col = this.sortColumn();
     if (col) {
       const dir = this.sortDirection() === 'asc' ? 1 : -1;
@@ -104,7 +97,6 @@ export class VacacionesTable implements OnInit {
         if (typeof va === 'number' && typeof vb === 'number') {
           return (va - vb) * dir;
         }
-        // fechas YYYY-MM-DD comparables lexicográficamente
         return String(va ?? '').localeCompare(String(vb ?? '')) * dir;
       });
     }
@@ -229,8 +221,6 @@ export class VacacionesTable implements OnInit {
   recargar(): void {
     this.cargarVacaciones();
   }
-
-  
 
   onEditar(v: VacacionesResponse): void {
     this.editar.emit(v);

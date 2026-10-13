@@ -4,11 +4,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import { LaboralService } from '../../services/laboral.service';
 import { Aniversarios as AniversarioModel } from '../../models/laboral.model';
+import { EmptyStateComponent } from '../../components/empty-state/empty-state';
 
 @Component({
   selector: 'app-aniversarios',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EmptyStateComponent],
   templateUrl: './aniversarios.html',
   styleUrl: './aniversarios.css',
 })

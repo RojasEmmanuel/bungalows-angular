@@ -7,6 +7,7 @@ import { PrestamoResponse } from '../../../models/prestamo.model';
 import { AbonoPrestamoForm } from '../abono-prestamo-form/abono-prestamo-form';
 import { ModalComponent } from '../../modal/modal';
 import { ConfirmModalComponent } from '../../confirm-modal/confirm-modal';
+import { EmptyStateComponent } from '../../empty-state/empty-state';
 
 @Component({
   selector: 'app-prestmos-list',
@@ -16,6 +17,7 @@ import { ConfirmModalComponent } from '../../confirm-modal/confirm-modal';
     AbonoPrestamoForm,
     ModalComponent,
     ConfirmModalComponent,
+    EmptyStateComponent,
   ],
   templateUrl: './prestamos-list.html',
   styleUrl: './prestamos-list.css',

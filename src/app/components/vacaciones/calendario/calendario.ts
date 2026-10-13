@@ -4,6 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import { VacacionesService } from '../../../services/vacaciones.service';
 import { VacacionesResponse } from '../../../models/vacaciones.model';
+import { EmptyStateComponent } from '../../empty-state/empty-state';
 
 /** Colaborador con sus periodos de vacaciones */
 interface FilaColaborador {
@@ -26,7 +27,7 @@ interface DiaCalendario {
 @Component({
   selector: 'app-vacaciones-calendario',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EmptyStateComponent],
   templateUrl: './calendario.html',
   styleUrl: './calendario.css',
 })
@@ -39,21 +40,18 @@ export class VacacionesCalendario implements OnInit {
   error = signal<string | null>(null);
 
   private static readonly PALETA = [
-    { bg: '#dbeafe', border: '#93c5fd', text: '#1e40af' }, // azul
-    { bg: '#dcfce7', border: '#86efac', text: '#166534' }, // verde
-    { bg: '#fef3c7', border: '#fcd34d', text: '#92400e' }, // ámbar
-    { bg: '#fce7f3', border: '#f9a8d4', text: '#9d174d' }, // rosa
-    { bg: '#ede9fe', border: '#c4b5fd', text: '#5b21b6' }, // violeta
-    { bg: '#cffafe', border: '#67e8f9', text: '#155e75' }, // cian
-    { bg: '#ffedd5', border: '#fdba74', text: '#9a3412' }, // naranja
-    { bg: '#e0e7ff', border: '#a5b4fc', text: '#3730a3' }, // índigo
+    { bg: '#dbeafe', border: '#93c5fd', text: '#1e40af' },
+    { bg: '#dcfce7', border: '#86efac', text: '#166534' },
+    { bg: '#fef3c7', border: '#fcd34d', text: '#92400e' },
+    { bg: '#fce7f3', border: '#f9a8d4', text: '#9d174d' },
+    { bg: '#ede9fe', border: '#c4b5fd', text: '#5b21b6' },
+    { bg: '#cffafe', border: '#67e8f9', text: '#155e75' },
+    { bg: '#ffedd5', border: '#fdba74', text: '#9a3412' },
+    { bg: '#e0e7ff', border: '#a5b4fc', text: '#3730a3' },
   ];
 
   // ---------- Rango visible ----------
-  /** Fecha de inicio del rango mostrado */
   fechaInicio = signal<Date>(this.hoyNormalizado());
-
-  /** Número de días visibles */
   readonly DIAS_VISIBLES = 14;
 
   // ---------- Búsqueda ----------
@@ -84,7 +82,6 @@ export class VacacionesCalendario implements OnInit {
     return resultado;
   });
 
-  /** Etiqueta del rango: "10 ene – 23 ene 2026" */
   etiquetaRango = computed(() => {
     const inicio = this.dias()[0]?.fecha;
     const fin = this.dias()[this.dias().length - 1]?.fecha;
@@ -170,10 +167,6 @@ export class VacacionesCalendario implements OnInit {
   }
 
   // ---------- Posicionamiento de las barras ----------
-  /**
-   * Calcula el estilo CSS (left y width en %) de una barra de vacaciones
-   * respecto al rango visible.
-   */
   estiloBarra(v: VacacionesResponse): Record<string, string> {
     const inicioRango = this.dias()[0]?.fecha;
     const finRango = this.dias()[this.dias().length - 1]?.fecha;
@@ -197,7 +190,6 @@ export class VacacionesCalendario implements OnInit {
     const left = (offsetDias / totalDias) * 100;
     const width = (duracionDias / totalDias) * 100;
 
-    // Color según id (rotativo)
     const color = this.colorDe(v.id);
 
     return {
@@ -214,8 +206,6 @@ export class VacacionesCalendario implements OnInit {
     return VacacionesCalendario.PALETA[idx];
   }
 
-
-  /** Clase según estatus */
   barraClase(v: VacacionesResponse): string {
     const e = (v.estatus ?? '').toUpperCase();
     if (e.includes('APROBADA') || e.includes('APROBADO')) return 'bar bar--ok';
@@ -235,7 +225,6 @@ export class VacacionesCalendario implements OnInit {
     return v.estatus ?? '—';
   }
 
-  /** Tooltip al pasar el mouse por la barra */
   tooltip(v: VacacionesResponse): string {
     return `${this.etiquetaEstatus(v)} · ${v.fechaInicio} → ${v.fechaFin} (${v.diasOcupados} días)`;
   }
@@ -281,7 +270,4 @@ export class VacacionesCalendario implements OnInit {
     ];
     return `${d.getDate()} ${meses[d.getMonth()]}`;
   }
-
-
-  
 }

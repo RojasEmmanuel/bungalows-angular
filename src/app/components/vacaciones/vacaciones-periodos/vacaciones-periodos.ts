@@ -5,11 +5,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import { VacacionalService } from '../../../services/vacacional.service';
 import { VacacionalResponse } from '../../../models/vacaciones.model';
+import { EmptyStateComponent } from '../../empty-state/empty-state';
 
 @Component({
   selector: 'app-vacaciones-periodos',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, EmptyStateComponent],
   templateUrl: './vacaciones-periodos.html',
   styleUrl: './vacaciones-periodos.css',
 })

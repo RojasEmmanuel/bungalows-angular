@@ -4,13 +4,22 @@
     <p class="state">Cargando aniversarios…</p>
   } @else if (error()) {
     <p class="state state--error">{{ error() }}</p>
-  } @else if (!hayAniversarios()) {
-    <p class="state">Hoy no hay aniversarios.</p>
-  } @else {
+  }
+
+  <!-- ===== Sin aniversarios hoy: empty extendido ===== -->
+  @else if (!hayAniversarios()) {
+    <app-empty-state
+      image="aniversarios-empty.svg"
+      title="Hoy no hay aniversarios"
+      description="Ningún colaborador cumple años el día de hoy. Vuelve mañana para ver quién está de festejo."
+    />
+  }
+
+  <!-- ===== Con aniversarios: grid ===== -->
+  @else {
     <div [class]="gridClase()">
       @for (a of aniversarios(); track a.id) {
         <article class="aniv">
-          <!-- Avatar grande -->
           <div class="aniv__avatar">
             @if (showAvatar(a)) {
               <div class="avatar">
@@ -26,7 +35,6 @@
             }
           </div>
 
-          <!-- Info -->
           <div class="aniv__info">
             <h4 class="aniv__name">{{ a.nombreColaborador }}</h4>
             <p class="aniv__meta">

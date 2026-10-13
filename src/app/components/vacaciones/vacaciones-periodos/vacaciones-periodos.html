@@ -1,4 +1,5 @@
 <section class="periodos">
+
   <!-- ============ Header con búsqueda ============ -->
   <header class="periodos__head">
     <div>
@@ -8,31 +9,34 @@
       </p>
     </div>
 
-    <div class="search">
-      <svg class="search__icon" viewBox="0 0 512 512">
-        <path
-          d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+    <!-- La búsqueda solo aparece cuando hay datos o está cargando -->
+    @if (loading() || periodos().length > 0) {
+      <div class="search">
+        <svg class="search__icon" viewBox="0 0 512 512">
+          <path
+            d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+          />
+        </svg>
+        <input
+          class="search__input"
+          type="text"
+          placeholder="Buscar por colaborador…"
+          [ngModel]="busqueda()"
+          (ngModelChange)="busqueda.set($event)"
+          autocomplete="off"
         />
-      </svg>
-      <input
-        class="search__input"
-        type="text"
-        placeholder="Buscar por colaborador…"
-        [ngModel]="busqueda()"
-        (ngModelChange)="busqueda.set($event)"
-        autocomplete="off"
-      />
-      @if (hayBusqueda()) {
-        <button
-          type="button"
-          class="search__clear"
-          (click)="limpiarBusqueda()"
-          aria-label="Limpiar búsqueda"
-        >
-          ✕
-        </button>
-      }
-    </div>
+        @if (hayBusqueda()) {
+          <button
+            type="button"
+            class="search__clear"
+            (click)="limpiarBusqueda()"
+            aria-label="Limpiar búsqueda"
+          >
+            ✕
+          </button>
+        }
+      </div>
+    }
   </header>
 
   <!-- ============ Estados ============ -->
@@ -40,20 +44,33 @@
     <p class="state">Cargando periodos vacacionales…</p>
   } @else if (error()) {
     <p class="state state--error">{{ error() }}</p>
-  } @else if (periodosFiltrados().length === 0) {
-    <p class="state">
-      @if (hayBusqueda()) {
-        No se encontraron colaboradores con ese nombre.
-      } @else {
-        No hay periodos vacacionales registrados.
-      }
-    </p>
-  } @else {
-    <!-- ============ Cards ============ -->
+  }
+
+  <!-- ============ Sin periodos en absoluto: empty extendido ============ -->
+  @else if (periodos().length === 0) {
+    <app-empty-state
+      image="periodos-vacacionales-empty.svg"
+      title="Sin periodos vacacionales"
+      description="Aún no hay periodos vacacionales registrados. Cuando los colaboradores tengan antigüedad suficiente, aparecerán aquí sus días disponibles y ocupados."
+    />
+  }
+
+  <!-- ============ Búsqueda sin resultados: empty simple ============ -->
+  @else if (periodosFiltrados().length === 0) {
+    <app-empty-state
+      image="periodos-vacacionales-empty.svg"
+      title="Sin resultados"
+      description="No se encontraron colaboradores que coincidan con tu búsqueda."
+      actionLabel="Limpiar búsqueda"
+      (action)="limpiarBusqueda()"
+    />
+  }
+
+  <!-- ============ Cards ============ -->
+  @else {
     <div class="cards">
       @for (p of periodosFiltrados(); track p.id) {
         <article class="card">
-          <!-- Header con avatar + datos del colaborador -->
           <header class="card__head">
             <div class="avatar">
               <span class="avatar__text">{{ iniciales(p.colaboradorNombre) }}</span>
@@ -71,7 +88,6 @@
             </span>
           </header>
 
-          <!-- Días: barra + números -->
           <div class="dias">
             <div class="dias__bar">
               <div

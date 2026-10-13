@@ -1,4 +1,5 @@
 <section class="lista">
+
   <!-- ============ Cabecera del colaborador ============ -->
   <header class="colab">
     <div class="colab__avatar">
@@ -23,8 +24,25 @@
     </div>
   </header>
 
-  <!-- ============ Resumen de totales ============ -->
-  @if (!loading() && !error() && prestamos().length > 0) {
+  <!-- ============ Estados ============ -->
+  @if (loading()) {
+    <p class="state">Cargando préstamos…</p>
+  } @else if (error()) {
+    <p class="state state--error">{{ error() }}</p>
+  }
+
+  <!-- ============ Empty state extendido ============ -->
+  @else if (prestamos().length === 0) {
+    <app-empty-state
+      image="prestamos_empty.svg"
+      title="Sin préstamos registrados"
+      description="Este colaborador todavía no tiene préstamos. Cuando se registre uno, podrás verlo aquí con su estatus, abonos y progreso de pago."
+    />
+  }
+
+  <!-- ============ Con datos: resumen + lista ============ -->
+  @else {
+    <!-- Resumen de totales -->
     <div class="resumen">
       <div class="resumen__item">
         <span class="resumen__label">Préstamos</span>
@@ -45,17 +63,8 @@
         </span>
       </div>
     </div>
-  }
 
-  <!-- ============ Estados ============ -->
-  @if (loading()) {
-    <p class="state">Cargando préstamos…</p>
-  } @else if (error()) {
-    <p class="state state--error">{{ error() }}</p>
-  } @else if (prestamos().length === 0) {
-    <p class="state">Este colaborador no tiene préstamos activos.</p>
-  } @else {
-    <!-- ============ Lista ============ -->
+    <!-- Lista -->
     <ul class="items">
       @for (p of prestamos(); track p.id) {
         <li class="item">
@@ -100,6 +109,7 @@
   }
 </section>
 
+
 <!-- ============ Modal abono ============ -->
 <app-modal
   titulo="Aplicar abono"
@@ -115,6 +125,7 @@
     />
   }
 </app-modal>
+
 
 <!-- ============ Modal cancelar ============ -->
 <app-confirm-modal

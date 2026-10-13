@@ -1,32 +1,50 @@
 <section class="dashboard">
   <!-- Columna ancha: ubicaciones -->
   <div class="dashboard__main">
-    <header class="section-head">
-      <h2 class="section-head__title">Ubicaciones</h2>
 
-      <div class="section-head__actions">
-        <button
-          type="button"
-          class="btn-new btn-new--ghost"
-          (click)="abrirModalPuesto()"
-        >
-          Nuevo puesto
-        </button>
-        <button
-          type="button"
-          class="btn-new"
-          (click)="abrirModalUbicacion()"
-        >
-          Nueva
-        </button>
-      </div>
-    </header>
+    <!-- ===== Header ===== -->
+    <!-- Solo se muestra si hay datos o está cargando -->
+    @if (loadingUbicaciones() || ubicaciones().length > 0) {
+      <header class="section-head">
+        <h2 class="section-head__title">Ubicaciones</h2>
 
+        <div class="section-head__actions">
+          <button
+            type="button"
+            class="btn-new btn-new--ghost"
+            (click)="abrirModalPuesto()"
+          >
+            Nuevo puesto
+          </button>
+          <button
+            type="button"
+            class="btn-new"
+            (click)="abrirModalUbicacion()"
+          >
+            Nueva
+          </button>
+        </div>
+      </header>
+    }
+
+    <!-- ===== Estados ===== -->
     @if (loadingUbicaciones()) {
       <p class="state">Cargando ubicaciones…</p>
-    } @else if (ubicaciones().length === 0) {
-      <p class="state">No hay ubicaciones registradas.</p>
-    } @else {
+    }
+
+    <!-- ===== Sin ubicaciones: empty extendido ===== -->
+    @else if (ubicaciones().length === 0) {
+      <app-empty-state
+        image="ubicaciones_empty.svg"
+        title="Sin ubicaciones registradas"
+        description="Aún no has registrado ninguna ubicación. Agrega la primera para poder asignar colaboradores y puestos."
+        actionLabel="Nueva ubicación"
+        (action)="abrirModalUbicacion()"
+      />
+    }
+
+    <!-- ===== Con datos: grid ===== -->
+    @else {
       <div class="grid">
         @for (u of ubicaciones(); track u.id) {
           <app-ubicacion-card
@@ -46,6 +64,7 @@
     />
   </aside>
 </section>
+
 
 <!-- ============ Modales ============ -->
 

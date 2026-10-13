@@ -2,6 +2,7 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AntiguedadesProximas } from '../../models/laboral.model';
+import { EmptyStateComponent } from '../../components/empty-state/empty-state';
 
 /** Grupo de aniversarios según proximidad */
 interface Grupo {
@@ -14,7 +15,7 @@ interface Grupo {
 @Component({
   selector: 'app-antiguedad-proxima-card',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, EmptyStateComponent],
   templateUrl: './antiguedad-proxima-card.html',
   styleUrl: './antiguedad-proxima-card.css',
 })
@@ -26,7 +27,6 @@ export class AntiguedadProximaCardComponent {
   busqueda = signal('');
 
   // ---------- Grupos expandidos/contraídos ----------
-  /** Por defecto todos expandidos */
   expandidos = signal<Set<Grupo['id']>>(
     new Set(['semana', 'mes', 'dos-meses'])
   );
@@ -82,6 +82,9 @@ export class AntiguedadProximaCardComponent {
   // ---------- Resumen ----------
   total = computed(() => this.filtradas().length);
   hayResultados = computed(() => this.total() > 0);
+
+  // ---------- ¿Hay datos en absoluto? ----------
+  hayAntiguedades = computed(() => this.antiguedades().length > 0);
 
   // ---------- Handlers de búsqueda ----------
   onBusqueda(event: Event): void {
@@ -139,10 +142,6 @@ export class AntiguedadProximaCardComponent {
   }
 
   // ---------- Fechas ----------
-  /**
-   * Devuelve "12 oct" a partir de fechaIngreso + antiguedadProxima
-   * (o calculado desde fechaIngreso).
-   */
   fechaProximoAniversario(a: AntiguedadesProximas): string {
     if (!a.fechaIngreso) return '—';
     const [anio, mes, dia] = a.fechaIngreso.split('-').map(Number);
@@ -154,17 +153,9 @@ export class AntiguedadProximaCardComponent {
     ];
     const mesStr = meses[mes - 1] ?? '';
 
-    const hoy = new Date();
-    const anioAniversario =
-      a.diasFaltantes === 0 ? hoy.getFullYear() : hoy.getFullYear();
-    // Nota: para este componente basta con mostrar día y mes.
-    // El año exacto del próximo aniversario depende de si ya pasó o no,
-    // pero el grupo ya lo categoriza por días faltantes.
-
     return `${dia} ${mesStr}`;
   }
 
-  /** Texto "Hoy", "En 3 días", "En 2 semanas" */
   etiquetaProximidad(dias: number): string {
     if (dias === 0) return 'Hoy';
     if (dias === 1) return 'Mañana';
@@ -175,7 +166,6 @@ export class AntiguedadProximaCardComponent {
     return 'En ~2 meses';
   }
 
-  /** Clase para urgencia */
   badgeClase(dias: number): string {
     if (dias === 0) return 'badge badge--hoy';
     if (dias <= 7) return 'badge badge--proximo';

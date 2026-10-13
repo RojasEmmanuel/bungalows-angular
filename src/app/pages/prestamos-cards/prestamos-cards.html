@@ -77,16 +77,32 @@
     <p class="state">Cargando deudas…</p>
   } @else if (error()) {
     <p class="state state--error">{{ error() }}</p>
-  } @else if (!hayResultados()) {
-    <p class="state">
-      @if (hayFiltrosActivos()) {
-        No se encontraron colaboradores con esos criterios.
-      } @else {
-        No hay deudas activas.
-      }
-    </p>
-  } @else {
-    <!-- ============ Grid de cards ============ -->
+  }
+
+  <!-- ============ Sin deudas en absoluto: empty extendido ============ -->
+  @else if (deudas().length === 0) {
+    <app-empty-state
+      image="prestamos_empty.svg"
+      title="Sin préstamos registrados"
+      description="Aún no se ha otorgado ningún préstamo a los colaboradores. Cuando registres uno, aparecerá aquí con su progreso de pago."
+      actionLabel="Registrar préstamo"
+      (action)="abrirModalNuevoPrestamo()"
+    />
+  }
+
+  <!-- ============ Búsqueda sin resultados: empty simple ============ -->
+  @else if (!hayResultados()) {
+    <app-empty-state
+      image="prestamos_empty.svg"
+      title="Sin resultados"
+      description="No se encontraron colaboradores que coincidan con tu búsqueda."
+      actionLabel="Limpiar búsqueda"
+      (action)="limpiarBusqueda()"
+    />
+  }
+
+  <!-- ============ Grid de cards ============ -->
+  @else {
     <div class="cards">
       @for (d of deudasFiltradas(); track d.colaboradorId) {
         <article class="card">
@@ -171,6 +187,7 @@
   }
 </section>
 
+
 <!-- ============ Modal: Abonar ============ -->
 <app-modal
   titulo="Aplicar abono"
@@ -187,6 +204,7 @@
     />
   }
 </app-modal>
+
 
 <!-- ============ Modal: Ver préstamos ============ -->
 <app-modal

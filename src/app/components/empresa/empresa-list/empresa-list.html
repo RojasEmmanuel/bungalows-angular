@@ -1,23 +1,40 @@
 <section class="empresas">
-  <header class="empresas__head">
-    <h3 class="empresas__title">Empresas</h3>
 
-    <button
-      type="button"
-      class="btn-new"
-      (click)="onCrearClick()"
-    >
-      Nueva
-    </button>
-  </header>
+  <!-- ===== Header: solo si hay datos o está cargando ===== -->
+  @if (cargando() || empresas().length > 0) {
+    <header class="empresas__head">
+      <h3 class="empresas__title">Empresas</h3>
 
+      <button
+        type="button"
+        class="btn-new"
+        (click)="onCrearClick()"
+      >
+        Nueva
+      </button>
+    </header>
+  }
+
+  <!-- ===== Estados ===== -->
   @if (cargando()) {
     <p class="state">Cargando empresas…</p>
   } @else if (error()) {
     <p class="state state--error">{{ error() }}</p>
-  } @else if (empresas().length === 0) {
-    <p class="state">No hay empresas registradas.</p>
-  } @else {
+  }
+
+  <!-- ===== Sin empresas: empty extendido ===== -->
+  @else if (empresas().length === 0) {
+    <app-empty-state
+      image="empresas_empty.svg"
+      title="Sin empresas registradas"
+      description="Registra la primera empresa para poder asignar colaboradores, ubicaciones y configurar datos fiscales."
+      actionLabel="Nueva empresa"
+      (action)="onCrearClick()"
+    />
+  }
+
+  <!-- ===== Con datos: lista ===== -->
+  @else {
     <ul class="empresas__list">
       @for (e of empresas(); track e.id) {
         <li
