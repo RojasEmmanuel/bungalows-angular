@@ -46,3 +46,16 @@ export interface Aniversarios{
     diasVacaciones:number,
     antiguedad:number
 }
+
+export interface LaboralNominaResponse{
+    id:number,
+    nombreColaborador:string,
+    rfc:string,
+    curp:string,
+    fechaIngreso:string,
+    jornada:string,
+    nss:string,
+    puesto:string,
+    ubicacion:string,
+    sueldo:number
+}

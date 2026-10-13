@@ -93,3 +93,8 @@ export interface ColaboradorPatch{
     estadoCivil: string;
     fotografia: string | null;
 }
+
+export interface ColaboradorOptionResponse{
+    id:number,
+    nombreCompleto:string
+}

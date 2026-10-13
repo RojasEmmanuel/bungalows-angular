@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
-import { NominasComponent } from './nominas/nominas.components';
 import { LayoutComponent } from './layout/layout';
 import { Vacaciones } from './vacaciones/vacaciones';
 import { InicioComponent } from './pages/inicio/inicio';
 import { ColaboradoresComponent } from './pages/colaboradores/colaboradores';
 import { AniversariosProximos } from './pages/aniversarios-proximos/aniversarios-proximos';
 import { PrestamosCards } from './pages/prestamos-cards/prestamos-cards';
+import { NominasComponent } from './pages/nominas/nominas.components';
 
 export const routes: Routes = [
   {

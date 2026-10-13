@@ -4,7 +4,8 @@ import { Observable } from 'rxjs';
 import {
   ColaboradorTable, 
   ColaboradorRequest, ColaboradorResponse,
-  ColaboradorPatch, ColaboradorSimpleResponse
+  ColaboradorPatch, ColaboradorSimpleResponse,
+  ColaboradorOptionResponse
 } from '../models/colaborador.model';
 
 @Injectable({ providedIn: 'root' })
@@ -31,5 +32,9 @@ export class ColaboradorService {
   
   actualizarColaborador(body: ColaboradorPatch): Observable<ColaboradorResponse> {
     return this.http.patch<ColaboradorResponse>(`${this.baseUrl}`, body);
+  }
+
+  getColaboradoresToSelect():Observable<ColaboradorOptionResponse[]>{
+    return this.http.get<ColaboradorOptionResponse[]>(`${this.baseUrl}/options`)
   }
 }

@@ -43,4 +43,8 @@ export class EnumsService {
   getEstatusVacaciones(): Observable<EnumOption[]> {
     return this.http.get<EnumOption[]>(`${this.baseUrl}/estatus-vacaciones`);
   }
+
+  getTiposDeducciones(): Observable<EnumOption[]>{
+    return this.http.get<EnumOption[]>(`${this.baseUrl}/tipos-deducciones`);
+  }
 }
