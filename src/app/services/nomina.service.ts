@@ -9,7 +9,15 @@ export class NominaService {
   private http = inject(HttpClient);
   private baseUrl = '/api/nominas';
 
-  crearNomina(request: NominaRequest): Observable<void> {
-    return this.http.post<void>(this.baseUrl, request);
+  /** El backend devuelve solo el id de la nómina creada */
+  crearNomina(request: NominaRequest): Observable<number> {
+    return this.http.post<number>(this.baseUrl, request);
+  }
+
+  /** Descarga el PDF de una nómina como Blob */
+  descargarPdf(id: number): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/${id}/pdf`, {
+      responseType: 'blob',
+    });
   }
 }

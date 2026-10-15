@@ -1,0 +1,40 @@
+.exito {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  margin-top: 1.25rem;
+  border-radius: 10px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+
+.exito__icono {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #10b981;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.exito__texto {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.exito__texto span {
+  font-size: 0.85rem;
+  color: #047857;
+}
+
+.exito__acciones {
+  display: flex;
+  gap: 0.5rem;
+}

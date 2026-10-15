@@ -1,4 +1,3 @@
-// nomina-form/nomina-form.component.ts
 import { Component, OnInit, inject, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -33,6 +32,9 @@ export class NominaFormComponent implements OnInit {
   deduccionesChange = output<DeduccionRequest[]>();
   tiposDeduccionesChange = output<EnumOption[]>();
 
+  /** Emite el id de la nómina recién creada (para que el padre maneje la descarga) */
+  nominaCreada = output<number>();
+
   // Colaborador
   busquedaColaborador = '';
   resultadosColaborador: ColaboradorOptionResponse[] = [];
@@ -47,7 +49,6 @@ export class NominaFormComponent implements OnInit {
   fechaInicio = '';
   fechaFin = '';
   diasPago = 0;
-  /** Bandera: el usuario tocó los días manualmente */
   private diasEditadosManualmente = false;
 
   // Percepciones
@@ -122,7 +123,6 @@ export class NominaFormComponent implements OnInit {
     this.deduccionesChange.emit([]);
   }
 
-  /** Recalcula días solo si el usuario no los editó manualmente */
   recalcularDias(): void {
     if (!this.diasEditadosManualmente) {
       if (!this.fechaInicio || !this.fechaFin) {
@@ -135,7 +135,6 @@ export class NominaFormComponent implements OnInit {
       }
     }
 
-    // Actualiza el concepto por defecto solo si aún no hay percepciones
     if (this.laboral && this.percepciones.length === 0) {
       this.percepcionConcepto = `Pago por ${this.diasPago} días laborales`;
     }
@@ -147,7 +146,6 @@ export class NominaFormComponent implements OnInit {
     });
   }
 
-  /** El usuario tocó el campo de días → dejamos de autocalcular */
   onDiasManual(valor: number): void {
     const n = Number(valor);
     this.diasPago = isNaN(n) || n < 0 ? 0 : n;
@@ -223,16 +221,25 @@ export class NominaFormComponent implements OnInit {
       deducciones: this.deducciones,
     };
 
-    this.nominaService.crearNomina(request).subscribe(() => {
-      this.percepciones = [];
-      this.deducciones = [];
-      this.fechaInicio = '';
-      this.fechaFin = '';
-      this.diasPago = 0;
-      this.diasEditadosManualmente = false;
-      this.percepcionesChange.emit([]);
-      this.deduccionesChange.emit([]);
-      this.periodoChange.emit({ inicio: '', fin: '', dias: 0 });
+    this.nominaService.crearNomina(request).subscribe({
+      next: (id) => {
+        // Notifica al padre con el id para que muestre el botón de descarga
+        this.nominaCreada.emit(id);
+
+        // Reset del formulario
+        this.percepciones = [];
+        this.deducciones = [];
+        this.fechaInicio = '';
+        this.fechaFin = '';
+        this.diasPago = 0;
+        this.diasEditadosManualmente = false;
+        this.percepcionesChange.emit([]);
+        this.deduccionesChange.emit([]);
+        this.periodoChange.emit({ inicio: '', fin: '', dias: 0 });
+      },
+      error: (err) => {
+        console.error('Error al crear nómina', err);
+      },
     });
   }
 }
