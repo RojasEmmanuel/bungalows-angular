@@ -27,18 +27,18 @@
 
     <div class="field">
       <label class="field__label" for="e-rfc">
-        Registro fiscal <span class="req">*</span>
+        Regimen fiscal <span class="req">*</span>
       </label>
       <input
         id="e-rfc"
         class="field__input"
         type="text"
-        formControlName="registroFiscal"
+        formControlName="regimenFiscal"
         [disabled]="enviando()"
         autocomplete="off"
         spellcheck="false"
       />
-      @if (mostrarError('registroFiscal'); as msg) {
+      @if (mostrarError('regimenFiscal'); as msg) {
         <p class="field__error">{{ msg }}</p>
       }
     </div>

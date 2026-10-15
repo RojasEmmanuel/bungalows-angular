@@ -32,7 +32,7 @@ export class EmpresaList implements OnInit {
   private readonly camposEvaluados: { key: keyof empresaResponse; label: string }[] = [
     { key: 'nombreLegal', label: 'Nombre legal' },
     { key: 'responsable', label: 'Responsable' },
-    { key: 'registroFiscal', label: 'Registro fiscal' },
+    { key: 'regimenFiscal', label: 'Regimen fiscal' },
     { key: 'registroPatronal', label: 'Registro patronal' },
     { key: 'direccion', label: 'Dirección' },
     { key: 'logoPath', label: 'Logo' },

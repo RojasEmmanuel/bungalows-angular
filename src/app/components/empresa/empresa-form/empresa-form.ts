@@ -22,7 +22,7 @@ import { empresaRequest } from '../../../models/empresa.model';
 type CampoEmpresa =
   | 'nombreLegal'
   | 'responsable'
-  | 'registroFiscal'
+  | 'regimenFiscal'
   | 'direccion'
   | 'registroPatronal';
 
@@ -51,7 +51,7 @@ export class EmpresaForm implements OnDestroy {
       Validators.minLength(3),                      // @Length min=3
       Validators.maxLength(200),                    // @Length max=200
     ]],
-    registroFiscal: ['', [Validators.required]],    // @NotBlank
+    regimenFiscal: ['', [Validators.required]],    // @NotBlank
     direccion: [''],                                // opcional
     registroPatronal: [''],                         // opcional
   });
@@ -160,7 +160,7 @@ export class EmpresaForm implements OnDestroy {
     const body: empresaRequest = {
       nombreLegal: v.nombreLegal.trim(),
       responsable: v.responsable.trim(),
-      registroFiscal: v.registroFiscal.trim(),
+      regimenFiscal: v.regimenFiscal.trim(),
       direccion: this.nullSiVacio(v.direccion),
       registroPatronal: this.nullSiVacio(v.registroPatronal),
       logoPath: this.logoPath(),
@@ -201,7 +201,7 @@ export class EmpresaForm implements OnDestroy {
     this.form.reset({
       nombreLegal: '',
       responsable: '',
-      registroFiscal: '',
+      regimenFiscal: '',
       direccion: '',
       registroPatronal: '',
     });
@@ -227,7 +227,7 @@ export class EmpresaForm implements OnDestroy {
       const etiquetas: Record<CampoEmpresa, string> = {
         nombreLegal: 'el nombre legal',
         responsable: 'el responsable',
-        registroFiscal: 'el registro fiscal',
+        regimenFiscal: 'el regimen fiscal',
         direccion: 'la dirección',
         registroPatronal: 'el registro patronal',
       };

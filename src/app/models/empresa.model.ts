@@ -2,7 +2,7 @@ export interface empresaResponse {
   id: number;
   nombreLegal: string;
   responsable: string;
-  registroFiscal: string;
+  regimenFiscal: string;
   direccion: string | null;
   registroPatronal: string | null;
   logoPath: string | null;
@@ -11,7 +11,7 @@ export interface empresaResponse {
 export interface empresaRequest {
   nombreLegal: string;
   responsable: string;
-  registroFiscal: string;
+  regimenFiscal: string;
   direccion: string | null;
   registroPatronal: string | null;
   logoPath: string | null;
