@@ -27,10 +27,29 @@
 
     <div class="field">
       <label class="field__label" for="e-rfc">
-        Regimen fiscal <span class="req">*</span>
+        RFC <span class="opt">(opcional)</span>
       </label>
       <input
         id="e-rfc"
+        class="field__input"
+        type="text"
+        formControlName="rfc"
+        [disabled]="enviando()"
+        autocomplete="off"
+        spellcheck="false"
+        maxlength="13"
+      />
+      @if (mostrarError('rfc'); as msg) {
+        <p class="field__error">{{ msg }}</p>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="e-regimen">
+        Regimen fiscal <span class="req">*</span>
+      </label>
+      <input
+        id="e-regimen"
         class="field__input"
         type="text"
         formControlName="regimenFiscal"

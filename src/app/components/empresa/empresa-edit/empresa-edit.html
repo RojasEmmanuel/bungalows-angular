@@ -30,11 +30,34 @@
           {{ empresa()?.regimenFiscal || '—' }}
         </span>
       </div>
+
+      <div class="info__row">
+        <span class="info__label">RFC</span>
+        <span class="info__value info__value--mono">
+          {{ empresa()?.rfc || '—' }}
+        </span>
+      </div>
     </section>
 
     <!-- ============ Datos editables ============ -->
     <fieldset class="fieldset">
       <legend class="fieldset__legend">Datos editables</legend>
+
+      <div class="field">
+        <label class="field__label" for="ee-rfc">
+          RFC <span class="opt">(opcional)</span>
+        </label>
+        <input
+          id="ee-rfc"
+          class="field__input field__input--mono"
+          type="text"
+          formControlName="rfc"
+          [disabled]="enviando()"
+          autocomplete="off"
+          spellcheck="false"
+          maxlength="13"
+        />
+      </div>
 
       <div class="field">
         <label class="field__label" for="ee-direccion">

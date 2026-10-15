@@ -16,7 +16,7 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 import { toast } from 'ngx-sonner';
 
-import { empresaService } from '../../../services/empresa.service'; 
+import { empresaService } from '../../../services/empresa.service';
 import { UploadLogoEmpresaService } from '../../../services/upload/logo-empresa.service';
 import { empresaPatch, empresaResponse } from '../../../models/empresa.model';
 
@@ -46,6 +46,7 @@ export class EmpresaEdit implements OnDestroy {
 
   // ---------- Form editable ----------
   form = this.fb.nonNullable.group({
+    rfc: [''],
     direccion: [''],
     registroPatronal: [''],
   });
@@ -101,6 +102,7 @@ export class EmpresaEdit implements OnDestroy {
         this.empresa.set(emp);
         this.logoPath.set(emp.logoPath ?? null);
         this.form.patchValue({
+          rfc: emp.rfc ?? '',
           direccion: emp.direccion ?? '',
           registroPatronal: emp.registroPatronal ?? '',
         });
@@ -204,6 +206,7 @@ export class EmpresaEdit implements OnDestroy {
 
     const body: empresaPatch = {
       id: emp.id,
+      rfc: this.nullSiVacio(v.rfc),
       direccion: this.nullSiVacio(v.direccion),
       registroPatronal: this.nullSiVacio(v.registroPatronal),
       logoPath: this.logoEliminado() ? null : this.logoPath(),

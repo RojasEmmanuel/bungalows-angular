@@ -23,6 +23,7 @@ type CampoEmpresa =
   | 'nombreLegal'
   | 'responsable'
   | 'regimenFiscal'
+  | 'rfc'
   | 'direccion'
   | 'registroPatronal';
 
@@ -52,6 +53,7 @@ export class EmpresaForm implements OnDestroy {
       Validators.maxLength(200),                    // @Length max=200
     ]],
     regimenFiscal: ['', [Validators.required]],    // @NotBlank
+    rfc: [''],                                      // opcional (string | null)
     direccion: [''],                                // opcional
     registroPatronal: [''],                         // opcional
   });
@@ -161,6 +163,7 @@ export class EmpresaForm implements OnDestroy {
       nombreLegal: v.nombreLegal.trim(),
       responsable: v.responsable.trim(),
       regimenFiscal: v.regimenFiscal.trim(),
+      rfc: this.nullSiVacio(v.rfc),
       direccion: this.nullSiVacio(v.direccion),
       registroPatronal: this.nullSiVacio(v.registroPatronal),
       logoPath: this.logoPath(),
@@ -202,6 +205,7 @@ export class EmpresaForm implements OnDestroy {
       nombreLegal: '',
       responsable: '',
       regimenFiscal: '',
+      rfc: '',
       direccion: '',
       registroPatronal: '',
     });
@@ -228,6 +232,7 @@ export class EmpresaForm implements OnDestroy {
         nombreLegal: 'el nombre legal',
         responsable: 'el responsable',
         regimenFiscal: 'el regimen fiscal',
+        rfc: 'el RFC',
         direccion: 'la dirección',
         registroPatronal: 'el registro patronal',
       };
