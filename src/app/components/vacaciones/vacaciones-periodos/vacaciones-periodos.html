@@ -1,6 +1,38 @@
 <section class="periodos">
 
-  <!-- ============ Header con búsqueda ============ -->
+  
+
+  <!-- ============ Estados ============ -->
+  @if (loading()) {
+    <p class="state">Cargando periodos vacacionales…</p>
+  } @else if (error()) {
+    <p class="state state--error">{{ error() }}</p>
+  }
+
+  <!-- ============ Sin periodos en absoluto: empty extendido ============ -->
+  @else if (periodos().length === 0) {
+    <app-empty-state
+      image="periodos-vacacionales-empty.svg"
+      title="Sin periodos vacacionales"
+      description="Aún no hay periodos vacacionales registrados. Cuando los colaboradores tengan antigüedad suficiente, aparecerán aquí sus días disponibles y ocupados."
+    />
+  }
+
+  <!-- ============ Búsqueda sin resultados: empty simple ============ -->
+  @else if (periodosFiltrados().length === 0) {
+    <app-empty-state
+      image="periodos-vacacionales-empty.svg"
+      title="Sin resultados"
+      description="No se encontraron colaboradores que coincidan con tu búsqueda."
+      actionLabel="Limpiar búsqueda"
+      (action)="limpiarBusqueda()"
+    />
+  }
+
+  <!-- ============ Cards ============ -->
+  @else {
+
+    <!-- ============ Header con búsqueda ============ -->
   <header class="periodos__head">
     <div>
       <h2 class="periodos__title">Periodos vacacionales</h2>
@@ -39,35 +71,7 @@
     }
   </header>
 
-  <!-- ============ Estados ============ -->
-  @if (loading()) {
-    <p class="state">Cargando periodos vacacionales…</p>
-  } @else if (error()) {
-    <p class="state state--error">{{ error() }}</p>
-  }
 
-  <!-- ============ Sin periodos en absoluto: empty extendido ============ -->
-  @else if (periodos().length === 0) {
-    <app-empty-state
-      image="periodos-vacacionales-empty.svg"
-      title="Sin periodos vacacionales"
-      description="Aún no hay periodos vacacionales registrados. Cuando los colaboradores tengan antigüedad suficiente, aparecerán aquí sus días disponibles y ocupados."
-    />
-  }
-
-  <!-- ============ Búsqueda sin resultados: empty simple ============ -->
-  @else if (periodosFiltrados().length === 0) {
-    <app-empty-state
-      image="periodos-vacacionales-empty.svg"
-      title="Sin resultados"
-      description="No se encontraron colaboradores que coincidan con tu búsqueda."
-      actionLabel="Limpiar búsqueda"
-      (action)="limpiarBusqueda()"
-    />
-  }
-
-  <!-- ============ Cards ============ -->
-  @else {
     <div class="cards">
       @for (p of periodosFiltrados(); track p.id) {
         <article class="card">

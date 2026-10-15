@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { LayoutComponent } from './layout/layout';
-import { Vacaciones } from './vacaciones/vacaciones';
+import { Vacaciones } from './pages/vacaciones/vacaciones';
 import { InicioComponent } from './pages/inicio/inicio';
 import { ColaboradoresComponent } from './pages/colaboradores/colaboradores';
 import { AniversariosProximos } from './pages/aniversarios-proximos/aniversarios-proximos';

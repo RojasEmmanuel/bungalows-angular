@@ -1,0 +1,201 @@
+/* ============================================================
+   Página
+   ============================================================ */
+.page {
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.page__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.page__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin: 0;
+}
+
+/* ============================================================
+   Botón "Nueva vacación"
+   ============================================================ */
+.btn-new {
+  height: 38px;
+  padding: 0 1rem;
+  border: 1px solid var(--color-brand);
+  border-radius: 0.5rem;
+  background-color: var(--color-brand);
+  color: var(--color-surface);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.btn-new:hover:not(:disabled) {
+  background-color: var(--color-brand-hover);
+  border-color: var(--color-brand-hover);
+}
+
+.btn-new:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   Tabs iOS
+   ============================================================ */
+.ios-tabs {
+  display: flex;
+  justify-content: flex-start;   /* alineado a la izquierda */
+  width: 100%;
+  padding: 4px 0 12px;
+}
+
+.ios-tabs__input {
+  display: none;
+}
+
+.ios-tabs__control {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  width: 100%;
+  max-width: 420px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--color-brand-softer, #f4f7ff);
+  box-shadow:
+    inset 0 0 0 1px var(--color-line, #e5edff),
+    0 2px 8px rgba(11, 27, 63, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.ios-tabs__thumb {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(33.3333% - 3.33px);
+  height: calc(100% - 8px);
+  border-radius: 999px;
+  background: var(--color-brand, #1c9cf1);
+  box-shadow:
+    0 1px 2px rgba(11, 27, 63, 0.18),
+    0 6px 16px rgba(28, 156, 241, 0.28);
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.ios-tabs__item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  border-radius: 999px;
+  color: var(--color-ink-soft, #3b5488);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  transition: color 260ms ease;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
+.ios-tabs__item:hover {
+  color: var(--color-ink, #0b1b3f);
+}
+
+/* ---------- Iconos (SVG inline via mask) ---------- */
+.ios-tabs__icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  background-color: currentColor;      /* hereda el color del texto */
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+          mask-position: center;
+  -webkit-mask-size: contain;
+          mask-size: contain;
+  transition: background-color 260ms ease;
+}
+
+/* Lista (Registros) */
+.ios-tabs__icon--list {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><line x1='8' y1='6' x2='21' y2='6'/><line x1='8' y1='12' x2='21' y2='12'/><line x1='8' y1='18' x2='21' y2='18'/><circle cx='3.5' cy='6' r='1'/><circle cx='3.5' cy='12' r='1'/><circle cx='3.5' cy='18' r='1'/></svg>");
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><line x1='8' y1='6' x2='21' y2='6'/><line x1='8' y1='12' x2='21' y2='12'/><line x1='8' y1='18' x2='21' y2='18'/><circle cx='3.5' cy='6' r='1'/><circle cx='3.5' cy='12' r='1'/><circle cx='3.5' cy='18' r='1'/></svg>");
+}
+
+/* Calendario con check (Periodos) */
+.ios-tabs__icon--calendar {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='18' rx='2'/><line x1='16' y1='2' x2='16' y2='6'/><line x1='8' y1='2' x2='8' y2='6'/><line x1='3' y1='10' x2='21' y2='10'/><path d='M9 16l2 2 4-4'/></svg>");
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='18' rx='2'/><line x1='16' y1='2' x2='16' y2='6'/><line x1='8' y1='2' x2='8' y2='6'/><line x1='3' y1='10' x2='21' y2='10'/><path d='M9 16l2 2 4-4'/></svg>");
+}
+
+/* Grid (Calendario) */
+.ios-tabs__icon--grid {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='7' height='7' rx='1'/><rect x='14' y='3' width='7' height='7' rx='1'/><rect x='3' y='14' width='7' height='7' rx='1'/><rect x='14' y='14' width='7' height='7' rx='1'/></svg>");
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='7' height='7' rx='1'/><rect x='14' y='3' width='7' height='7' rx='1'/><rect x='3' y='14' width='7' height='7' rx='1'/><rect x='14' y='14' width='7' height='7' rx='1'/></svg>");
+}
+
+/* ---------- Posición del thumb según el radio activo ---------- */
+#tab-registros:checked ~ .ios-tabs__control .ios-tabs__thumb {
+  transform: translateX(0%);
+}
+#tab-periodos:checked ~ .ios-tabs__control .ios-tabs__thumb {
+  transform: translateX(100%);
+}
+#tab-calendario:checked ~ .ios-tabs__control .ios-tabs__thumb {
+  transform: translateX(200%);
+}
+
+/* ---------- Texto e icono blancos en el tab activo ---------- */
+#tab-registros:checked ~ .ios-tabs__control label[for="tab-registros"],
+#tab-periodos:checked ~ .ios-tabs__control label[for="tab-periodos"],
+#tab-calendario:checked ~ .ios-tabs__control label[for="tab-calendario"] {
+  color: #ffffff;
+}
+
+#tab-registros:checked ~ .ios-tabs__control label[for="tab-registros"] .ios-tabs__icon,
+#tab-periodos:checked ~ .ios-tabs__control label[for="tab-periodos"] .ios-tabs__icon,
+#tab-calendario:checked ~ .ios-tabs__control label[for="tab-calendario"] .ios-tabs__icon {
+  background-color: #ffffff;
+}
+
+/* ---------- Accesibilidad: reducir movimiento ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .ios-tabs__thumb,
+  .ios-tabs__item,
+  .ios-tabs__icon {
+    transition: none;
+  }
+}
+
+.tab-panel {
+  display: block;
+}
+
+.tab-panel--hidden {
+  display: none;
+}

@@ -42,7 +42,10 @@ export class VacacionesTable implements OnInit {
 
   // ---------- Datos crudos ----------
   vacaciones = signal<VacacionesResponse[]>([]);
+  /** Solo se activa en la primera carga (cuando no hay datos previos) */
   loading = signal(false);
+  /** Recargas silenciosas: no afecta al template */
+  recargando = signal(false);
   error = signal<string | null>(null);
 
   // ---------- Catálogos ----------
@@ -141,18 +144,27 @@ export class VacacionesTable implements OnInit {
   }
 
   private cargarVacaciones(): void {
-    this.loading.set(true);
+    // Si ya había datos, esta es una recarga silenciosa (no tocamos `loading`)
+    const esPrimeraCarga = this.vacaciones().length === 0;
+
+    if (esPrimeraCarga) {
+      this.loading.set(true);
+    } else {
+      this.recargando.set(true);
+    }
     this.error.set(null);
 
     this.vacacionesService.getVacaciones().subscribe({
       next: (data) => {
         this.vacaciones.set(data);
         this.loading.set(false);
+        this.recargando.set(false);
       },
       error: (err: HttpErrorResponse) => {
         console.error('Error al cargar vacaciones', err);
         this.error.set('No se pudieron cargar las vacaciones.');
         this.loading.set(false);
+        this.recargando.set(false);
       },
     });
   }

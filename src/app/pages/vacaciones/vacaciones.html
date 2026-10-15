@@ -1,0 +1,109 @@
+<section class="page">
+  <!-- ============ Header ============ -->
+  <header class="page__head">
+    <h1 class="page__title">Vacaciones</h1>
+    <button type="button" class="btn-new" (click)="abrirModal()">
+      + Nueva vacación
+    </button>
+  </header>
+
+  <!-- ============ Tabs iOS ============ -->
+  <div class="ios-tabs">
+    <input
+      class="ios-tabs__input"
+      type="radio"
+      name="vista-vacaciones"
+      id="tab-registros"
+      [checked]="vistaActiva() === 'registros'"
+      (change)="cambiarVista('registros')"
+    />
+    <input
+      class="ios-tabs__input"
+      type="radio"
+      name="vista-vacaciones"
+      id="tab-periodos"
+      [checked]="vistaActiva() === 'periodos'"
+      (change)="cambiarVista('periodos')"
+    />
+    <input
+      class="ios-tabs__input"
+      type="radio"
+      name="vista-vacaciones"
+      id="tab-calendario"
+      [checked]="vistaActiva() === 'calendario'"
+      (change)="cambiarVista('calendario')"
+    />
+
+    <div class="ios-tabs__control">
+      <div class="ios-tabs__thumb"></div>
+
+      <label class="ios-tabs__item" for="tab-registros">
+        <span class="ios-tabs__icon ios-tabs__icon--list"></span>
+        <span>Registros</span>
+      </label>
+
+      <label class="ios-tabs__item" for="tab-periodos">
+        <span class="ios-tabs__icon ios-tabs__icon--calendar"></span>
+        <span>Periodos</span>
+      </label>
+
+      <label class="ios-tabs__item" for="tab-calendario">
+        <span class="ios-tabs__icon ios-tabs__icon--grid"></span>
+        <span>Calendario</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- ============ Contenido: los 3 montados, solo uno visible ============ -->
+  <div class="tab-panel" [class.tab-panel--hidden]="vistaActiva() !== 'registros'">
+    <app-vacaciones-table
+      (editar)="onEditarVacaciones($event)"
+      (eliminar)="onEliminarVacaciones($event)"
+    />
+  </div>
+
+  <div class="tab-panel" [class.tab-panel--hidden]="vistaActiva() !== 'periodos'">
+    <app-vacaciones-periodos />
+  </div>
+
+  <div class="tab-panel" [class.tab-panel--hidden]="vistaActiva() !== 'calendario'">
+    <app-vacaciones-calendario />
+  </div>
+</section>
+
+<!-- ============ Modales (sin cambios) ============ -->
+<app-modal
+  titulo="Registrar vacaciones"
+  [abierto]="modalCrearAbierto()"
+  (cerrar)="cerrarModal()"
+>
+  <app-vacaciones-form
+    (creado)="onCreado()"
+    (cancelado)="cerrarModal()"
+  />
+</app-modal>
+
+<app-modal
+  titulo="Editar vacaciones"
+  [abierto]="modalEditarAbierto()"
+  (cerrar)="cerrarModalEditar()"
+>
+  @if (vacacionesSeleccionadasId(); as id) {
+    <app-vacaciones-edit
+      [vacacionesId]="id"
+      (guardado)="onVacacionesActualizadas()"
+      (cancelado)="cerrarModalEditar()"
+    />
+  }
+</app-modal>
+
+<app-confirm-modal
+  titulo="Eliminar vacaciones"
+  mensaje="Si elimina este registro de vacaciones no se restablecerán los días ocupados como días disponibles al periodo vacacional anual."
+  [detalle]="vacacionesAEliminar()?.nombreColaborador ?? null"
+  textoConfirmar="Eliminar"
+  [abierto]="modalEliminarAbierto()"
+  [procesando]="eliminando()"
+  (confirmar)="confirmarEliminar()"
+  (cancelar)="cerrarModalEliminar()"
+/>

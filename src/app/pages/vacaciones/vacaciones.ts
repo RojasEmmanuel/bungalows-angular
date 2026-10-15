@@ -1,16 +1,16 @@
 import { Component, inject, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { VacacionesTable } from '../components/vacaciones/vacaciones-table/vacaciones-table';
-import { VacacionesForm } from '../components/vacaciones/vacaciones-form/vacaciones-form';
-import { VacacionesEdit } from '../components/vacaciones/vacaciones-edit/vacaciones-edit';
-import { VacacionesPeriodos } from '../components/vacaciones/vacaciones-periodos/vacaciones-periodos';
-import { VacacionesCalendario } from '../components/vacaciones/calendario/calendario';
-import { ModalComponent } from '../components/modal/modal';
-import { ConfirmModalComponent } from '../components/confirm-modal/confirm-modal';
+import { VacacionesTable } from '../../components/vacaciones/vacaciones-table/vacaciones-table';
+import { VacacionesForm } from '../../components/vacaciones/vacaciones-form/vacaciones-form';
+import { VacacionesEdit } from '../../components/vacaciones/vacaciones-edit/vacaciones-edit';
+import { VacacionesPeriodos } from '../../components/vacaciones/vacaciones-periodos/vacaciones-periodos';
+import { VacacionesCalendario } from '../../components/vacaciones/calendario/calendario';
+import { ModalComponent } from '../../components/modal/modal';
+import { ConfirmModalComponent } from '../../components/confirm-modal/confirm-modal';
 
-import { VacacionesService } from '../services/vacaciones.service';
-import { VacacionesResponse } from '../models/vacaciones.model';
+import { VacacionesService } from '../../services/vacaciones.service';
+import { VacacionesResponse } from '../../models/vacaciones.model';
 
 type VistaActiva = 'registros' | 'periodos' | 'calendario';
 

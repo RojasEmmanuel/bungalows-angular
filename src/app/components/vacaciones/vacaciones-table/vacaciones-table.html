@@ -1,8 +1,6 @@
 <section class="vacaciones">
 
-  <!-- ============ Header + búsqueda + filtros ============ -->
-  <!-- Solo se muestra si hay datos o está cargando -->
-  @if (loading() || vacaciones().length > 0) {
+  @if (vacaciones().length > 0) {
     <header class="vacaciones__head">
 
       <div class="search">
