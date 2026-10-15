@@ -324,3 +324,18 @@
     padding: 0.5rem;
   }
 }
+
+/* Fallback de avatar con iniciales */
+.profile__img--fallback {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  flex: 0 0 40px;
+}

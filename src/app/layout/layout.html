@@ -128,19 +128,22 @@
       <div class="topbar__right">
         <!-- Perfil -->
         <div class="profile">
-          <img
-            class="profile__img"
-            [src]="user().avatar"
-            [alt]="'Foto de ' + user().name"
-          />
+          <div class="profile__img profile__img--fallback">
+            {{ inicialesUsuario() }}
+          </div>
           <div class="profile__info">
-            <span class="profile__name">{{ user().name }}</span>
-            <span class="profile__role">{{ user().role }}</span>
+            <span class="profile__name">{{ user()?.nombre ?? 'Usuario' }}</span>
+            <span class="profile__role">{{ user()?.username ?? '' }}</span>
           </div>
         </div>
 
         <!-- Logout -->
-        <button type="button" class="btn-logout">
+        <button
+          type="button"
+          class="btn-logout"
+          (click)="abrirModalLogout()"
+          aria-label="Cerrar sesión"
+        >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
             <polyline points="16 17 21 12 16 7" />
@@ -157,3 +160,15 @@
     </main>
   </div>
 </div>
+
+<!-- ==================== MODAL LOGOUT ==================== -->
+<app-confirm-modal
+  titulo="Cerrar sesión"
+  mensaje="¿Estás seguro que deseas cerrar sesión?"
+  [detalle]="user()?.nombre ?? null"
+  textoConfirmar="Cerrar sesión"
+  [abierto]="modalLogoutAbierto()"
+  [procesando]="cerrandoSesion()"
+  (confirmar)="confirmarLogout()"
+  (cancelar)="cerrarModalLogout()"
+/>

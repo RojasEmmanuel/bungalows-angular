@@ -6,11 +6,22 @@ import { ColaboradoresComponent } from './pages/colaboradores/colaboradores';
 import { AniversariosProximos } from './pages/aniversarios-proximos/aniversarios-proximos';
 import { PrestamosCards } from './pages/prestamos-cards/prestamos-cards';
 import { NominasComponent } from './pages/nominas/nominas.components';
+import { authGuard } from './core/guards/auth.guard'; 
+import { Login } from './pages/auth/login/login';
 
 export const routes: Routes = [
+  // ---------- Ruta pública ----------
+  {
+    path: 'login',
+    loadComponent: () => Login,
+  },
+
+  // ---------- Rutas protegidas (bajo el layout) ----------
   {
     path: '',
     component: LayoutComponent,
+    canActivate: [authGuard],
+    canActivateChild: [authGuard],
     children: [
       {
         path: 'inicio',
@@ -34,7 +45,6 @@ export const routes: Routes = [
             (m) => m.ColaboradorView
           ),
       },
-
       {
         path: 'nominas',
         loadComponent: () => NominasComponent,
@@ -48,11 +58,13 @@ export const routes: Routes = [
         loadComponent: () => AniversariosProximos,
       },
       {
-        path:'prestamos',
-        loadComponent: ()=> PrestamosCards
+        path: 'prestamos',
+        loadComponent: () => PrestamosCards,
       },
       { path: '', redirectTo: 'inicio', pathMatch: 'full' },
     ],
   },
-  { path: '**', redirectTo: 'inicio' },
+
+  // ---------- Fallback ----------
+  { path: '**', redirectTo: 'login' },
 ];
