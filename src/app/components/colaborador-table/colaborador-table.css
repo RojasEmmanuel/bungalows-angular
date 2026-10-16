@@ -355,3 +355,95 @@
   color: var(--color-brand);
   font-weight: 600;
 }
+
+/* =========================================================
+   Tabs por ubicación (basado en Uiverse.io by lawson_5090)
+   ========================================================= */
+.tabs {
+  display: flex;
+  justify-content: flex-start;   /* ← alineado a la izquierda */
+  width: 100%;
+  padding: 1rem 1rem 0;
+}
+
+.tabs__control {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--tab-count, 1), minmax(0, 1fr));
+  align-items: center;
+  width: fit-content;
+  min-width: 240px;
+  padding: 5px;
+  border-radius: 999px;
+  background: var(--color-brand-softer);
+  box-shadow:
+    inset 0 0 0 1px var(--color-line),
+    0 2px 8px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.tabs__thumb {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: calc((100% - 10px) / var(--tab-count, 1));
+  height: calc(100% - 10px);
+  border-radius: 999px;
+  background: var(--color-brand);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.2),
+    0 8px 20px rgba(15, 23, 42, 0.16);
+  transform: translateX(calc(var(--tab-index, 0) * 100%));
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.tabs__item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 1rem;
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  color: var(--color-ink-soft);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: color 260ms ease;
+}
+
+.tabs__item:hover {
+  color: var(--color-ink);
+}
+
+.tabs__item--active {
+  color: var(--color-surface);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tabs__thumb,
+  .tabs__item {
+    transition: none;
+  }
+}
+
+/* En móvil: permitir scroll horizontal si hay muchas ubicaciones */
+@media (max-width: 640px) {
+  .tabs {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+  .tabs__control {
+    min-width: max-content;
+  }
+  .tabs__item { padding: 0 0.75rem; }
+}

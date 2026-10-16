@@ -6,6 +6,30 @@ import { EmptyStateComponent } from '../../components/empty-state/empty-state';
 type SortColumn = 'nombreCompleto' | 'edad' | 'antiguedad' | null;
 type SortDirection = 'asc' | 'desc';
 
+const TODAS = '__todas__';
+
+interface TabState {
+  busqueda: string;
+  filtroPuesto: string;
+  filtroTurno: string;
+  filtroDiaDescanso: string;
+  sortColumn: SortColumn;
+  sortDirection: SortDirection;
+  currentPage: number;
+  mostrarTodos: boolean;
+}
+
+const createInitialTabState = (): TabState => ({
+  busqueda: '',
+  filtroPuesto: '',
+  filtroTurno: '',
+  filtroDiaDescanso: '',
+  sortColumn: null,
+  sortDirection: 'asc',
+  currentPage: 1,
+  mostrarTodos: false,
+});
+
 @Component({
   selector: 'app-colaborador-table',
   standalone: true,
@@ -14,40 +38,57 @@ type SortDirection = 'asc' | 'desc';
   styleUrl: './colaborador-table.css',
 })
 export class ColaboradorTableComponent {
-  /** Datos crudos: el padre NO filtra, NO ordena, NO pagina. */
   colaboradores = input.required<ColaboradorTable[]>();
-
   verColaborador = output<number>();
 
-  // ---------- Filtros ----------
-  busqueda = signal('');
-  filtroPuesto = signal('');
-  filtroUbicacion = signal('');
-  filtroTurno = signal('');
-  filtroDiaDescanso = signal('');
-
-  // ---------- Ordenamiento ----------
-  sortColumn = signal<SortColumn>(null);
-  sortDirection = signal<SortDirection>('asc');
-
-  // ---------- Paginación ----------
   readonly pageSize = signal(15);
-  readonly currentPage = signal(1);
-  readonly mostrarTodos = signal(false);
 
-  private readonly pageSizeEfectivo = computed(() =>
-    this.mostrarTodos() ? Number.MAX_SAFE_INTEGER : this.pageSize()
+  // ---------- Tabs por ubicación ----------
+  /** Ubicaciones únicas ordenadas alfabéticamente. */
+  readonly ubicaciones = computed(() =>
+    this.uniqueSorted(this.colaboradores().map((c) => c.ubicacion))
   );
 
-  // ---------- Imágenes fallidas ----------
+  /** Lista de tabs: "Todas" + cada ubicación. */
+  readonly tabs = computed(() => [TODAS, ...this.ubicaciones()]);
+
+  /** Tab activo. */
+  readonly tabActivo = signal<string>(TODAS);
+
+  /** Estado por tab (filtros, orden, paginación). */
+  private readonly tabStates = signal<Map<string, TabState>>(new Map());
+
+  /** Estado del tab activo (con fallback a inicial). */
+  readonly estadoActual = computed<TabState>(() => {
+    const map = this.tabStates();
+    return map.get(this.tabActivo()) ?? createInitialTabState();
+  });
+
+  // Helpers para leer/escribir el estado del tab activo
+  private patchEstado(patch: Partial<TabState>): void {
+    const key = this.tabActivo();
+    const map = new Map(this.tabStates());
+    const actual = map.get(key) ?? createInitialTabState();
+    map.set(key, { ...actual, ...patch });
+    this.tabStates.set(map);
+  }
+
+  // Signals puente (para que el template siga usando `busqueda()` etc.)
+  readonly busqueda = computed(() => this.estadoActual().busqueda);
+  readonly filtroPuesto = computed(() => this.estadoActual().filtroPuesto);
+  readonly filtroTurno = computed(() => this.estadoActual().filtroTurno);
+  readonly filtroDiaDescanso = computed(() => this.estadoActual().filtroDiaDescanso);
+  readonly sortColumn = computed(() => this.estadoActual().sortColumn);
+  readonly sortDirection = computed(() => this.estadoActual().sortDirection);
+  readonly currentPage = computed(() => this.estadoActual().currentPage);
+  readonly mostrarTodos = computed(() => this.estadoActual().mostrarTodos);
+
+  // ---------- Imágenes fallidas (global, no por tab) ----------
   private readonly failedImages = signal<Set<number>>(new Set());
 
   // ---------- Opciones únicas para los selects ----------
   opcionesPuesto = computed(() =>
     this.uniqueSorted(this.colaboradores().map((c) => c.puesto))
-  );
-  opcionesUbicacion = computed(() =>
-    this.uniqueSorted(this.colaboradores().map((c) => c.ubicacion))
   );
   opcionesTurno = computed(() =>
     this.uniqueSorted(this.colaboradores().map((c) => c.turno))
@@ -56,32 +97,37 @@ export class ColaboradorTableComponent {
     this.uniqueSorted(this.colaboradores().map((c) => c.diaDescanso))
   );
 
+  // ---------- Datos base del tab activo ----------
+  readonly colaboradoresDelTab = computed(() => {
+    const tab = this.tabActivo();
+    if (tab === TODAS) return this.colaboradores();
+    return this.colaboradores().filter((c) => c.ubicacion === tab);
+  });
+
   // ---------- Filtrado + ordenado ----------
   readonly colaboradoresFiltrados = computed(() => {
-    let lista = this.colaboradores();
+    let lista = this.colaboradoresDelTab();
+    const estado = this.estadoActual();
 
-    const term = this.busqueda().trim().toLowerCase();
+    const term = estado.busqueda.trim().toLowerCase();
     if (term) {
       lista = lista.filter((c) =>
         c.nombreCompleto?.toLowerCase().includes(term)
       );
     }
-    if (this.filtroPuesto()) {
-      lista = lista.filter((c) => c.puesto === this.filtroPuesto());
+    if (estado.filtroPuesto) {
+      lista = lista.filter((c) => c.puesto === estado.filtroPuesto);
     }
-    if (this.filtroUbicacion()) {
-      lista = lista.filter((c) => c.ubicacion === this.filtroUbicacion());
+    if (estado.filtroTurno) {
+      lista = lista.filter((c) => c.turno === estado.filtroTurno);
     }
-    if (this.filtroTurno()) {
-      lista = lista.filter((c) => c.turno === this.filtroTurno());
-    }
-    if (this.filtroDiaDescanso()) {
-      lista = lista.filter((c) => c.diaDescanso === this.filtroDiaDescanso());
+    if (estado.filtroDiaDescanso) {
+      lista = lista.filter((c) => c.diaDescanso === estado.filtroDiaDescanso);
     }
 
-    const col = this.sortColumn();
-    if (col) {
-      const dir = this.sortDirection() === 'asc' ? 1 : -1;
+    if (estado.sortColumn) {
+      const dir = estado.sortDirection === 'asc' ? 1 : -1;
+      const col = estado.sortColumn;
       lista = [...lista].sort((a, b) => {
         const va = a[col];
         const vb = b[col];
@@ -96,6 +142,10 @@ export class ColaboradorTableComponent {
   });
 
   // ---------- Paginación derivada ----------
+  private readonly pageSizeEfectivo = computed(() =>
+    this.estadoActual().mostrarTodos ? Number.MAX_SAFE_INTEGER : this.pageSize()
+  );
+
   readonly totalPages = computed(() =>
     Math.max(
       1,
@@ -122,74 +172,82 @@ export class ColaboradorTableComponent {
     )
   );
 
-  readonly mostrarPaginador = computed(() => !this.mostrarTodos());
+  readonly mostrarPaginador = computed(() => !this.estadoActual().mostrarTodos);
 
   // ---------- ¿Hay filtros activos? ----------
-  readonly hayFiltrosActivos = computed(
-    () =>
-      !!this.busqueda().trim() ||
-      !!this.filtroPuesto() ||
-      !!this.filtroUbicacion() ||
-      !!this.filtroTurno() ||
-      !!this.filtroDiaDescanso()
-  );
+  readonly hayFiltrosActivos = computed(() => {
+    const e = this.estadoActual();
+    return (
+      !!e.busqueda.trim() ||
+      !!e.filtroPuesto ||
+      !!e.filtroTurno ||
+      !!e.filtroDiaDescanso
+    );
+  });
 
-  // ---------- ¿Hay colaboradores en absoluto? ----------
-  readonly hayColaboradores = computed(() => this.colaboradores().length > 0);
+  readonly hayColaboradores = computed(() => this.colaboradoresDelTab().length > 0);
+
+  /** Total de colaboradores globales (para saber si mostrar tabs). */
+  readonly hayColaboradoresGlobal = computed(() => this.colaboradores().length > 0);
 
   constructor() {
+    // Si el tab activo deja de existir (cambian datos), volver a "Todas".
     effect(() => {
-      this.busqueda();
-      this.filtroPuesto();
-      this.filtroUbicacion();
-      this.filtroTurno();
-      this.filtroDiaDescanso();
-      this.sortColumn();
-      this.sortDirection();
-      this.colaboradores();
-      this.mostrarTodos();
-      this.currentPage.set(1);
+      const tabs = this.tabs();
+      if (!tabs.includes(this.tabActivo())) {
+        this.tabActivo.set(TODAS);
+      }
     });
+  }
+
+  // ---------- Tabs ----------
+  seleccionarTab(ubicacion: string): void {
+    if (this.tabActivo() === ubicacion) return;
+    this.tabActivo.set(ubicacion);
+  }
+
+  tabLabel(ubicacion: string): string {
+    return ubicacion === TODAS ? 'Todas' : ubicacion;
   }
 
   // ---------- Handlers de filtros ----------
   onBusqueda(event: Event): void {
-    this.busqueda.set((event.target as HTMLInputElement).value);
+    this.patchEstado({ busqueda: (event.target as HTMLInputElement).value, currentPage: 1 });
   }
   onFiltroPuesto(event: Event): void {
-    this.filtroPuesto.set((event.target as HTMLSelectElement).value);
-  }
-  onFiltroUbicacion(event: Event): void {
-    this.filtroUbicacion.set((event.target as HTMLSelectElement).value);
+    this.patchEstado({ filtroPuesto: (event.target as HTMLSelectElement).value, currentPage: 1 });
   }
   onFiltroTurno(event: Event): void {
-    this.filtroTurno.set((event.target as HTMLSelectElement).value);
+    this.patchEstado({ filtroTurno: (event.target as HTMLSelectElement).value, currentPage: 1 });
   }
   onFiltroDiaDescanso(event: Event): void {
-    this.filtroDiaDescanso.set((event.target as HTMLSelectElement).value);
+    this.patchEstado({ filtroDiaDescanso: (event.target as HTMLSelectElement).value, currentPage: 1 });
   }
 
   limpiarFiltros(): void {
-    this.busqueda.set('');
-    this.filtroPuesto.set('');
-    this.filtroUbicacion.set('');
-    this.filtroTurno.set('');
-    this.filtroDiaDescanso.set('');
+    this.patchEstado({
+      busqueda: '',
+      filtroPuesto: '',
+      filtroTurno: '',
+      filtroDiaDescanso: '',
+      currentPage: 1,
+    });
   }
 
   // ---------- Ordenamiento ----------
   onSort(columna: SortColumn): void {
-    if (this.sortColumn() === columna) {
-      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    const e = this.estadoActual();
+    if (e.sortColumn === columna) {
+      this.patchEstado({ sortDirection: e.sortDirection === 'asc' ? 'desc' : 'asc' });
     } else {
-      this.sortColumn.set(columna);
-      this.sortDirection.set('asc');
+      this.patchEstado({ sortColumn: columna, sortDirection: 'asc' });
     }
   }
 
   iconClass(columna: SortColumn): string {
-    if (this.sortColumn() !== columna) return 'sort-icon sort-icon--off';
-    return this.sortDirection() === 'asc'
+    const e = this.estadoActual();
+    if (e.sortColumn !== columna) return 'sort-icon sort-icon--off';
+    return e.sortDirection === 'asc'
       ? 'sort-icon sort-icon--asc'
       : 'sort-icon sort-icon--desc';
   }
@@ -197,7 +255,7 @@ export class ColaboradorTableComponent {
   // ---------- Paginación ----------
   goToPage(p: number): void {
     if (p < 1 || p > this.totalPages()) return;
-    this.currentPage.set(p);
+    this.patchEstado({ currentPage: p });
   }
   nextPage(): void {
     this.goToPage(this.currentPage() + 1);
@@ -207,8 +265,7 @@ export class ColaboradorTableComponent {
   }
 
   toggleMostrarTodos(): void {
-    this.mostrarTodos.update((v) => !v);
-    this.currentPage.set(1);
+    this.patchEstado({ mostrarTodos: !this.estadoActual().mostrarTodos, currentPage: 1 });
   }
 
   // ---------- Helpers de presentación ----------

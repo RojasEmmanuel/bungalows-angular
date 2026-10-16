@@ -1,7 +1,28 @@
 <div class="table-card">
 
-  <!-- ===== Toolbar: search + filtros (solo si hay colaboradores) ===== -->
-  @if (hayColaboradores()) {
+  <!-- ===== Tabs por ubicación ===== -->
+  @if (hayColaboradoresGlobal() && ubicaciones().length > 0) {
+    <div class="tabs">
+      <div class="tabs__control"
+           [style.--tab-count]="tabs().length"
+           [style.--tab-index]="tabs().indexOf(tabActivo())">
+        <div class="tabs__thumb"></div>
+        @for (t of tabs(); track t) {
+          <button
+            type="button"
+            class="tabs__item"
+            [class.tabs__item--active]="tabActivo() === t"
+            (click)="seleccionarTab(t)"
+          >
+            {{ tabLabel(t) }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ===== Toolbar: search + filtros ===== -->
+  @if (hayColaboradoresGlobal()) {
     <div class="toolbar">
 
       <div class="filtros__group">
@@ -40,21 +61,6 @@
             <option value="">Todos</option>
             @for (p of opcionesPuesto(); track p) {
               <option [value]="p">{{ p }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="filtros__group">
-          <label class="filtros__label" for="f-ubicacion">Ubicación</label>
-          <select
-            id="f-ubicacion"
-            class="filtros__select"
-            [value]="filtroUbicacion()"
-            (change)="onFiltroUbicacion($event)"
-          >
-            <option value="">Todas</option>
-            @for (u of opcionesUbicacion(); track u) {
-              <option [value]="u">{{ u }}</option>
             }
           </select>
         </div>
@@ -102,11 +108,20 @@
   }
 
   <!-- ===== Sin colaboradores: empty extendido ===== -->
-  @if (!hayColaboradores()) {
+  @if (!hayColaboradoresGlobal()) {
     <app-empty-state
       image="colaboradores_empty.svg"
       title="Sin colaboradores registrados"
       description="Aún no hay colaboradores en el sistema. Cuando agregues el primero, aparecerá aquí con su información laboral."
+    />
+  }
+
+  <!-- ===== Tab sin colaboradores ===== -->
+  @else if (!hayColaboradores()) {
+    <app-empty-state
+      image="colaboradores_empty.svg"
+      title="Sin colaboradores en esta ubicación"
+      description="No hay colaboradores registrados en la ubicación seleccionada."
     />
   }
 
