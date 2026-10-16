@@ -226,16 +226,27 @@ export class NominaFormComponent implements OnInit {
         // Notifica al padre con el id para que muestre el botón de descarga
         this.nominaCreada.emit(id);
 
-        // Reset del formulario
+        // Reset SOLO de percepciones y deducciones (el periodo se conserva
+        // para permitir registrar varias nóminas con el mismo rango de fechas).
         this.percepciones = [];
         this.deducciones = [];
-        this.fechaInicio = '';
-        this.fechaFin = '';
-        this.diasPago = 0;
-        this.diasEditadosManualmente = false;
         this.percepcionesChange.emit([]);
         this.deduccionesChange.emit([]);
-        this.periodoChange.emit({ inicio: '', fin: '', dias: 0 });
+
+        // Re-prellenar el concepto de percepción con el periodo actual,
+        // así el usuario solo tiene que escribir/confirmar el monto.
+        if (this.laboral) {
+          this.percepcionConcepto = `Pago por ${this.diasPago} días laborales`;
+          this.percepcionMonto = this.laboral.sueldo;
+        }
+
+        // NO tocamos: fechaInicio, fechaFin, diasPago, diasEditadosManualmente.
+        // Reemitimos el periodo para que el padre (resumen) siga consistente.
+        this.periodoChange.emit({
+          inicio: this.fechaInicio,
+          fin: this.fechaFin,
+          dias: this.diasPago,
+        });
       },
       error: (err) => {
         console.error('Error al crear nómina', err);

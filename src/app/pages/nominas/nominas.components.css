@@ -9,6 +9,7 @@
     border: 1px solid #a7f3d0;
     color: #065f46;
 }
+
 .exito__icono {
     width: 36px;
     height: 36px;
@@ -21,16 +22,75 @@
     font-size: 1.1rem;
     flex-shrink: 0;
 }
+
 .exito__texto {
     display: flex;
     flex-direction: column;
     flex: 1;
+    min-width: 0;
 }
+
 .exito__texto span {
     font-size: 0.85rem;
     color: #047857;
 }
+
 .exito__acciones {
     display: flex;
+    align-items: center;
     gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* ---------- Botones ---------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.05s ease;
+}
+
+.btn:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Descargar PDF */
+.btn--primary {
+    height: 34px;
+    padding: 0 0.875rem;
+    font-size: 0.8125rem;
+    background: #10b981;
+    color: #fff;
+}
+
+.btn--primary:hover:not(:disabled) {
+    background: #059669;
+}
+
+/* Cerrar (solo icono X) */
+.btn--close {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    background: transparent;
+    color: #065f46;
+    border-radius: 8px;
+}
+
+.btn--close:hover {
+    background: rgba(6, 95, 70, 0.1);
+}
+
+.btn--close svg {
+    display: block;
 }
