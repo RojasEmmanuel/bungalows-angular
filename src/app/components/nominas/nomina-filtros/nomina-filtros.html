@@ -1,0 +1,98 @@
+<div class="filtros">
+
+  <!-- ─── Fila 1: accesos rápidos + ejercicio ─────────────── -->
+  <div class="filtros__fila filtros__fila--chips">
+
+    <button
+      type="button"
+      class="chip"
+      [class.chip--activo]="quincenaActiva === 'primera'"
+      (click)="onQuincena('primera')"
+    >
+      Primera quincena
+    </button>
+
+    <button
+      type="button"
+      class="chip"
+      [class.chip--activo]="quincenaActiva === 'segunda'"
+      (click)="onQuincena('segunda')"
+    >
+      Segunda quincena
+    </button>
+
+    <button
+      type="button"
+      class="chip"
+      [class.chip--activo]="quincenaActiva === 'anual'"
+      (click)="onQuincena('anual')"
+    >
+      Todo el año
+    </button>
+
+    <div class="filtros__ejercicio">
+      <select
+        class="control control--select"
+        [ngModel]="ejercicioSeleccionado"
+        (ngModelChange)="onEjercicioChange($event)"
+      >
+        <option *ngFor="let e of ejercicios" [ngValue]="e">
+          Ejercicio {{ e }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ─── Fila 2: rango + colaborador ──────────────────────── -->
+  <div class="filtros__grid">
+
+    <div class="campo">
+      <label class="campo__label" for="fi-desde">Desde</label>
+      <input
+        id="fi-desde"
+        type="date"
+        class="control"
+        [(ngModel)]="borrador.fechaInicio"
+      />
+    </div>
+
+    <div class="campo">
+      <label class="campo__label" for="fi-hasta">Hasta</label>
+      <input
+        id="fi-hasta"
+        type="date"
+        class="control"
+        [(ngModel)]="borrador.fechaFin"
+      />
+    </div>
+
+    <div class="campo campo--ancho">
+      <label class="campo__label" for="fi-colaborador">Colaborador</label>
+      <input
+        id="fi-colaborador"
+        type="text"
+        class="control"
+        placeholder="Buscar por nombre…"
+        [(ngModel)]="borrador.colaborador"
+      />
+    </div>
+  </div>
+
+  <!-- ─── Acciones ─────────────────────────────────────────── -->
+  <div class="filtros__acciones">
+    <button
+      type="button"
+      class="btn btn--ghost"
+      (click)="limpiar.emit()"
+    >
+      Limpiar
+    </button>
+    <button
+      type="button"
+      class="btn btn--primary"
+      (click)="aplicar()"
+    >
+      Aplicar filtros
+    </button>
+  </div>
+</div>

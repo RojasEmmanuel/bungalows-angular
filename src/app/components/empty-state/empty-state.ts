@@ -1,4 +1,3 @@
-// shared/components/empty-state/empty-state.component.ts
 import { Component, Input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 

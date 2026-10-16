@@ -1,0 +1,35 @@
+<div class="resumen-grid">
+
+  <!-- Nóminas -->
+  <article class="card ">
+    <p class="card__label">Nóminas</p>
+    <p class="card__value">
+      @if (cargando) { — } @else { {{ resumen.cantidadNominas }} }
+    </p>
+  </article>
+
+  <!-- Subtotal -->
+  <article class="card">
+    <p class="card__label">Subtotal</p>
+    <p class="card__value">
+      @if (cargando) { — } @else { {{ formatoMoneda(resumen.subtotal) }} }
+    </p>
+  </article>
+
+  <!-- Deducciones + Retenciones -->
+  <article class="card">
+    <p class="card__label">Deducciones + Retenciones</p>
+    <p class="card__value">
+      @if (cargando) { — } @else { {{ formatoMoneda(totalDeducciones) }} }
+    </p>
+  </article>
+
+  <!-- Total (destacado) -->
+  <article class="card card--soft">
+    <p class="card__label card__label--brand">Total</p>
+    <p class="card__value card__value--brand">
+      @if (cargando) { — } @else { {{ formatoMoneda(resumen.total) }} }
+    </p>
+  </article>
+
+</div>

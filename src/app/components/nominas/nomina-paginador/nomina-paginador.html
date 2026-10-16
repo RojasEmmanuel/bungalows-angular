@@ -1,0 +1,41 @@
+<!-- nomina-paginador.html -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-[var(--color-line)] bg-white">
+  <p class="text-sm text-[var(--color-ink-soft)]">
+    Mostrando <span class="font-medium text-[var(--color-ink)]">{{ desde }}</span>
+    – <span class="font-medium text-[var(--color-ink)]">{{ hasta }}</span>
+    de <span class="font-medium text-[var(--color-ink)]">{{ totalElements }}</span>
+  </p>
+
+  <div class="flex items-center gap-1">
+    <button
+      type="button"
+      [disabled]="!puedeAnterior"
+      (click)="ir(page - 1)"
+      class="px-3 py-1.5 rounded-lg border border-[var(--color-line)] text-sm text-[var(--color-ink)] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[var(--color-brand-softer)]"
+    >
+      Anterior
+    </button>
+
+    <button
+      *ngFor="let p of paginas"
+      type="button"
+      [disabled]="p === '…'"
+      (click)="ir(p)"
+      [class]="p === page
+        ? 'bg-[var(--color-brand)] text-white border-[var(--color-brand)]'
+        : 'bg-white text-[var(--color-ink)] border-[var(--color-line)] hover:bg-[var(--color-brand-softer)]'"
+      class="min-w-[36px] px-2 py-1.5 rounded-lg border text-sm"
+    >
+      {{ p === '…' ? '…' : (p + 1) }}
+    </button>
+
+    <button
+      type="button"
+      [disabled]="!puedeSiguiente"
+      (click)="ir(page + 1)"
+      class="px-3 py-1.5 rounded-lg border border-[var(--color-line)] text-sm text-[var(--color-ink)] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[var(--color-brand-softer)]"
+    >
+      Siguiente
+    </button>
+  </div>
+</div>

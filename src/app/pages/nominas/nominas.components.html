@@ -1,61 +1,102 @@
+<!-- nominas.components.html -->
 <section class="rounded-2xl p-6">
-    @if (nominaId() !== null) {
-    <div class="exito">
-        <div class="exito__icono">✓</div>
-        <div class="exito__texto">
-        <strong>Nómina creada correctamente</strong>
-        <span>Ya puedes descargar el recibo en PDF.</span>
+
+  <!-- ─── Tabs ─────────────────────────────────────────────── -->
+  <div role="tablist"
+       class="inline-flex items-center gap-1 p-1 rounded-xl border border-[var(--color-line)] bg-[var(--color-brand-softer)]">
+
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="tabActivo() === 'nueva'"
+      (click)="seleccionarTab('nueva')"
+      [class]="tabActivo() === 'nueva'
+        ? 'bg-white text-[var(--color-ink)] shadow-sm border-[var(--color-line)]'
+        : 'text-[var(--color-ink-soft)] hover:text-[var(--color-ink)] border-transparent'"
+      class="px-4 py-2 rounded-lg border text-sm font-medium transition"
+    >
+      Nueva nómina
+    </button>
+
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="tabActivo() === 'historial'"
+      (click)="seleccionarTab('historial')"
+      [class]="tabActivo() === 'historial'
+        ? 'bg-white text-[var(--color-ink)] shadow-sm border-[var(--color-line)]'
+        : 'text-[var(--color-ink-soft)] hover:text-[var(--color-ink)] border-transparent'"
+      class="px-4 py-2 rounded-lg border text-sm font-medium transition"
+    >
+      Historial
+    </button>
+  </div>
+
+  @if (tabActivo() === 'nueva') {
+    <div class="mt-5">
+
+      @if (nominaId() !== null) {
+        <div class="exito">
+          <div class="exito__icono">✓</div>
+          <div class="exito__texto">
+            <strong>Nómina creada correctamente</strong>
+            <span>Ya puedes descargar el recibo en PDF.</span>
+          </div>
+          <div class="exito__acciones">
+            <button
+              type="button"
+              class="btn btn--primary"
+              (click)="descargarPdf()"
+              [disabled]="descargandoPdf()"
+            >
+              @if (descargandoPdf()) {
+                Generando PDF…
+              } @else {
+                Descargar PDF
+              }
+            </button>
+
+            <button
+              type="button"
+              class="btn btn--close"
+              (click)="cerrarBanner()"
+              aria-label="Cerrar"
+              title="Cerrar"
+            >
+              <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                <path d="M6 6l12 12M18 6L6 18"
+                      stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+              </svg>
+            </button>
+          </div>
         </div>
-        <div class="exito__acciones">
-        <button
-            type="button"
-            class="btn btn--primary"
-            (click)="descargarPdf()"
-            [disabled]="descargandoPdf()"
-        >
-            @if (descargandoPdf()) {
-            Generando PDF…
-            } @else {
-            Descargar PDF
-            }
-        </button>
+      }
 
-        <button
-            type="button"
-            class="btn btn--close"
-            (click)="cerrarBanner()"
-            aria-label="Cerrar"
-            title="Cerrar"
-        >
-            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
-            <path
-                d="M6 6l12 12M18 6L6 18"
-                stroke="currentColor"
-                stroke-width="2.2"
-                stroke-linecap="round"
-            />
-            </svg>
-        </button>
-        </div>
+      <div class="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <app-nomina-form
+          (laboralSeleccionadoChange)="laboral.set($event)"
+          (periodoChange)="periodo.set($event)"
+          (percepcionesChange)="percepciones.set($event)"
+          (deduccionesChange)="deducciones.set($event)"
+          (tiposDeduccionesChange)="tiposDeducciones.set($event)"
+          (nominaCreada)="onNominaCreada($event)"
+        />
+
+        <app-nomina-resumen
+          [laboral]="laboral()"
+          [periodo]="periodo()"
+          [percepciones]="percepciones()"
+          [deducciones]="deducciones()"
+          [tiposDeducciones]="tiposDeducciones()"
+        />
+      </div>
     </div>
-    }
+  }
 
-    <div class="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <app-nomina-form
-        (laboralSeleccionadoChange)="laboral.set($event)"
-        (periodoChange)="periodo.set($event)"
-        (percepcionesChange)="percepciones.set($event)"
-        (deduccionesChange)="deducciones.set($event)"
-        (tiposDeduccionesChange)="tiposDeducciones.set($event)"
-        (nominaCreada)="onNominaCreada($event)"
-    />
-
-    <app-nomina-resumen
-        [laboral]="laboral()"
-        [periodo]="periodo()"
-        [percepciones]="percepciones()"
-        [deducciones]="deducciones()"
-        [tiposDeducciones]="tiposDeducciones()"
-    />
+  @if (tabActivo() === 'historial') {
+    <div class="mt-5">
+      <app-nominas-listado />
     </div>
+  }
+
 </section>

@@ -1,0 +1,75 @@
+/* ─────────────────────────────────────────────────────────────
+   Layout
+   ───────────────────────────────────────────────────────────── */
+:host {
+  display: block;
+}
+
+.resumen-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (min-width: 1024px) {
+  .resumen-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Card base
+   ───────────────────────────────────────────────────────────── */
+.card {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  border-color: var(--color-brand-soft);
+  box-shadow: 0 1px 2px rgba(28, 156, 241, 0.06);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Variantes
+   ───────────────────────────────────────────────────────────── */
+.card--soft {
+  background: var(--color-brand-softer);
+}
+
+.card--brand {
+  background: var(--color-brand-soft);
+  border-color: var(--color-brand);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Texto
+   ───────────────────────────────────────────────────────────── */
+.card__label {
+  margin: 0;
+  font-size: 0.6875rem;      /* 11px */
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+.card__label--brand {
+  color: var(--color-brand);
+}
+
+.card__value {
+  margin: 0.25rem 0 0;
+  font-size: 1.5rem;         /* 24px */
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.card__value--brand {
+  color: var(--color-brand);
+}

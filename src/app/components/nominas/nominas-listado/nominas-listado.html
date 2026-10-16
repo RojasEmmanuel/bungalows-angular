@@ -1,0 +1,97 @@
+<!-- nominas-listado.html -->
+<div class="space-y-6">
+
+  <!-- Encabezado -->
+  <header class="flex items-center gap-3">
+    <div>
+      <h1 class="text-xl font-semibold">Historial</h1>
+    </div>
+  </header>
+
+  <!-- Resumen -->
+  <app-nomina-resumen-cards
+    [resumen]="resumen()"
+    [cargando]="cargandoResumen()"
+  />
+
+  <!-- Filtros -->
+  <app-nomina-filtros
+    [ejercicios]="ejercicios()"
+    [ejercicioSeleccionado]="ejercicioSeleccionado()"
+    [quincenaActiva]="quincenaActiva()"
+    [filtros]="filtros()"
+    (ejercicioChange)="onEjercicioChange($event)"
+    (quincenaChange)="seleccionarQuincena($event)"
+    (filtrosChange)="aplicarFiltros($event)"
+    (limpiar)="limpiarFiltros()"
+  />
+
+  <!-- Listado -->
+  <section class="rounded-xl border border-[var(--color-line)] bg-white overflow-hidden">
+
+    @if (cargandoListado() || !page()?.empty) {
+      <header class="px-4 py-3 border-b border-[var(--color-line)] bg-[var(--color-brand-softer)]">
+        <h2 class="font-semibold text-[var(--color-ink)]">{{ etiquetaPeriodoActual() }}</h2>
+        @if (page(); as p) {
+          <p class="text-sm text-[var(--color-ink-soft)]">
+            {{ p.totalElements }} {{ p.totalElements === 1 ? 'registro' : 'registros' }}
+          </p>
+        }
+      </header>
+    }
+
+    @if (cargandoListado()) {
+      <!-- Skeleton -->
+      <div class="divide-y divide-[var(--color-line)]">
+        @for (i of [1,2,3,4,5]; track i) {
+          <div class="flex items-center gap-4 px-4 py-3 animate-pulse">
+            <div class="h-10 w-10 rounded-full bg-[var(--color-brand-soft)]"></div>
+            <div class="flex-1 space-y-2">
+              <div class="h-3 w-1/3 bg-[var(--color-brand-soft)] rounded"></div>
+              <div class="h-3 w-1/4 bg-[var(--color-brand-soft)] rounded"></div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (page()?.empty) {
+      <app-empty-state
+        image="undraw_no-data_ig65.svg"
+        [imageSize]="160"
+        title="Sin resultados"
+        description="No encontramos nóminas con los filtros seleccionados."
+        actionLabel="Limpiar filtros"
+        (action)="limpiarFiltros()"
+      />
+    } @else if (page(); as p) {
+      <div>
+        @for (n of p.content; track n.id) {
+          <app-nomina-item
+            [nomina]="n"
+            [etiquetaPeriodo]="etiquetaPeriodoActual()"
+            (seleccionar)="abrirDetalle($event)"
+          />
+        }
+      </div>
+
+      <app-nomina-paginador
+        [page]="p.number"
+        [totalPages]="p.totalPages"
+        [totalElements]="p.totalElements"
+        [size]="p.size"
+        (pageChange)="cambiarPagina($event)"
+      />
+    }
+  </section>
+
+  <!-- Modal de detalle -->
+  <app-modal
+    [titulo]="'Detalle de nómina'"
+    [abierto]="modalAbierto()"
+    (cerrar)="cerrarDetalle()"
+  >
+    @if (nominaSeleccionadaId(); as id) {
+      <app-nomina-detalle [nominaId]="id" />
+    }
+  </app-modal>
+
+</div>

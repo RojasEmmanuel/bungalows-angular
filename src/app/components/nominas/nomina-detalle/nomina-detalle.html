@@ -1,0 +1,90 @@
+@if (cargando()) {
+  <div class="detalle__estado">Cargando detalle…</div>
+} @else if (error()) {
+  <div class="detalle__estado detalle__estado--error">{{ error() }}</div>
+} @else if (detalle(); as d) {
+
+  <!-- Encabezado del colaborador -->
+  <section class="detalle__hero">
+    <p class="detalle__nombre">{{ d.nombreColaborador }}</p>
+    <p class="detalle__periodo">{{ d.periodo }} · Ejercicio {{ d.ejercicio }}</p>
+  </section>
+
+  <!-- Datos del periodo -->
+  <section class="detalle__grid">
+    <div class="dato">
+      <span class="dato__label">Días pagados</span>
+      <span class="dato__valor">{{ d.diasPago }}</span>
+    </div>
+    <div class="dato">
+      <span class="dato__label">Periodo</span>
+      <span class="dato__valor">{{ d.periodo }}</span>
+    </div>
+  </section>
+
+  <!-- Percepciones -->
+  <section class="detalle__seccion">
+    <header class="seccion__head">
+      <h4 class="seccion__titulo">Percepciones</h4>
+      <span class="seccion__subtotal">{{ formatoMoneda(d.subtotal) }}</span>
+    </header>
+
+    @if (d.percepciones?.length) {
+      <ul class="lista">
+        @for (p of d.percepciones; track p.concepto) {
+          <li class="lista__item">
+            <span class="lista__concepto">{{ p.concepto }}</span>
+            <span class="lista__monto">{{ formatoMoneda(p.monto) }}</span>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="vacio">Sin percepciones registradas.</p>
+    }
+  </section>
+
+  <!-- Deducciones -->
+  <section class="detalle__seccion">
+    <header class="seccion__head">
+      <h4 class="seccion__titulo">Deducciones</h4>
+      <span class="seccion__subtotal">{{ formatoMoneda(d.descuentos) }}</span>
+    </header>
+
+    @if (d.deducciones?.length) {
+      <ul class="lista">
+        @for (dd of d.deducciones; track dd.tipo) {
+          <li class="lista__item">
+            <span class="lista__concepto">{{ dd.tipo }}</span>
+            <span class="lista__monto">{{ formatoMoneda(dd.monto) }}</span>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="vacio">Sin deducciones registradas.</p>
+    }
+  </section>
+
+  <!-- Totales -->
+  <section class="detalle__totales">
+    <div class="total-fila">
+      <span class="total-fila__label">Subtotal</span>
+      <span class="total-fila__valor">{{ formatoMoneda(d.subtotal) }}</span>
+    </div>
+    <div class="total-fila">
+      <span class="total-fila__label">Deducciones</span>
+      <span class="total-fila__valor">- {{ formatoMoneda(d.descuentos) }}</span>
+    </div>
+    <div class="total-fila">
+      <span class="total-fila__label">Retenciones</span>
+      <span class="total-fila__valor">- {{ formatoMoneda(d.retenciones) }}</span>
+    </div>
+
+    <div class="total-fila total-fila--final">
+      <span class="total-fila__label">Total</span>
+      <span class="total-fila__valor total-fila__valor--final">
+        {{ formatoMoneda(d.total) }}
+      </span>
+    </div>
+  </section>
+
+}

@@ -1,0 +1,35 @@
+<button
+  type="button"
+  class="item"
+  (click)="seleccionar.emit(nomina.id)"
+>
+  <!-- Avatar: foto si existe, si no, iniciales -->
+  <span class="item__avatar" aria-hidden="true">
+    @if (tieneFoto) {
+      <img
+        class="item__avatar-img"
+        [src]="nomina.fotografia!"
+        [alt]="nomina.nombreColaborador"
+        loading="lazy"
+        (error)="onFotoError()"
+      />
+    } @else {
+      {{ iniciales(nomina.nombreColaborador) }}
+    }
+  </span>
+
+  <span class="item__info">
+    <span class="item__nombre">{{ nomina.nombreColaborador }}</span>
+    <span class="item__meta">
+      {{ etiquetaPeriodo }} · {{ nomina.diasPago }} días
+    </span>
+    <span class="item__total">
+      <strong class="item__total-valor">{{ formatoMoneda(nomina.total) }}</strong>
+    </span>
+  </span>
+
+  <svg class="item__chevron" fill="none" viewBox="0 0 24 24"
+       stroke="currentColor" stroke-width="2" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+  </svg>
+</button>
