@@ -6,8 +6,34 @@
 
   <!-- Encabezado del colaborador -->
   <section class="detalle__hero">
-    <p class="detalle__nombre">{{ d.nombreColaborador }}</p>
-    <p class="detalle__periodo">{{ d.periodo }} · Ejercicio {{ d.ejercicio }}</p>
+    <div class="detalle__hero-info">
+      <p class="detalle__nombre">{{ d.nombreColaborador }}</p>
+      <p class="detalle__periodo">{{ d.periodo }} · Ejercicio {{ d.ejercicio }}</p>
+    </div>
+
+    <!-- Botón de descarga -->
+    <button
+    type="button"
+    class="btn-pdf"
+    (click)="descargarPdf()"
+    [disabled]="descargandoPdf()"
+    [attr.aria-label]="descargandoPdf() ? 'Generando PDF…' : 'Descargar PDF de la nómina'"
+    [attr.title]="descargandoPdf() ? 'Generando PDF…' : 'Descargar PDF'"
+    >
+    <svg
+        class="btn-pdf__icon"
+        viewBox="0 0 384 512"
+        height="1em"
+        xmlns="http://www.w3.org/2000/svg"
+    >
+        <path
+        d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"
+        ></path>
+    </svg>
+    <span class="btn-pdf__base"></span>
+    </button>
+
+
   </section>
 
   <!-- Datos del periodo -->

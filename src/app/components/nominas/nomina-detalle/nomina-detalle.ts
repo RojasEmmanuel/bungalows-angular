@@ -25,6 +25,8 @@ export class NominaDetalleComponent implements OnInit {
   cargando = signal(false);
   error = signal<string | null>(null);
 
+  descargandoPdf = signal(false);   // ← nuevo
+
   ngOnInit(): void {
     this.cargar();
   }
@@ -41,6 +43,26 @@ export class NominaDetalleComponent implements OnInit {
         error: (err) => {
           console.error('Error al cargar detalle de nómina', err);
           this.error.set('No se pudo cargar el detalle de la nómina.');
+        },
+      });
+  }
+
+  // ── Descarga de PDF
+  descargarPdf(): void {
+    if (this.descargandoPdf()) return;
+    this.descargandoPdf.set(true);
+
+    this.nominaService
+      .descargarPdf(this.nominaId)
+      .pipe(finalize(() => this.descargandoPdf.set(false)))
+      .subscribe({
+        next: (blob) => {
+          const url = URL.createObjectURL(blob);
+          window.open(url, '_blank');
+          setTimeout(() => URL.revokeObjectURL(url), 30_000);
+        },
+        error: (err) => {
+          console.error('Error al descargar PDF', err);
         },
       });
   }
