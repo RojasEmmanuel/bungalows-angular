@@ -140,34 +140,40 @@ export class NominaFormComponent implements OnInit {
     });
 
     // CONSULTAR DEUDA CON LOGS Y FINALIZE
-    console.log('⏳ Iniciando petición de deuda para el colaborador:', c.id);
+    console.log('Iniciando petición de deuda para el colaborador:', c.id);
     
     this.prestamoService.getDeuda(c.id)
       .pipe(
         finalize(() => {
           // Esto SIEMPRE se ejecuta (éxito o error)
-          console.log('🏁 Petición de deuda finalizada.');
+          console.log('Petición de deuda finalizada.');
           this.cargandoDeuda = false;
           this.cdr.detectChanges();
         })
       )
       .subscribe({
         next: (deuda) => {
-          console.log('✅ Deuda recibida del backend:', deuda);
+          console.log('Deuda recibida del backend:', deuda);
           this.deuda = deuda;
           
           if (deuda && deuda.pendiente > 0) {
+            this.deuda = deuda;
             if (this.tiposDeduccionesListos) {
               this.prellenarDeduccionPrestamo(deuda.pendiente);
             } else {
               this.deudaPendienteDeCargar = deuda.pendiente;
             }
+          } else {
+            // Si no hay deuda, limpiamos el estado
+            this.deuda = null;
+            this.prestamoDeduccionMonto = 0;
           }
+          this.errorDeuda = false;
           this.cdr.detectChanges();
         },
         error: (err) => {
           // ESTE LOG ES VITAL PARA VER QUÉ ESTÁ FALLANDO
-          console.error('❌ Error HTTP al cargar la deuda:', err);
+          console.error('Error HTTP al cargar la deuda:', err);
           this.errorDeuda = true;
           this.deuda = null;
         },
