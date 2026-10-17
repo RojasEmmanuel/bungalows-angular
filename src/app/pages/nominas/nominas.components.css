@@ -1,96 +1,165 @@
+/* =========================================
+   CONTENEDOR PRINCIPAL
+   ========================================= */
+.nominas-panel {
+  border-radius: 1rem; /* rounded-2xl */
+  padding: 1.5rem; /* p-6 */
+}
+
+/* =========================================
+   TABS
+   ========================================= */
+.tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 0.75rem; /* rounded-xl */
+  border: 1px solid var(--color-line);
+  background-color: var(--color-brand-softer);
+}
+
+.tab-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem; /* rounded-lg */
+  border: 1px solid transparent;
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500; /* font-medium */
+  color: var(--color-ink-soft);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tab-btn:hover {
+  color: var(--color-ink);
+}
+
+.tab-btn--activo {
+  background-color: #ffffff;
+  color: var(--color-ink);
+  border-color: var(--color-line);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+}
+
+/* =========================================
+   CONTENIDO DE PESTAÑAS Y LAYOUT
+   ========================================= */
+.tab-contenido {
+  margin-top: 1.25rem; /* mt-5 */
+}
+
+.layout-grid {
+  margin-top: 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem; /* gap-6 */
+}
+
+@media (min-width: 1024px) {
+  .layout-grid {
+    grid-template-columns: repeat(2, 1fr); /* lg:grid-cols-2 */
+  }
+}
+
+/* =========================================
+   BANNER DE ÉXITO (MANTENIDO IGUAL)
+   ========================================= */
 .exito {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-    margin-top: 1.25rem;
-    border-radius: 10px;
-    background: #ecfdf5;
-    border: 1px solid #a7f3d0;
-    color: #065f46;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  margin-top: 1.25rem;
+  border-radius: 10px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
 }
 
 .exito__icono {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #10b981;
-    color: #fff;
-    display: grid;
-    place-items: center;
-    font-weight: bold;
-    font-size: 1.1rem;
-    flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #10b981;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  flex-shrink: 0;
 }
 
 .exito__texto {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-width: 0;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
 }
 
 .exito__texto span {
-    font-size: 0.85rem;
-    color: #047857;
+  font-size: 0.85rem;
+  color: #047857;
 }
 
 .exito__acciones {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
-/* ---------- Botones ---------- */
+/* =========================================
+   BOTONES DEL BANNER DE ÉXITO (MANTENIDOS)
+   ========================================= */
 .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    cursor: pointer;
-    font-family: inherit;
-    font-weight: 600;
-    border-radius: 8px;
-    transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.05s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.05s ease;
 }
 
 .btn:active:not(:disabled) {
-    transform: translateY(1px);
+  transform: translateY(1px);
 }
 
 .btn:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 /* Descargar PDF */
 .btn--primary {
-    height: 34px;
-    padding: 0 0.875rem;
-    font-size: 0.8125rem;
-    background: #10b981;
-    color: #fff;
+  height: 34px;
+  padding: 0 0.875rem;
+  font-size: 0.8125rem;
+  background: #10b981;
+  color: #fff;
 }
 
 .btn--primary:hover:not(:disabled) {
-    background: #059669;
+  background: #059669;
 }
 
 /* Cerrar (solo icono X) */
 .btn--close {
-    width: 34px;
-    height: 34px;
-    padding: 0;
-    background: transparent;
-    color: #065f46;
-    border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  background: transparent;
+  color: #065f46;
+  border-radius: 8px;
 }
 
 .btn--close:hover {
-    background: rgba(6, 95, 70, 0.1);
+  background: rgba(6, 95, 70, 0.1);
 }
 
 .btn--close svg {
-    display: block;
+  display: block;
 }

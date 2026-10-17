@@ -1,29 +1,34 @@
-import { Component, OnInit, inject, output } from '@angular/core';
+import { Component, OnInit, inject, output, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { debounceTime, distinctUntilChanged, Subject, switchMap, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, switchMap, of, finalize } from 'rxjs';
 
 import { ColaboradorService } from '../../../services/colaborador.service';
 import { LaboralService } from '../../../services/laboral.service';
 import { NominaService } from '../../../services/nomina.service';
 import { EnumsService } from '../../../services/enums.service';
+import { PrestamoService } from '../../../services/prestamo.service';
 import { PercepcionRequest, DeduccionRequest, NominaRequest } from '../../../models/nomina.model';
 import { LaboralNominaResponse } from '../../../models/laboral.model';
 import { ColaboradorOptionResponse } from '../../../models/colaborador.model';
 import { EnumOption } from '../../../models/enum-option.model';
+import { DeudaResponse } from '../../../models/prestamo.model';
 
 @Component({
   selector: 'app-nomina-form',
   standalone: true,
   imports: [CommonModule, FormsModule, HttpClientModule],
-  templateUrl: 'nomina-form.html'
+  templateUrl: 'nomina-form.html',
+  styleUrl:'nomina-form.css'
 })
 export class NominaFormComponent implements OnInit {
   private colaboradorService = inject(ColaboradorService);
   private laboralService = inject(LaboralService);
   private nominaService = inject(NominaService);
   private enumsService = inject(EnumsService);
+  private prestamoService = inject(PrestamoService);
+  private cdr = inject(ChangeDetectorRef); // Para forzar actualización de vista
 
   // Salidas hacia el componente resumen
   laboralSeleccionadoChange = output<LaboralNominaResponse | null>();
@@ -44,6 +49,14 @@ export class NominaFormComponent implements OnInit {
 
   // Laboral
   laboral: LaboralNominaResponse | null = null;
+
+  // Deuda / Préstamo
+  deuda: DeudaResponse | null = null;
+  prestamoDeduccionMonto: number = 0;
+  cargandoDeuda = false;
+  errorDeuda = false;
+  private tiposDeduccionesListos = false;
+  private deudaPendienteDeCargar: number | null = null;
 
   // Periodo
   fechaInicio = '';
@@ -78,11 +91,19 @@ export class NominaFormComponent implements OnInit {
         this.resultadosColaborador = colabs
           .filter((c) => c.nombreCompleto.toLowerCase().includes(term))
           .slice(0, 20);
+        this.cdr.detectChanges();
       });
 
     this.enumsService.getTiposDeducciones().subscribe((tipos: EnumOption[]) => {
       this.tiposDeducciones = tipos;
       this.tiposDeduccionesChange.emit(tipos);
+      this.tiposDeduccionesListos = true;
+
+      if (this.deudaPendienteDeCargar !== null) {
+        this.prellenarDeduccionPrestamo(this.deudaPendienteDeCargar);
+        this.deudaPendienteDeCargar = null;
+      }
+      this.cdr.detectChanges();
     });
   }
 
@@ -101,6 +122,13 @@ export class NominaFormComponent implements OnInit {
     this.busquedaColaborador = c.nombreCompleto;
     this.mostrarLista = false;
 
+    // Reset de estado de deuda
+    this.deuda = null;
+    this.prestamoDeduccionMonto = 0;
+    this.cargandoDeuda = true;
+    this.errorDeuda = false;
+    this.deudaPendienteDeCargar = null;
+
     this.laboralService.getLaboralToNomina(c.id).subscribe((lab) => {
       this.laboral = lab;
       this.laboralSeleccionadoChange.emit(lab);
@@ -108,7 +136,58 @@ export class NominaFormComponent implements OnInit {
       const concepto = `Pago por ${this.diasPago || 0} días laborales`;
       this.percepcionConcepto = concepto;
       this.percepcionMonto = lab.sueldo;
+      this.cdr.detectChanges();
     });
+
+    // CONSULTAR DEUDA CON LOGS Y FINALIZE
+    console.log('⏳ Iniciando petición de deuda para el colaborador:', c.id);
+    
+    this.prestamoService.getDeuda(c.id)
+      .pipe(
+        finalize(() => {
+          // Esto SIEMPRE se ejecuta (éxito o error)
+          console.log('🏁 Petición de deuda finalizada.');
+          this.cargandoDeuda = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (deuda) => {
+          console.log('✅ Deuda recibida del backend:', deuda);
+          this.deuda = deuda;
+          
+          if (deuda && deuda.pendiente > 0) {
+            if (this.tiposDeduccionesListos) {
+              this.prellenarDeduccionPrestamo(deuda.pendiente);
+            } else {
+              this.deudaPendienteDeCargar = deuda.pendiente;
+            }
+          }
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          // ESTE LOG ES VITAL PARA VER QUÉ ESTÁ FALLANDO
+          console.error('❌ Error HTTP al cargar la deuda:', err);
+          this.errorDeuda = true;
+          this.deuda = null;
+        },
+      });
+  }
+
+  private prellenarDeduccionPrestamo(pendiente: number): void {
+    this.deduccionTipo = this.resolverTipoPrestamo();
+    this.deduccionMonto = pendiente;
+    this.cdr.detectChanges();
+  }
+
+  private resolverTipoPrestamo(): string {
+    const tipo = this.tiposDeducciones.find(
+      (t) =>
+        t.value?.toLowerCase().includes('prestamo') ||
+        t.label?.toLowerCase().includes('préstamo') ||
+        t.label?.toLowerCase().includes('prestamo')
+    );
+    return tipo?.value ?? '';
   }
 
   limpiarColaborador(): void {
@@ -121,7 +200,18 @@ export class NominaFormComponent implements OnInit {
     this.deducciones = [];
     this.percepcionesChange.emit([]);
     this.deduccionesChange.emit([]);
+
+    this.deuda = null;
+    this.prestamoDeduccionMonto = 0;
+    this.deduccionTipo = '';
+    this.deduccionMonto = null;
+    this.cargandoDeuda = false;
+    this.errorDeuda = false;
+    this.deudaPendienteDeCargar = null;
+    this.cdr.detectChanges();
   }
+
+  // ... (el resto de los métodos recalcularDias, agregarPercepcion, etc. se mantienen EXACTAMENTE IGUAL) ...
 
   recalcularDias(): void {
     if (!this.diasEditadosManualmente) {
@@ -134,40 +224,25 @@ export class NominaFormComponent implements OnInit {
         this.diasPago = diff > 0 ? diff : 0;
       }
     }
-
     if (this.laboral && this.percepciones.length === 0) {
       this.percepcionConcepto = `Pago por ${this.diasPago} días laborales`;
     }
-
-    this.periodoChange.emit({
-      inicio: this.fechaInicio,
-      fin: this.fechaFin,
-      dias: this.diasPago,
-    });
+    this.periodoChange.emit({ inicio: this.fechaInicio, fin: this.fechaFin, dias: this.diasPago });
   }
 
   onDiasManual(valor: number): void {
     const n = Number(valor);
     this.diasPago = isNaN(n) || n < 0 ? 0 : n;
     this.diasEditadosManualmente = true;
-
     if (this.laboral && this.percepciones.length === 0) {
       this.percepcionConcepto = `Pago por ${this.diasPago} días laborales`;
     }
-
-    this.periodoChange.emit({
-      inicio: this.fechaInicio,
-      fin: this.fechaFin,
-      dias: this.diasPago,
-    });
+    this.periodoChange.emit({ inicio: this.fechaInicio, fin: this.fechaFin, dias: this.diasPago });
   }
 
   agregarPercepcion(): void {
     if (!this.percepcionConcepto.trim() || this.percepcionMonto === null) return;
-    this.percepciones = [
-      ...this.percepciones,
-      { concepto: this.percepcionConcepto.trim(), monto: Number(this.percepcionMonto) },
-    ];
+    this.percepciones = [...this.percepciones, { concepto: this.percepcionConcepto.trim(), monto: Number(this.percepcionMonto) }];
     this.percepcionConcepto = '';
     this.percepcionMonto = null;
     this.percepcionesChange.emit(this.percepciones);
@@ -180,16 +255,27 @@ export class NominaFormComponent implements OnInit {
 
   agregarDeduccion(): void {
     if (!this.deduccionTipo || this.deduccionMonto === null) return;
-    this.deducciones = [
-      ...this.deducciones,
-      { tipo: this.deduccionTipo, monto: Number(this.deduccionMonto) },
-    ];
+    const monto = Number(this.deduccionMonto);
+    const tipoPrestamo = this.resolverTipoPrestamo();
+    const esPrestamo = this.deduccionTipo === tipoPrestamo;
+
+    if (esPrestamo && this.deuda && monto > this.deuda.pendiente) {
+      this.deduccionMonto = this.deuda.pendiente;
+      return;
+    }
+
+    this.deducciones = [...this.deducciones, { tipo: this.deduccionTipo, monto }];
+    if (esPrestamo) this.prestamoDeduccionMonto = monto;
+
     this.deduccionTipo = '';
     this.deduccionMonto = null;
     this.deduccionesChange.emit(this.deducciones);
   }
 
   quitarDeduccion(index: number): void {
+    const deduccion = this.deducciones[index];
+    const tipoPrestamo = this.resolverTipoPrestamo();
+    if (deduccion && deduccion.tipo === tipoPrestamo) this.prestamoDeduccionMonto = 0;
     this.deducciones = this.deducciones.filter((_, i) => i !== index);
     this.deduccionesChange.emit(this.deducciones);
   }
@@ -199,19 +285,11 @@ export class NominaFormComponent implements OnInit {
   }
 
   get puedeRegistrar(): boolean {
-    return (
-      !!this.laboral &&
-      !!this.fechaInicio &&
-      !!this.fechaFin &&
-      this.diasPago > 0 &&
-      this.percepciones.length > 0 &&
-      this.deducciones.length > 0
-    );
+    return !!this.laboral && !!this.fechaInicio && !!this.fechaFin && this.diasPago > 0 && this.percepciones.length > 0 && this.deducciones.length > 0;
   }
 
   registrarNomina(): void {
     if (!this.puedeRegistrar || !this.laboral) return;
-
     const request: NominaRequest = {
       laboralId: this.laboral.id,
       fechaInicio: this.fechaInicio,
@@ -221,36 +299,38 @@ export class NominaFormComponent implements OnInit {
       deducciones: this.deducciones,
     };
 
+    const colaboradorId = this.colaboradorSeleccionado?.id;
+    const abonoPrestamo = this.prestamoDeduccionMonto;
+
     this.nominaService.crearNomina(request).subscribe({
       next: (id) => {
-        // Notifica al padre con el id para que muestre el botón de descarga
-        this.nominaCreada.emit(id);
+        if (colaboradorId && abonoPrestamo > 0) {
+          this.prestamoService.abonarByColaborador(colaboradorId, abonoPrestamo).subscribe({
+            next: () => {
+              this.prestamoService.getDeuda(colaboradorId).subscribe({
+                next: (d) => { this.deuda = d; this.cdr.detectChanges(); },
+                error: () => {},
+              });
+            },
+            error: (err) => console.error('Error al abonar al préstamo', err),
+          });
+        }
 
-        // Reset SOLO de percepciones y deducciones (el periodo se conserva
-        // para permitir registrar varias nóminas con el mismo rango de fechas).
+        this.nominaCreada.emit(id);
         this.percepciones = [];
         this.deducciones = [];
+        this.prestamoDeduccionMonto = 0;
         this.percepcionesChange.emit([]);
         this.deduccionesChange.emit([]);
 
-        // Re-prellenar el concepto de percepción con el periodo actual,
-        // así el usuario solo tiene que escribir/confirmar el monto.
         if (this.laboral) {
           this.percepcionConcepto = `Pago por ${this.diasPago} días laborales`;
           this.percepcionMonto = this.laboral.sueldo;
         }
-
-        // NO tocamos: fechaInicio, fechaFin, diasPago, diasEditadosManualmente.
-        // Reemitimos el periodo para que el padre (resumen) siga consistente.
-        this.periodoChange.emit({
-          inicio: this.fechaInicio,
-          fin: this.fechaFin,
-          dias: this.diasPago,
-        });
+        this.periodoChange.emit({ inicio: this.fechaInicio, fin: this.fechaFin, dias: this.diasPago });
+        this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.error('Error al crear nómina', err);
-      },
+      error: (err) => console.error('Error al crear nómina', err),
     });
   }
 }

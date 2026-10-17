@@ -15,6 +15,11 @@ export class PrestamoService {
         return this.http.get<DeudaResponse[]>(this.baseUrl);
     }
 
+    // exclusivo para nomina-form
+    getDeuda(colaboradorId:number): Observable<DeudaResponse>{
+        return this.http.get<DeudaResponse>(`${this.baseUrl}/colaborador/${colaboradorId}`);
+    }
+
     getPrestamosByColaboradorId(colaboradorId: number): Observable<PrestamoResponse[]>{
         return this.http.get<PrestamoResponse[]>(`${this.baseUrl}/${colaboradorId}`);
     }

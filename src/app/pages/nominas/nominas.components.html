@@ -1,19 +1,15 @@
 <!-- nominas.components.html -->
-<section class="rounded-2xl p-6">
+<section class="nominas-panel">
 
   <!-- ─── Tabs ─────────────────────────────────────────────── -->
-  <div role="tablist"
-       class="inline-flex items-center gap-1 p-1 rounded-xl border border-[var(--color-line)] bg-[var(--color-brand-softer)]">
-
+  <div role="tablist" class="tabs">
     <button
       type="button"
       role="tab"
       [attr.aria-selected]="tabActivo() === 'nueva'"
       (click)="seleccionarTab('nueva')"
-      [class]="tabActivo() === 'nueva'
-        ? 'bg-white text-[var(--color-ink)] shadow-sm border-[var(--color-line)]'
-        : 'text-[var(--color-ink-soft)] hover:text-[var(--color-ink)] border-transparent'"
-      class="px-4 py-2 rounded-lg border text-sm font-medium transition"
+      class="tab-btn"
+      [class.tab-btn--activo]="tabActivo() === 'nueva'"
     >
       Nueva nómina
     </button>
@@ -23,17 +19,15 @@
       role="tab"
       [attr.aria-selected]="tabActivo() === 'historial'"
       (click)="seleccionarTab('historial')"
-      [class]="tabActivo() === 'historial'
-        ? 'bg-white text-[var(--color-ink)] shadow-sm border-[var(--color-line)]'
-        : 'text-[var(--color-ink-soft)] hover:text-[var(--color-ink)] border-transparent'"
-      class="px-4 py-2 rounded-lg border text-sm font-medium transition"
+      class="tab-btn"
+      [class.tab-btn--activo]="tabActivo() === 'historial'"
     >
       Historial
     </button>
   </div>
 
   @if (tabActivo() === 'nueva') {
-    <div class="mt-5">
+    <div class="tab-contenido">
 
       @if (nominaId() !== null) {
         <div class="exito">
@@ -72,7 +66,7 @@
         </div>
       }
 
-      <div class="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="layout-grid">
         <app-nomina-form
           (laboralSeleccionadoChange)="laboral.set($event)"
           (periodoChange)="periodo.set($event)"
@@ -94,7 +88,7 @@
   }
 
   @if (tabActivo() === 'historial') {
-    <div class="mt-5">
+    <div class="tab-contenido">
       <app-nominas-listado />
     </div>
   }

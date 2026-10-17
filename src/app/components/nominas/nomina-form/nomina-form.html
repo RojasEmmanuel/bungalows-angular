@@ -1,218 +1,152 @@
-<section class="rounded-2xl bg-white p-6">
-    <h2 class="text-xl font-bold" style="color: var(--color-ink)">Registrar Nómina</h2>
+<section class="nomina-form">
+    <h2 class="nomina-form__titulo">Registrar Nómina</h2>
 
     <!-- ===== Colaborador (buscador) ===== -->
-    <div class="mt-5">
-    <label class="block text-sm font-medium mb-1" style="color: var(--color-ink-soft)">
-        Colaborador
-    </label>
-    <div class="relative">
-        <input
-        type="text"
-        [(ngModel)]="busquedaColaborador"
-        (ngModelChange)="onBuscarColaborador($event)"
-        (focus)="mostrarLista = true"
-        (blur)="onBlurBusqueda()"
-        placeholder="Escribe el nombre del colaborador..."
-        class="w-full rounded-lg px-3 py-2 text-sm outline-none"
-        style="background: var(--color-brand-softer); border:1px solid var(--color-line); color:var(--color-ink)"
-        />
+    <div class="campo-grupo">
+        <label class="campo-label">Colaborador</label>
+        <div class="buscador">
+            <input
+                type="text"
+                class="input-base input-busqueda"
+                [(ngModel)]="busquedaColaborador"
+                (ngModelChange)="onBuscarColaborador($event)"
+                (focus)="mostrarLista = true"
+                (blur)="onBlurBusqueda()"
+                placeholder="Escribe el nombre del colaborador..."
+            />
 
-        @if (mostrarLista && resultadosColaborador.length > 0 && !colaboradorSeleccionado) {
-        <ul
-            class="absolute z-10 mt-1 w-full max-h-56 overflow-auto rounded-lg"
-            style="background: var(--color-surface); border:1px solid var(--color-line)"
-        >
-            @for (c of resultadosColaborador; track c.id) {
-            <li
-                (mousedown)="seleccionarColaborador(c)"
-                class="px-3 py-2 text-sm cursor-pointer"
-                style="color: var(--color-ink)"
-            >
-                {{ c.nombreCompleto }}
-            </li>
+            @if (mostrarLista && resultadosColaborador.length > 0 && !colaboradorSeleccionado) {
+                <ul class="buscador__lista">
+                    @for (c of resultadosColaborador; track c.id) {
+                        <li (mousedown)="seleccionarColaborador(c)" class="buscador__item">
+                            {{ c.nombreCompleto }}
+                        </li>
+                    }
+                </ul>
             }
-        </ul>
-        }
-    </div>
+        </div>
 
-    @if (colaboradorSeleccionado) {
-        <p class="mt-2 text-sm" style="color: var(--color-brand)">
-        Seleccionado: {{ colaboradorSeleccionado.nombreCompleto }}
-        <button
-            type="button"
-            (click)="limpiarColaborador()"
-            class="ml-2 text-xs underline"
-            style="color: var(--color-ink-soft)"
-        >
-            cambiar
-        </button>
-        </p>
-    }
+        @if (colaboradorSeleccionado) {
+            <p class="colaborador-seleccionado">
+                Seleccionado: {{ colaboradorSeleccionado.nombreCompleto }}
+                <button type="button" (click)="limpiarColaborador()" class="btn-link">
+                    cambiar
+                </button>
+            </p>
+        }
     </div>
 
     <!-- ===== Periodo ===== -->
-    <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
-    <div>
-        <label class="block text-sm font-medium mb-1" style="color: var(--color-ink-soft)">Fecha inicio</label>
-        <input
-        type="date"
-        [(ngModel)]="fechaInicio"
-        (ngModelChange)="recalcularDias()"
-        class="w-full rounded-lg px-3 py-2 text-sm outline-none"
-        style="background: var(--color-brand-softer); border:1px solid var(--color-line); color:var(--color-ink)"
-        />
-    </div>
-    <div>
-        <label class="block text-sm font-medium mb-1" style="color: var(--color-ink-soft)">Fecha fin</label>
-        <input
-        type="date"
-        [(ngModel)]="fechaFin"
-        (ngModelChange)="recalcularDias()"
-        class="w-full rounded-lg px-3 py-2 text-sm outline-none"
-        style="background: var(--color-brand-softer); border:1px solid var(--color-line); color:var(--color-ink)"
-        />
-    </div>
-    <div>
-        <label class="block text-sm font-medium mb-1" style="color: var(--color-ink-soft)">Días laborales</label>
-        <input
-        type="number"
-        min="0"
-        [(ngModel)]="diasPago"
-        (ngModelChange)="onDiasManual($event)"
-        class="w-full rounded-lg px-3 py-2 text-sm outline-none tabular-nums"
-        style="background: var(--color-brand-soft); border:1px solid var(--color-line); color:var(--color-ink)"
-        />
-    </div>
+    <div class="periodo-grid">
+        <div>
+            <label class="campo-label">Fecha inicio</label>
+            <input type="date" class="input-base" [(ngModel)]="fechaInicio" (ngModelChange)="recalcularDias()" />
+        </div>
+        <div>
+            <label class="campo-label">Fecha fin</label>
+            <input type="date" class="input-base" [(ngModel)]="fechaFin" (ngModelChange)="recalcularDias()" />
+        </div>
+        <div>
+            <label class="campo-label">Días laborales</label>
+            <input type="number" min="0" class="input-base input-dias" [(ngModel)]="diasPago" (ngModelChange)="onDiasManual($event)" />
+        </div>
     </div>
 
     <!-- ===== Percepciones ===== -->
-    <div class="mt-6">
-    <h3 class="text-base font-semibold" style="color: var(--color-ink)">Percepciones</h3>
-
-    <div class="mt-3 flex flex-col md:flex-row md:items-center gap-2">
-        <input
-        type="text"
-        [(ngModel)]="percepcionConcepto"
-        placeholder="Concepto"
-        class="flex-1 rounded-lg px-3 py-2 text-sm outline-none"
-        style="background: var(--color-brand-softer); border:1px solid var(--color-line); color:var(--color-ink)"
-        />
-        <input
-        type="number"
-        [(ngModel)]="percepcionMonto"
-        placeholder="Monto"
-        class="md:w-40 rounded-lg px-3 py-2 text-sm outline-none tabular-nums"
-        style="background: var(--color-brand-softer); border:1px solid var(--color-line); color:var(--color-ink)"
-        />
-        <button
-        type="button"
-        (click)="agregarPercepcion()"
-        [disabled]="!percepcionConcepto.trim() || percepcionMonto === null"
-        class="rounded-lg px-4 py-2 text-sm font-medium"
-        style="background: var(--color-brand); color:#fff"
-        >
-        Agregar
-        </button>
-    </div>
-
-    @if (percepciones.length > 0) {
-        <div class="mt-3 flex flex-wrap gap-2">
-        @for (p of percepciones; track $index) {
-            <span
-            class="inline-flex items-center gap-2 rounded-full pl-3 pr-1 py-1 text-xs"
-            style="background: var(--color-brand); color:#fff"
-            >
-            <span class="font-medium">{{ p.concepto }}</span>
-            <span class="tabular-nums" style="opacity:.85">
-                {{ p.monto | number:'1.2-2' }}
-            </span>
-            <button
-                type="button"
-                (click)="quitarPercepcion($index)"
-                class="ml-1 w-5 h-5 inline-flex items-center justify-center rounded-full text-xs font-bold"
-                style="background: rgba(255,255,255,.18); color:#fff"
-                aria-label="Quitar"
-            >
-                ×
+    <div class="seccion">
+        <h3 class="seccion__titulo">Percepciones</h3>
+        <div class="fila-formulario">
+            <input type="text" class="input-base input-flex" [(ngModel)]="percepcionConcepto" placeholder="Concepto" />
+            <input type="number" class="input-base input-monto" [(ngModel)]="percepcionMonto" placeholder="Monto" />
+            <button type="button" (click)="agregarPercepcion()" [disabled]="!percepcionConcepto.trim() || percepcionMonto === null" class="btn-primario">
+                Agregar
             </button>
-            </span>
-        }
         </div>
-    }
+
+        @if (percepciones.length > 0) {
+            <div class="chips-contenedor">
+                @for (p of percepciones; track $index) {
+                    <span class="chip">
+                        <span class="chip__texto">{{ p.concepto }}</span>
+                        <span class="chip__monto">{{ p.monto | number:'1.2-2' }}</span>
+                        <button type="button" (click)="quitarPercepcion($index)" class="chip__btn" aria-label="Quitar">×</button>
+                    </span>
+                }
+            </div>
+        }
     </div>
 
     <!-- ===== Deducciones ===== -->
-    <div class="mt-6">
-    <h3 class="text-base font-semibold" style="color: var(--color-ink)">Deducciones</h3>
-
-    <div class="mt-3 flex flex-col md:flex-row md:items-center gap-2">
-        <select
-        [(ngModel)]="deduccionTipo"
-        class="flex-1 rounded-lg px-3 py-2 text-sm outline-none"
-        style="background: var(--color-brand-softer); border:1px solid var(--color-line); color:var(--color-ink)"
-        >
-        <option value="">Selecciona un tipo</option>
-        @for (t of tiposDeducciones; track t.value) {
-            <option [value]="t.value">{{ t.label }}</option>
-        }
-        </select>
-        <input
-        type="number"
-        [(ngModel)]="deduccionMonto"
-        placeholder="Monto"
-        class="md:w-40 rounded-lg px-3 py-2 text-sm outline-none tabular-nums"
-        style="background: var(--color-brand-softer); border:1px solid var(--color-line); color:var(--color-ink)"
-        />
-        <button
-        type="button"
-        (click)="agregarDeduccion()"
-        [disabled]="!deduccionTipo || deduccionMonto === null"
-        class="rounded-lg px-4 py-2 text-sm font-medium"
-        style="background: var(--color-brand); color:#fff"
-        >
-        Agregar
-        </button>
-    </div>
-
-    @if (deducciones.length > 0) {
-        <div class="mt-3 flex flex-wrap gap-2">
-        @for (d of deducciones; track $index) {
-            <span
-            class="inline-flex items-center gap-2 rounded-full pl-3 pr-1 py-1 text-xs"
-            style="background: var(--color-brand); color:#fff"
-            >
-            <span class="font-medium">{{ labelTipo(d.tipo) }}</span>
-            <span class="tabular-nums" style="opacity:.85">
-                {{ d.monto | number:'1.2-2' }}
-            </span>
-            <button
-                type="button"
-                (click)="quitarDeduccion($index)"
-                class="ml-1 w-5 h-5 inline-flex items-center justify-center rounded-full text-xs font-bold"
-                style="background: rgba(255,255,255,.18); color:#fff"
-                aria-label="Quitar"
-            >
-                ×
+    <div class="seccion">
+        <h3 class="seccion__titulo">Deducciones</h3>
+        <div class="fila-formulario">
+            <select class="input-base input-flex" [(ngModel)]="deduccionTipo">
+                <option value="">Selecciona un tipo</option>
+                @for (t of tiposDeducciones; track t.value) {
+                    <option [value]="t.value">{{ t.label }}</option>
+                }
+            </select>
+            <input type="number" class="input-base input-monto" [(ngModel)]="deduccionMonto" placeholder="Monto" />
+            <button type="button" (click)="agregarDeduccion()" [disabled]="!deduccionTipo || deduccionMonto === null" class="btn-primario">
+                Agregar
             </button>
-            </span>
-        }
         </div>
-    }
+
+        @if (deducciones.length > 0) {
+            <div class="chips-contenedor">
+                @for (d of deducciones; track $index) {
+                    <span class="chip">
+                        <span class="chip__texto">{{ labelTipo(d.tipo) }}</span>
+                        <span class="chip__monto">{{ d.monto | number:'1.2-2' }}</span>
+                        <button type="button" (click)="quitarDeduccion($index)" class="chip__btn" aria-label="Quitar">×</button>
+                    </span>
+                }
+            </div>
+        }
     </div>
 
     <!-- ===== Acciones ===== -->
-    <div class="mt-6 flex justify-end">
-    <button
-        type="button"
-        (click)="registrarNomina()"
-        [disabled]="!puedeRegistrar"
-        class="rounded-lg px-5 py-2 text-sm font-semibold"
-        style="background: var(--color-brand); color:#fff"
-    >
-        Registrar Nómina
-    </button>
+    <div class="acciones">
+        <button type="button" (click)="registrarNomina()" [disabled]="!puedeRegistrar" class="btn-registrar">
+            Registrar Nómina
+        </button>
     </div>
+
+    <!-- ===== Estado de carga / error de deuda ===== -->
+    @if (colaboradorSeleccionado && cargandoDeuda) {
+        <div class="banner-estado banner-estado--cargando">
+            Cargando información de préstamos...
+        </div>
+    }
+
+    @if (colaboradorSeleccionado && errorDeuda) {
+        <div class="banner-estado banner-estado--error">
+            No se pudo cargar la información de préstamos. Verifica la conexión con el servidor.
+        </div>
+    }
+
+    <!-- ===== Banner de deuda (solo si hay datos) ===== -->
+    @if (colaboradorSeleccionado && deuda && !cargandoDeuda) {
+        <div class="banner-deuda">
+            <p class="banner-deuda__titulo">Resumen de préstamos</p>
+            <div class="banner-deuda__grid">
+                <div>
+                    <p class="banner-deuda__label">Préstamos activos</p>
+                    <p class="banner-deuda__valor">{{ deuda.prestamosActivos }}</p>
+                </div>
+                <div>
+                    <p class="banner-deuda__label">Prestado</p>
+                    <p class="banner-deuda__valor">{{ deuda.prestado | number:'1.2-2' }}</p>
+                </div>
+                <div>
+                    <p class="banner-deuda__label">Pagado</p>
+                    <p class="banner-deuda__valor">{{ deuda.pagado | number:'1.2-2' }}</p>
+                </div>
+                <div>
+                    <p class="banner-deuda__label">Pendiente</p>
+                    <p class="banner-deuda__valor banner-deuda__valor--destacado">{{ deuda.pendiente | number:'1.2-2' }}</p>
+                </div>
+            </div>
+        </div>
+    }
 </section>
-
-

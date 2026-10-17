@@ -1,3 +1,329 @@
+
+.nomina-form {
+  background-color: var(--color-surface);
+  border-radius: 1rem; /* rounded-2xl */
+  padding: 1.5rem; /* p-6 */
+}
+
+.nomina-form__titulo {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 700; /* font-bold */
+  color: var(--color-ink);
+  margin: 0;
+}
+
+/* =========================================
+   UTILIDADES GENERALES
+   ========================================= */
+.campo-grupo {
+  margin-top: 1.25rem;
+}
+
+.campo-label {
+  display: block;
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500; /* font-medium */
+  color: var(--color-ink-soft);
+  margin-bottom: 0.25rem;
+}
+
+.input-base {
+  width: 100%;
+  border-radius: 0.5rem; /* rounded-lg */
+  padding: 0.5rem 0.75rem; /* py-2 px-3 */
+  font-size: 0.875rem; /* text-sm */
+  outline: none;
+  background-color: var(--color-brand-softer);
+  border: 1px solid var(--color-line);
+  color: var(--color-ink);
+  box-sizing: border-box;
+}
+
+.input-base:focus {
+  border-color: var(--color-brand);
+}
+
+/* =========================================
+   BUSCADOR COLABORADOR
+   ========================================= */
+.buscador {
+  position: relative;
+}
+
+.buscador__lista {
+  position: absolute;
+  z-index: 10;
+  margin-top: 0.25rem;
+  width: 100%;
+  max-height: 14rem; /* max-h-56 */
+  overflow-y: auto;
+  border-radius: 0.5rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line);
+  list-style: none;
+  padding: 0;
+}
+
+.buscador__item {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  color: var(--color-ink);
+}
+
+.buscador__item:hover {
+  background-color: var(--color-brand-soft);
+}
+
+.colaborador-seleccionado {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-brand);
+}
+
+.btn-link {
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  text-decoration: underline;
+  color: var(--color-ink-soft);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* =========================================
+   PERIODO (GRID)
+   ========================================= */
+.periodo-grid {
+  margin-top: 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .periodo-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.input-dias {
+  background-color: var(--color-brand-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+/* =========================================
+   SECCIONES (PERCEPCIONES / DEDUCCIONES)
+   ========================================= */
+.seccion {
+  margin-top: 1.5rem;
+}
+
+.seccion__titulo {
+  font-size: 1rem; /* text-base */
+  font-weight: 600; /* font-semibold */
+  color: var(--color-ink);
+  margin: 0 0 0.75rem 0;
+}
+
+.fila-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .fila-formulario {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.input-flex {
+  flex: 1;
+}
+
+.input-monto {
+  width: 100%;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 768px) {
+  .input-monto {
+    width: 10rem; /* md:w-40 */
+  }
+}
+
+/* =========================================
+   BOTONES
+   ========================================= */
+.btn-primario {
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: var(--color-brand);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-primario:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.btn-primario:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.acciones {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-registrar {
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background-color: var(--color-brand);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-registrar:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.btn-registrar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   CHIPS (ETIQUETAS)
+   ========================================= */
+.chips-contenedor {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px; /* rounded-full */
+  padding: 0.25rem 0.25rem 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  background-color: var(--color-brand);
+  color: #fff;
+}
+
+.chip__texto {
+  font-weight: 500;
+}
+
+.chip__monto {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+}
+
+.chip__btn {
+  margin-left: 0.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+/* =========================================
+   BANNERS DE ESTADO (CARGA / ERROR)
+   ========================================= */
+.banner-estado {
+  margin-top: 1.5rem;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+}
+
+.banner-estado--cargando {
+  background-color: var(--color-brand-soft);
+  border: 1px solid var(--color-line);
+  color: var(--color-ink-soft);
+}
+
+.banner-estado--error {
+  background-color: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+}
+
+/* =========================================
+   BANNER DE DEUDA
+   ========================================= */
+.banner-deuda {
+  margin-top: 1.5rem;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-brand-soft);
+  border: 1px solid var(--color-line);
+}
+
+.banner-deuda__titulo {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+  margin: 0 0 0.5rem 0;
+}
+
+.banner-deuda__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  font-size: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .banner-deuda__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.banner-deuda__label {
+  color: var(--color-ink-soft);
+  margin: 0;
+}
+
+.banner-deuda__valor {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+  margin: 0;
+}
+
+.banner-deuda__valor--destacado {
+  color: var(--color-brand);
+}
+
+/* =========================================
+   BANNER DE ÉXITO (SE MANTIENE IGUAL)
+   ========================================= */
 .exito {
   display: flex;
   align-items: center;
