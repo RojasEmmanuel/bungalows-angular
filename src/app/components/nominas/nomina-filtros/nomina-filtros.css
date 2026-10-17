@@ -76,12 +76,13 @@
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Grid de la fila 2
+   Grid de la fila 2 (inputs + acciones en la misma fila)
    ───────────────────────────────────────────────────────────── */
 .filtros__grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.75rem;
+  align-items: end;
 }
 
 @media (min-width: 640px) {
@@ -92,16 +93,12 @@
 
 @media (min-width: 1024px) {
   .filtros__grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .campo--ancho {
-    grid-column: span 2;
+    grid-template-columns: 1fr 1fr 1.6fr auto;
   }
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Campos (label + input/select)
+   Campos (label + input)
    ───────────────────────────────────────────────────────────── */
 .campo {
   display: flex;
@@ -164,13 +161,14 @@
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Acciones
+   Acciones (misma fila que los inputs)
    ───────────────────────────────────────────────────────────── */
 .filtros__acciones {
   display: flex;
-  justify-content: flex-end;
   gap: 0.5rem;
-  padding-top: 0.25rem;
+  align-items: center;
+  justify-content: flex-end;
+  white-space: nowrap;
 }
 
 /* ─────────────────────────────────────────────────────────────

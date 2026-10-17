@@ -43,7 +43,7 @@
     </div>
   </div>
 
-  <!-- ─── Fila 2: rango + colaborador ──────────────────────── -->
+  <!-- ─── Fila 2: rango + colaborador + acciones ──────────── -->
   <div class="filtros__grid">
 
     <div class="campo">
@@ -66,7 +66,7 @@
       />
     </div>
 
-    <div class="campo campo--ancho">
+    <div class="campo">
       <label class="campo__label" for="fi-colaborador">Colaborador</label>
       <input
         id="fi-colaborador"
@@ -76,23 +76,22 @@
         [(ngModel)]="borrador.colaborador"
       />
     </div>
-  </div>
 
-  <!-- ─── Acciones ─────────────────────────────────────────── -->
-  <div class="filtros__acciones">
-    <button
-      type="button"
-      class="btn btn--ghost"
-      (click)="limpiar.emit()"
-    >
-      Limpiar
-    </button>
-    <button
-      type="button"
-      class="btn btn--primary"
-      (click)="aplicar()"
-    >
-      Aplicar filtros
-    </button>
+    <div class="filtros__acciones">
+      <button
+        type="button"
+        class="btn btn--ghost"
+        (click)="limpiar.emit()"
+      >
+        Limpiar
+      </button>
+      <button
+        type="button"
+        class="btn btn--primary"
+        (click)="aplicar()"
+      >
+        Aplicar
+      </button>
+    </div>
   </div>
 </div>
