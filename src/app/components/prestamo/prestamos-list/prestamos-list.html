@@ -31,7 +31,7 @@
     <p class="state state--error">{{ error() }}</p>
   }
 
-  <!-- ============ Empty state extendido ============ -->
+  <!-- ============ Empty state ============ -->
   @else if (prestamos().length === 0) {
     <app-empty-state
       image="prestamos_empty.svg"
@@ -40,7 +40,7 @@
     />
   }
 
-  <!-- ============ Con datos: resumen + lista ============ -->
+  <!-- ============ Con datos ============ -->
   @else {
     <!-- Resumen de totales -->
     <div class="resumen">
@@ -68,41 +68,58 @@
     <ul class="items">
       @for (p of prestamos(); track p.id) {
         <li class="item">
-          <header class="item__head">
-            <div class="item__main">
-              <span class="item__monto">{{ formatoMonto(totalOriginalDe(p)) }}</span>
+          
+          <!-- Fila 1: Concepto y Monto Pendiente -->
+          <div class="item__row item__row--top">
+            <span class="item__concepto" [title]="p.concepto">
+              {{ p.concepto || 'Préstamo' }}
+            </span>
+            <div class="item__monto-wrap">
+              <span class="item__monto">{{ formatoMonto(p.monto) }}</span>
+            </div>
+          </div>
+
+          <!-- Fila 2: Estatus, Fecha, Progreso y Acciones -->
+          <div class="item__row item__row--bottom">
+            <div class="item__meta">
               <span [class]="estatusClase(p.estatus)">
                 {{ labelEstatus(p.estatus) }}
               </span>
+              <span class="item__dot">·</span>
+              <span class="item__fecha">{{ p.fechaPrestamo }}</span>
             </div>
-            <span class="item__fecha">{{ p.fechaPrestamo }}</span>
-          </header>
 
-          <div class="item__resumen">
-            <span class="item__resumen-item">
-              Pagado <strong>{{ formatoMonto(p.montoPagado) }}</strong>
-            </span>
-            <span class="item__resumen-item item__resumen-item--pendiente">
-              Pendiente <strong>{{ formatoMonto(p.monto) }}</strong>
-            </span>
+            <div class="item__progress-wrap">
+              <div class="progress">
+                <div class="progress__fill" [style.width.%]="porcentajePagado(p)"></div>
+              </div>
+              <span class="progress__label">{{ porcentajePagado(p) }}%</span>
+            </div>
+
+            <div class="item__actions">
+              <!-- Botón cancelar como icono sutil -->
+              <button
+                type="button"
+                class="icon-btn"
+                title="Cancelar préstamo"
+                aria-label="Cancelar préstamo"
+                (click)="abrirModalCancelar(p)"
+              >
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="btn btn--primary btn--sm"
+                (click)="abrirModalAbono(p)"
+              >
+                Abonar
+              </button>
+            </div>
           </div>
 
-          <div class="progress">
-            <div class="progress__fill" [style.width.%]="porcentajePagado(p)"></div>
-          </div>
-
-          @if (p.observaciones) {
-            <p class="item__obs">{{ p.observaciones }}</p>
-          }
-
-          <footer class="item__foot">
-            <button type="button" class="btn btn--ghost" (click)="abrirModalCancelar(p)">
-              Cancelar
-            </button>
-            <button type="button" class="btn btn--primary" (click)="abrirModalAbono(p)">
-              Abonar
-            </button>
-          </footer>
         </li>
       }
     </ul>
@@ -117,6 +134,11 @@
   (cerrar)="cerrarModalAbono()"
 >
   @if (prestamoParaAbonar(); as p) {
+    <p class="abono-subtitulo">
+      {{ p.concepto || 'Préstamo' }} ·
+      pendiente <strong>{{ formatoMonto(p.monto) }}</strong>
+    </p>
+
     <app-abono-prestamo-form
       [prestamoId]="p.id"
       [pendiente]="p.monto"
@@ -131,7 +153,7 @@
 <app-confirm-modal
   titulo="Cancelar préstamo"
   mensaje="¿Seguro que deseas cancelar este préstamo? Esta acción no se puede deshacer."
-  [detalle]="prestamoParaCancelar()?.nombreColaborador ?? null"
+  [detalle]="prestamoParaCancelar()?.concepto ?? null"
   textoConfirmar="Cancelar préstamo"
   [abierto]="modalCancelarAbierto()"
   [procesando]="cancelando()"

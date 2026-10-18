@@ -3,6 +3,7 @@ export interface PrestamoResponse{
     nombreColaborador:string,
     puestoColaborador:string,
     ubicacionColaborador:string,
+    concepto:string,
     monto:number,
     montoPagado:number,
     fechaPrestamo:string,
