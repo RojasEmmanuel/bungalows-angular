@@ -25,6 +25,10 @@ export class VacacionesService {
     return this.http.post<void>(this.baseUrl, body);
   }
 
+  descargarPdf(id: number): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/${id}/pdf`, { responseType: 'blob' });
+  }
+
   actualizarVacaciones(body: VacacionesPatch): Observable<void> {
     return this.http.patch<void>(this.baseUrl, body);
   }

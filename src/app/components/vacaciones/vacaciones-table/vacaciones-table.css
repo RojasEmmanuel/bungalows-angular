@@ -272,6 +272,11 @@
   color: var(--color-ink-soft);
 }
 
+.badge--success {
+  background-color: #e6f4ea; 
+  color: #1e7a3d;
+}
+
 .th--actions {
   text-align: right;
   white-space: nowrap;
@@ -315,23 +320,31 @@
   border-color: #f5c6c6;
   background-color: #fdecec;
 }
-/* NUEVO: Estilo para el badge de pagada */
-.badge--success {
-  background-color: #e6f4ea; 
-  color: #1e7a3d;
-}
 
-/* NUEVO: Estilo para la celda del dinero */
 .td--money {
   font-variant-numeric: tabular-nums;
   font-weight: 600;
-  color: #1e7a3d; /* Verde oscuro */
+  color: #1e7a3d;
 }
 
-/* Aseguramos el scroll para las nuevas columnas */
-.table-wrap {
-  overflow-x: auto;
-  width: 100%;
+/* Botón PDF */
+.icon-btn--pdf {
+  color: #4f46e5;
+  border-color: #c7d2fe;
+  background-color: #eef2ff;
 }
 
-/* El resto de tus estilos (icon-btn, badges, th, etc) se quedan exactamente igual */
+.icon-btn--pdf:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Spinner */
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

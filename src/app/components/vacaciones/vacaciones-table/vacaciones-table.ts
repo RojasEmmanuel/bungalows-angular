@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, forkJoin, of } from 'rxjs';
+import { toast } from 'ngx-sonner';
 
 import { VacacionesService } from '../../../services/vacaciones.service';
 import { EnumsService } from '../../../services/enums.service';
@@ -39,6 +40,9 @@ export class VacacionesTable implements OnInit {
   loading = signal(false);
   recargando = signal(false);
   error = signal<string | null>(null);
+  
+  // Signal para controlar qué fila está descargando el PDF
+  descargandoPdf = signal<number | null>(null);
 
   // ---------- Catálogos ----------
   estatusList = signal<EnumOption[]>([]);
@@ -197,9 +201,7 @@ export class VacacionesTable implements OnInit {
   estatusClase(value: string | null | undefined): string {
     const v = (value ?? '').toUpperCase();
     
-    // Agregamos el caso PAGADA
     if (v.includes('PAGADA') || v.includes('PAGADO')) return 'badge badge--success';
-    
     if (v.includes('APROBADA') || v.includes('APROBADO')) return 'badge badge--ok';
     if (v.includes('PENDIENTE')) return 'badge badge--info';
     if (v.includes('RECHAZADA') || v.includes('RECHAZADO') || v.includes('CANCELADA')) return 'badge badge--danger';
@@ -207,7 +209,6 @@ export class VacacionesTable implements OnInit {
     return 'badge';
   }
 
-  // Formateador nativo de moneda (MXN)
   formatearMoneda(valor: number | null | undefined): string {
     if (valor === null || valor === undefined) return '—';
     return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(valor);
@@ -223,5 +224,32 @@ export class VacacionesTable implements OnInit {
 
   onEliminar(v: VacacionesResponse): void {
     this.eliminar.emit(v);
+  }
+
+  // ---------- Descargar PDF ----------
+  onDescargarPdf(v: VacacionesResponse): void {
+    if (this.descargandoPdf() === v.id) return; // Evitar doble clic
+
+    this.descargandoPdf.set(v.id);
+
+    this.vacacionesService.descargarPdf(v.id).subscribe({
+      next: (blob: Blob) => {
+        this.descargandoPdf.set(null);
+        
+        // Crear una URL para el Blob y abrirlo en una nueva pestaña para imprimir
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        
+        // Limpiar la URL después de un tiempo para liberar memoria
+        setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+      },
+      error: (err: HttpErrorResponse) => {
+        console.error('Error al descargar PDF', err);
+        this.descargandoPdf.set(null);
+        toast.error('Error', {
+          description: 'No se pudo generar el documento PDF.'
+        });
+      }
+    });
   }
 }
