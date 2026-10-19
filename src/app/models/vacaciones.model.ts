@@ -6,6 +6,8 @@ export interface VacacionesResponse{
     fechaInicio:string,
     fechaFin:string,
     diasOcupados:number,
+    fechaRegreso:string,
+    cantidadPagada:number | null,
     estatus:string
 }
 
@@ -13,7 +15,8 @@ export interface VacacionesRequest{
     fechaInicio:string,
     fechaFin:string,
     colaboradorId:number,
-    estatusVacaciones:string
+    estatusVacaciones:string,
+    cantidadPagada:number | null
 }
 
 
@@ -21,14 +24,16 @@ export interface VacacionesPatch{
     id:number,
     fechaInicio:string,
     fechaFin:string,
-    estatusVacaciones:string
+    estatusVacaciones:string,
+    cantidadPagada:number | null,
 }
 
 export interface VacacionesSimpleResponse{
     id:number,
     fechaInicio:string,
     fechaFin:string,
-    estatusVacaciones:string
+    estatusVacaciones:string,
+    cantidadPagada:number | null,
 }
 
 
@@ -40,5 +45,5 @@ export interface VacacionalResponse{
     antiguedad:number,
     diasVacaciones:number,
     diasOcupados:number,
-    diasDisponibles:number
+    diasDisponibles:number,
 }

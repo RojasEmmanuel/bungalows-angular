@@ -38,7 +38,6 @@ export class VacacionesEdit implements OnInit {
   private readonly vacacionesService = inject(VacacionesService);
   private readonly enumsService = inject(EnumsService);
 
-  /** ID de las vacaciones (obligatorio) */
   vacacionesId = input.required<number>();
 
   guardado = output<void>();
@@ -50,20 +49,25 @@ export class VacacionesEdit implements OnInit {
       fechaInicio: ['', [Validators.required]],
       fechaFin: ['', [Validators.required]],
       estatusVacaciones: ['', [Validators.required]],
+      cantidadPagada: [null as number | null], // NUEVO CAMPO
     },
     { validators: this.rangoFechasValidator() }
   );
 
-  // ---------- Catálogo de estatus ----------
+  // ---------- Catálogo ----------
   estatusList = signal<EnumOption[]>([]);
 
   // ---------- UI ----------
   cargando = signal(false);
   guardando = signal(false);
   errorGeneral = signal<string | null>(null);
+  
+  // NUEVO: Signal para reactividad en el HTML
+  esPagada = signal(false);
 
   // ---------- Ciclo de vida ----------
   ngOnInit(): void {
+    this.escucharCambioEstatus();
     this.cargarDatos();
   }
 
@@ -93,19 +97,47 @@ export class VacacionesEdit implements OnInit {
         this.estatusList.set(estatusList);
 
         if (vacaciones) {
+          const estatusNormalizado = this.normalizarEstatus(
+            vacaciones.estatusVacaciones,
+            estatusList
+          );
+
           this.form.patchValue({
             fechaInicio: vacaciones.fechaInicio ?? '',
             fechaFin: vacaciones.fechaFin ?? '',
-            estatusVacaciones: this.normalizarEstatus(
-              vacaciones.estatusVacaciones,
-              estatusList
-            ),
+            estatusVacaciones: estatusNormalizado,
+            cantidadPagada: vacaciones.cantidadPagada ?? null, // Cargamos la cantidad del backend
           });
+          
+          // Forzamos la validación inicial por si viene con estatus "PAGADA"
+          this.actualizarValidacionCantidad(estatusNormalizado);
         }
 
         this.cargando.set(false);
       },
     });
+  }
+
+  // NUEVO: Reaccionar al cambio de estatus en la UI
+  private escucharCambioEstatus(): void {
+    this.form.controls.estatusVacaciones.valueChanges.subscribe((val) => {
+      this.actualizarValidacionCantidad(val);
+    });
+  }
+
+  private actualizarValidacionCantidad(estatus: string): void {
+    const esPagada = estatus?.toUpperCase().includes('PAGADA');
+    this.esPagada.set(esPagada);
+
+    const cantControl = this.form.controls.cantidadPagada;
+    
+    if (esPagada) {
+      cantControl.setValidators([Validators.required, Validators.min(0.01)]);
+    } else {
+      cantControl.clearValidators();
+      cantControl.setValue(null); // Limpiamos el valor si se cambia a un estatus que no es pagada
+    }
+    cantControl.updateValueAndValidity();
   }
 
   // ---------- Envío ----------
@@ -119,12 +151,14 @@ export class VacacionesEdit implements OnInit {
     this.errorGeneral.set(null);
 
     const v = this.form.getRawValue();
+    const esPagada = this.esPagada();
 
     const body: VacacionesPatch = {
       id: this.vacacionesId(),
       fechaInicio: v.fechaInicio,
       fechaFin: v.fechaFin,
       estatusVacaciones: v.estatusVacaciones,
+      cantidadPagada: esPagada ? v.cantidadPagada : null, // NUEVO
     };
 
     this.vacacionesService.actualizarVacaciones(body).subscribe({
@@ -176,11 +210,13 @@ export class VacacionesEdit implements OnInit {
   }
 
   errorDe(
-    campo: 'fechaInicio' | 'fechaFin' | 'estatusVacaciones'
+    campo: 'fechaInicio' | 'fechaFin' | 'estatusVacaciones' | 'cantidadPagada'
   ): string | null {
     const control = this.form.get(campo);
     if (!control || !control.touched || control.valid) return null;
+    
     if (control.hasError('required')) return 'Este campo es obligatorio';
+    if (control.hasError('min')) return 'La cantidad debe ser mayor a 0';
     return 'Campo inválido';
   }
 

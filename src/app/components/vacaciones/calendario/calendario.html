@@ -1,7 +1,6 @@
 <section class="cal">
 
   <!-- ============ Header ============ -->
-  <!-- Solo se muestra si hay datos o está cargando -->
   @if (loading() || vacaciones().length > 0) {
     <header class="cal__head">
       <div class="cal__title-wrap">
@@ -66,7 +65,6 @@
     <p class="state state--error">{{ error() }}</p>
   }
 
-  <!-- ============ Sin registros en absoluto: empty extendido ============ -->
   @else if (vacaciones().length === 0) {
     <app-empty-state
       image="calendar.svg"
@@ -75,7 +73,6 @@
     />
   }
 
-  <!-- ============ Búsqueda sin resultados: empty simple ============ -->
   @else if (!hayResultados()) {
     <app-empty-state
       image="calendar.svg"
@@ -143,11 +140,20 @@
                 <div class="barras">
                   @for (v of fila.vacaciones; track v.id) {
                     <div
-                      class="bar"
+                      [class]="barraClase(v)"
                       [style]="estiloBarra(v)"
                       [title]="tooltip(v)"
                     >
-                      <span class="bar__label">{{ etiquetaEstatus(v) }}</span>
+                      <span class="bar__label">
+                        <!-- NUEVO: Ícono de pago si está pagada -->
+                        @if (v.cantidadPagada != null && v.cantidadPagada > 0) {
+                          <svg class="bar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                          </svg>
+                        }
+                        {{ etiquetaEstatus(v) }}
+                      </span>
                       <span class="bar__dias">{{ v.diasOcupados }}d</span>
                     </div>
                   }

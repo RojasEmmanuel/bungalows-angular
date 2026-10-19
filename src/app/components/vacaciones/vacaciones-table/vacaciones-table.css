@@ -315,3 +315,23 @@
   border-color: #f5c6c6;
   background-color: #fdecec;
 }
+/* NUEVO: Estilo para el badge de pagada */
+.badge--success {
+  background-color: #e6f4ea; 
+  color: #1e7a3d;
+}
+
+/* NUEVO: Estilo para la celda del dinero */
+.td--money {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: #1e7a3d; /* Verde oscuro */
+}
+
+/* Aseguramos el scroll para las nuevas columnas */
+.table-wrap {
+  overflow-x: auto;
+  width: 100%;
+}
+
+/* El resto de tus estilos (icon-btn, badges, th, etc) se quedan exactamente igual */

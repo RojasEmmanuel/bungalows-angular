@@ -15,13 +15,7 @@ import { PuestoResponse } from '../../../models/puesto.model';
 import { UbicacionResponse } from '../../../models/ubicacion.model';
 import { EmptyStateComponent } from '../../empty-state/empty-state';
 
-type SortColumn =
-  | 'nombreColaborador'
-  | 'estatus'
-  | 'fechaInicio'
-  | 'fechaFin'
-  | null;
-
+type SortColumn = 'nombreColaborador' | 'estatus' | 'fechaInicio' | 'fechaFin' | null;
 type SortDirection = 'asc' | 'desc';
 
 @Component({
@@ -42,9 +36,7 @@ export class VacacionesTable implements OnInit {
 
   // ---------- Datos crudos ----------
   vacaciones = signal<VacacionesResponse[]>([]);
-  /** Solo se activa en la primera carga (cuando no hay datos previos) */
   loading = signal(false);
-  /** Recargas silenciosas: no afecta al template */
   recargando = signal(false);
   error = signal<string | null>(null);
 
@@ -69,9 +61,7 @@ export class VacacionesTable implements OnInit {
 
     const term = this.busqueda().trim().toLowerCase();
     if (term) {
-      lista = lista.filter((v) =>
-        v.nombreColaborador?.toLowerCase().includes(term)
-      );
+      lista = lista.filter((v) => v.nombreColaborador?.toLowerCase().includes(term));
     }
 
     if (this.filtroEstatus()) {
@@ -107,7 +97,6 @@ export class VacacionesTable implements OnInit {
     return lista;
   });
 
-  // ---------- Computed auxiliares ----------
   hayFiltrosActivos = computed(
     () =>
       !!this.busqueda().trim() ||
@@ -116,24 +105,16 @@ export class VacacionesTable implements OnInit {
       !!this.filtroUbicacion()
   );
 
-  // ---------- Ciclo de vida ----------
   ngOnInit(): void {
     this.cargarCatalogos();
     this.cargarVacaciones();
   }
 
-  // ---------- Cargas ----------
   private cargarCatalogos(): void {
     forkJoin({
-      estatus: this.enumsService
-        .getEstatusVacaciones()
-        .pipe(catchError(() => of([] as EnumOption[]))),
-      puestos: this.puestoService
-        .getPuestos()
-        .pipe(catchError(() => of([] as PuestoResponse[]))),
-      ubicaciones: this.ubicacionService
-        .getUbicaciones()
-        .pipe(catchError(() => of([] as UbicacionResponse[]))),
+      estatus: this.enumsService.getEstatusVacaciones().pipe(catchError(() => of([] as EnumOption[]))),
+      puestos: this.puestoService.getPuestos().pipe(catchError(() => of([] as PuestoResponse[]))),
+      ubicaciones: this.ubicacionService.getUbicaciones().pipe(catchError(() => of([] as UbicacionResponse[]))),
     }).subscribe({
       next: ({ estatus, puestos, ubicaciones }) => {
         this.estatusList.set(estatus);
@@ -144,14 +125,9 @@ export class VacacionesTable implements OnInit {
   }
 
   private cargarVacaciones(): void {
-    // Si ya había datos, esta es una recarga silenciosa (no tocamos `loading`)
     const esPrimeraCarga = this.vacaciones().length === 0;
-
-    if (esPrimeraCarga) {
-      this.loading.set(true);
-    } else {
-      this.recargando.set(true);
-    }
+    if (esPrimeraCarga) this.loading.set(true);
+    else this.recargando.set(true);
     this.error.set(null);
 
     this.vacacionesService.getVacaciones().subscribe({
@@ -169,7 +145,7 @@ export class VacacionesTable implements OnInit {
     });
   }
 
-  // ---------- Handlers de filtros ----------
+  // ---------- Handlers ----------
   onBusqueda(event: Event): void {
     this.busqueda.set((event.target as HTMLInputElement).value);
   }
@@ -205,9 +181,7 @@ export class VacacionesTable implements OnInit {
 
   iconClass(columna: SortColumn): string {
     if (this.sortColumn() !== columna) return 'sort-icon sort-icon--off';
-    return this.sortDirection() === 'asc'
-      ? 'sort-icon sort-icon--asc'
-      : 'sort-icon sort-icon--desc';
+    return this.sortDirection() === 'asc' ? 'sort-icon sort-icon--asc' : 'sort-icon sort-icon--desc';
   }
 
   // ---------- Helpers ----------
@@ -222,12 +196,21 @@ export class VacacionesTable implements OnInit {
 
   estatusClase(value: string | null | undefined): string {
     const v = (value ?? '').toUpperCase();
+    
+    // Agregamos el caso PAGADA
+    if (v.includes('PAGADA') || v.includes('PAGADO')) return 'badge badge--success';
+    
     if (v.includes('APROBADA') || v.includes('APROBADO')) return 'badge badge--ok';
     if (v.includes('PENDIENTE')) return 'badge badge--info';
-    if (v.includes('RECHAZADA') || v.includes('RECHAZADO') || v.includes('CANCELADA'))
-      return 'badge badge--danger';
+    if (v.includes('RECHAZADA') || v.includes('RECHAZADO') || v.includes('CANCELADA')) return 'badge badge--danger';
     if (v.includes('DISFRUTADA') || v.includes('TOMADA')) return 'badge badge--muted';
     return 'badge';
+  }
+
+  // Formateador nativo de moneda (MXN)
+  formatearMoneda(valor: number | null | undefined): string {
+    if (valor === null || valor === undefined) return '—';
+    return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(valor);
   }
 
   recargar(): void {

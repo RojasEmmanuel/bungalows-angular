@@ -166,7 +166,7 @@ export class VacacionesCalendario implements OnInit {
     this.busqueda.set('');
   }
 
-  // ---------- Posicionamiento de las barras ----------
+  // ---------- Posicionamiento y estilo de las barras ----------
   estiloBarra(v: VacacionesResponse): Record<string, string> {
     const inicioRango = this.dias()[0]?.fecha;
     const finRango = this.dias()[this.dias().length - 1]?.fecha;
@@ -190,7 +190,12 @@ export class VacacionesCalendario implements OnInit {
     const left = (offsetDias / totalDias) * 100;
     const width = (duracionDias / totalDias) * 100;
 
-    const color = this.colorDe(v.id);
+    // NUEVO: Verificar si está pagada para usar color verde
+    const esPagada = v.cantidadPagada != null && v.cantidadPagada > 0;
+    
+    const color = esPagada 
+      ? { bg: '#d1fae5', border: '#10b981', text: '#065f46' } // Verde para pagadas
+      : this.colorDe(v.id);
 
     return {
       left: `${left}%`,
@@ -208,6 +213,8 @@ export class VacacionesCalendario implements OnInit {
 
   barraClase(v: VacacionesResponse): string {
     const e = (v.estatus ?? '').toUpperCase();
+    
+    if (e.includes('PAGADA') || e.includes('PAGADO')) return 'bar bar--success';
     if (e.includes('APROBADA') || e.includes('APROBADO')) return 'bar bar--ok';
     if (e.includes('PENDIENTE')) return 'bar bar--info';
     if (e.includes('RECHAZADA') || e.includes('CANCELADA')) return 'bar bar--danger';
@@ -217,6 +224,8 @@ export class VacacionesCalendario implements OnInit {
 
   etiquetaEstatus(v: VacacionesResponse): string {
     const e = (v.estatus ?? '').toUpperCase();
+    
+    if (e.includes('PAGADA') || e.includes('PAGADO')) return 'Pagada';
     if (e.includes('APROBADA')) return 'Aprobada';
     if (e.includes('PENDIENTE')) return 'Pendiente';
     if (e.includes('RECHAZADA')) return 'Rechazada';
@@ -226,7 +235,15 @@ export class VacacionesCalendario implements OnInit {
   }
 
   tooltip(v: VacacionesResponse): string {
-    return `${this.etiquetaEstatus(v)} · ${v.fechaInicio} → ${v.fechaFin} (${v.diasOcupados} días)`;
+    const base = `${this.etiquetaEstatus(v)} · ${v.fechaInicio} → ${v.fechaFin} (${v.diasOcupados} días)`;
+    
+    // NUEVO: Agregar monto al tooltip si aplica
+    if (v.cantidadPagada != null && v.cantidadPagada > 0) {
+      const formatted = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(v.cantidadPagada);
+      return `${base} · Monto: ${formatted}`;
+    }
+    
+    return base;
   }
 
   iniciales(nombre: string | null | undefined): string {

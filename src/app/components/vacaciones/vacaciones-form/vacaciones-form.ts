@@ -38,44 +38,37 @@ export class VacacionesForm implements OnInit {
   private readonly colaboradorService = inject(ColaboradorService);
   private readonly enumsService = inject(EnumsService);
 
-  /** Emite cuando se crea correctamente */
   creado = output<void>();
-
-  /** Emite cuando se cancela */
   cancelado = output<void>();
 
-  // ---------- Formulario ----------
+  // Formulario actualizado con cantidadPagada
   form = this.fb.nonNullable.group(
     {
       colaboradorId: [null as number | null, [Validators.required]],
       fechaInicio: ['', [Validators.required]],
       fechaFin: ['', [Validators.required]],
       estatus: ['', [Validators.required]],
+      cantidadPagada: [null as number | null], // NUEVO CAMPO
     },
     { validators: this.rangoFechasValidator() }
   );
 
-  // ---------- Catálogos ----------
   colaboradores = signal<ColaboradorTable[]>([]);
   estatusList = signal<EnumOption[]>([]);
-
-  /** Texto de búsqueda del select de colaborador (filtra localmente) */
   busquedaColaborador = signal('');
-
-  /** Colaboradores filtrados por búsqueda (máx 20 resultados) */
   colaboradoresFiltrados = signal<ColaboradorTable[]>([]);
-
-  /** Estado del dropdown custom */
   dropdownAbierto = signal(false);
 
-  // ---------- UI ----------
   cargando = signal(false);
   guardando = signal(false);
   errorGeneral = signal<string | null>(null);
+  
+  // NUEVO: Signal para saber si el estatus actual es "PAGADA"
+  esPagada = signal(false);
 
-  // ---------- Ciclo de vida ----------
   ngOnInit(): void {
     this.cargarDatos();
+    this.escucharCambioEstatus();
   }
 
   private cargarDatos(): void {
@@ -105,11 +98,28 @@ export class VacacionesForm implements OnInit {
       error: () => {
         this.errorGeneral.set('No se pudieron cargar los catálogos.');
         this.cargando.set(false);
-
         toast.error('Error al cargar datos', {
           description: 'No se pudieron cargar los colaboradores o los estatus.',
         });
       },
+    });
+  }
+
+  // NUEVO: Escuchar cambios en el estatus para habilitar/deshabilitar el campo de cantidad
+  private escucharCambioEstatus(): void {
+    this.form.controls.estatus.valueChanges.subscribe((val) => {
+      const esPagada = val?.toUpperCase().includes('PAGADA');
+      this.esPagada.set(esPagada);
+
+      const cantControl = this.form.controls.cantidadPagada;
+      
+      if (esPagada) {
+        cantControl.setValidators([Validators.required, Validators.min(0.01)]);
+      } else {
+        cantControl.clearValidators();
+        cantControl.setValue(null); // Limpiamos el valor si deja de estar pagada
+      }
+      cantControl.updateValueAndValidity();
     });
   }
 
@@ -154,12 +164,14 @@ export class VacacionesForm implements OnInit {
     this.errorGeneral.set(null);
 
     const v = this.form.getRawValue();
+    const esPagada = this.esPagada();
 
     const body: VacacionesRequest = {
       colaboradorId: v.colaboradorId!,
       fechaInicio: v.fechaInicio,
       fechaFin: v.fechaFin,
       estatusVacaciones: v.estatus,
+      cantidadPagada: esPagada ? v.cantidadPagada : null, // NUEVO
     };
 
     this.vacacionesService.crearVacaciones(body).subscribe({
@@ -214,13 +226,14 @@ export class VacacionesForm implements OnInit {
       fechaInicio: '',
       fechaFin: '',
       estatus: this.estatusList()[0]?.value ?? '',
+      cantidadPagada: null,
     });
+    this.esPagada.set(false);
     this.busquedaColaborador.set('');
     this.colaboradoresFiltrados.set(this.colaboradores().slice(0, 20));
     this.dropdownAbierto.set(false);
   }
 
-  /** Nombre del colaborador seleccionado (para el toast) */
   private nombreColaboradorSeleccionado(): string {
     const id = this.form.getRawValue().colaboradorId;
     if (!id) return '';
@@ -229,12 +242,13 @@ export class VacacionesForm implements OnInit {
   }
 
   errorDe(
-    campo: 'colaboradorId' | 'fechaInicio' | 'fechaFin' | 'estatus'
+    campo: 'colaboradorId' | 'fechaInicio' | 'fechaFin' | 'estatus' | 'cantidadPagada'
   ): string | null {
     const control = this.form.get(campo);
     if (!control || !control.touched || control.valid) return null;
 
     if (control.hasError('required')) return 'Este campo es obligatorio';
+    if (control.hasError('min')) return 'La cantidad debe ser mayor a 0';
     return 'Campo inválido';
   }
 
@@ -248,7 +262,6 @@ export class VacacionesForm implements OnInit {
     return 'No se pudieron registrar las vacaciones.';
   }
 
-  /** Fecha mínima para el input: hoy (para fechaInicio) */
   hoy(): string {
     const d = new Date();
     const yyyy = d.getFullYear();
@@ -257,7 +270,6 @@ export class VacacionesForm implements OnInit {
     return `${yyyy}-${mm}-${dd}`;
   }
 
-  /** Fecha mínima para el input: mañana (para fechaFin) */
   manana(): string {
     const d = new Date();
     d.setDate(d.getDate() + 1);

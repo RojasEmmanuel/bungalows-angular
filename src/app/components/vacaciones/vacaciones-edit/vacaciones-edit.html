@@ -61,6 +61,26 @@
       }
     </div>
 
+    <!-- ============ Cantidad Pagada (NUEVO) ============ -->
+    @if (esPagada()) {
+      <div class="field">
+        <label class="field__label" for="ve-cantidad">Cantidad pagada ($)</label>
+        <input
+          id="ve-cantidad"
+          class="field__input"
+          type="number"
+          min="0.01"
+          step="0.01"
+          placeholder="Ej. 1500.50"
+          formControlName="cantidadPagada"
+          [disabled]="guardando()"
+        />
+        @if (errorDe('cantidadPagada'); as msg) {
+          <p class="field__error">{{ msg }}</p>
+        }
+      </div>
+    }
+
     <!-- ============ Acciones ============ -->
     <div class="actions">
       <button

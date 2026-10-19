@@ -1,13 +1,9 @@
 <section class="vacaciones">
-
   @if (vacaciones().length > 0) {
     <header class="vacaciones__head">
-
       <div class="search">
         <svg class="search__icon" viewBox="0 0 512 512">
-          <path
-            d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
-          />
+          <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/>
         </svg>
         <input
           class="search__input"
@@ -22,12 +18,7 @@
       <div class="filtros">
         <div class="filtros__group">
           <label class="filtros__label" for="f-estatus">Estatus</label>
-          <select
-            id="f-estatus"
-            class="filtros__select"
-            [ngModel]="filtroEstatus()"
-            (ngModelChange)="filtroEstatus.set($event)"
-          >
+          <select id="f-estatus" class="filtros__select" [ngModel]="filtroEstatus()" (ngModelChange)="filtroEstatus.set($event)">
             <option value="">Todos</option>
             @for (e of estatusList(); track e.value) {
               <option [ngValue]="e.value">{{ e.label }}</option>
@@ -37,12 +28,7 @@
 
         <div class="filtros__group">
           <label class="filtros__label" for="f-puesto">Puesto</label>
-          <select
-            id="f-puesto"
-            class="filtros__select"
-            [ngModel]="filtroPuesto()"
-            (ngModelChange)="filtroPuesto.set($event)"
-          >
+          <select id="f-puesto" class="filtros__select" [ngModel]="filtroPuesto()" (ngModelChange)="filtroPuesto.set($event)">
             <option value="">Todos</option>
             @for (p of puestos(); track p.id) {
               <option [ngValue]="p.nombre">{{ p.nombre }}</option>
@@ -52,12 +38,7 @@
 
         <div class="filtros__group">
           <label class="filtros__label" for="f-ubicacion">Ubicación</label>
-          <select
-            id="f-ubicacion"
-            class="filtros__select"
-            [ngModel]="filtroUbicacion()"
-            (ngModelChange)="filtroUbicacion.set($event)"
-          >
+          <select id="f-ubicacion" class="filtros__select" [ngModel]="filtroUbicacion()" (ngModelChange)="filtroUbicacion.set($event)">
             <option value="">Todas</option>
             @for (u of ubicaciones(); track u.id) {
               <option [ngValue]="u.nombre">{{ u.nombre }}</option>
@@ -85,7 +66,6 @@
     <p class="state state--error">{{ error() }}</p>
   }
 
-  <!-- ============ Sin registros en absoluto: empty extendido ============ -->
   @else if (vacaciones().length === 0) {
     <app-empty-state
       image="vacaciones-empty.svg"
@@ -94,7 +74,6 @@
     />
   }
 
-  <!-- ============ Filtros sin resultados: empty simple ============ -->
   @else if (vacacionesFiltradas().length === 0) {
     <app-empty-state
       image="vacaciones-empty.svg"
@@ -140,7 +119,11 @@
                 </svg>
               </span>
             </th>
+            <!-- NUEVA COLUMNA: REGRESO -->
+            <th class="th">Regreso</th>
             <th class="th th--num">Días</th>
+            <!-- NUEVA COLUMNA: MONTO PAGADO -->
+            <th class="th th--num">Monto Pagado</th>
             <th class="th th--sortable" (click)="ordenarPor('estatus')">
               <span class="th__inner">
                 Estatus
@@ -162,7 +145,11 @@
               <td class="td td--muted">{{ v.ubicacion }}</td>
               <td class="td td--muted">{{ v.fechaInicio }}</td>
               <td class="td td--muted">{{ v.fechaFin }}</td>
+              <!-- VALOR REGRESO -->
+              <td class="td td--muted">{{ v.fechaRegreso || '—' }}</td>
               <td class="td td--num">{{ v.diasOcupados }}</td>
+              <!-- VALOR MONTO PAGADO -->
+              <td class="td td--num td--money">{{ formatearMoneda(v.cantidadPagada) }}</td>
               <td class="td">
                 <span [class]="estatusClase(v.estatus)">
                   {{ labelEstatus(v.estatus) }}
