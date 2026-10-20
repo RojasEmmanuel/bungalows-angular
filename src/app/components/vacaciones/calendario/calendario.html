@@ -1,6 +1,5 @@
 <section class="cal">
 
-  <!-- ============ Header ============ -->
   @if (loading() || vacaciones().length > 0) {
     <header class="cal__head">
       <div class="cal__title-wrap">
@@ -9,7 +8,6 @@
       </div>
 
       <div class="cal__actions">
-        <!-- Búsqueda -->
         <div class="search">
           <svg class="search__icon" viewBox="0 0 512 512">
             <path
@@ -36,7 +34,6 @@
           }
         </div>
 
-        <!-- Navegación de fechas -->
         <div class="rango">
           <button type="button" class="rango__btn" (click)="anterior()" aria-label="Anterior">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -58,7 +55,6 @@
     </header>
   }
 
-  <!-- ============ Estados ============ -->
   @if (loading()) {
     <p class="state">Cargando vacaciones…</p>
   } @else if (error()) {
@@ -83,12 +79,10 @@
     />
   }
 
-  <!-- ============ Calendario ============ -->
   @else {
     <div class="cal__scroll">
       <div class="cal__grid">
 
-        <!-- ============ Header: días ============ -->
         <div class="cal__header">
           <div class="cal__col-colab">
             <span class="cal__col-colab-label">Colaborador</span>
@@ -107,11 +101,9 @@
           </div>
         </div>
 
-        <!-- ============ Filas ============ -->
         <div class="cal__body">
           @for (fila of filas(); track fila.nombre) {
             <div class="cal__row">
-              <!-- Colaborador -->
               <div class="cal__col-colab">
                 <div class="avatar">
                   <span class="avatar__text">{{ iniciales(fila.nombre) }}</span>
@@ -124,9 +116,7 @@
                 </div>
               </div>
 
-              <!-- Grid de días -->
               <div class="cal__col-dias">
-                <!-- Celdas de fondo -->
                 <div class="celdas">
                   @for (d of dias(); track d.iso) {
                     <div
@@ -136,7 +126,6 @@
                   }
                 </div>
 
-                <!-- Barras de vacaciones superpuestas -->
                 <div class="barras">
                   @for (v of fila.vacaciones; track v.id) {
                     <div
@@ -145,7 +134,6 @@
                       [title]="tooltip(v)"
                     >
                       <span class="bar__label">
-                        <!-- NUEVO: Ícono de pago si está pagada -->
                         @if (v.cantidadPagada != null && v.cantidadPagada > 0) {
                           <svg class="bar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="12" y1="1" x2="12" y2="23"></line>

@@ -59,7 +59,6 @@
     </header>
   }
 
-  <!-- ============ Estados ============ -->
   @if (loading()) {
     <p class="state">Cargando vacaciones…</p>
   } @else if (error()) {
@@ -84,7 +83,6 @@
     />
   }
 
-  <!-- ============ Tabla ============ -->
   @else {
     <div class="table-wrap">
       <table class="table">
@@ -99,8 +97,8 @@
                 </svg>
               </span>
             </th>
-            <th class="th">Puesto</th>
-            <th class="th">Ubicación</th>
+            <th class="th th--hide-mobile">Puesto</th>
+            <th class="th th--hide-mobile">Ubicación</th>
             <th class="th th--sortable" (click)="ordenarPor('fechaInicio')">
               <span class="th__inner">
                 Inicio
@@ -119,7 +117,7 @@
                 </svg>
               </span>
             </th>
-            <th class="th">Regreso</th>
+            <th class="th th--hide-mobile">Regreso</th>
             <th class="th th--num">Días</th>
             <th class="th th--num">Monto Pagado</th>
             <th class="th th--sortable" (click)="ordenarPor('estatus')">
@@ -138,22 +136,20 @@
         <tbody>
           @for (v of vacacionesFiltradas(); track v.id) {
             <tr class="tr">
-              <td class="td td--strong">{{ v.nombreColaborador }}</td>
-              <td class="td">{{ v.puesto }}</td>
-              <td class="td td--muted">{{ v.ubicacion }}</td>
-              <td class="td td--muted">{{ v.fechaInicio }}</td>
-              <td class="td td--muted">{{ v.fechaFin }}</td>
-              <td class="td td--muted">{{ v.fechaRegreso || '—' }}</td>
-              <td class="td td--num">{{ v.diasOcupados }}</td>
-              <td class="td td--num td--money">{{ formatearMoneda(v.cantidadPagada) }}</td>
-              <td class="td">
+              <td class="td td--strong td--colab" data-label="Colaborador">{{ v.nombreColaborador }}</td>
+              <td class="td td--hide-mobile" data-label="Puesto">{{ v.puesto }}</td>
+              <td class="td td--muted td--hide-mobile" data-label="Ubicación">{{ v.ubicacion }}</td>
+              <td class="td td--muted" data-label="Inicio">{{ v.fechaInicio }}</td>
+              <td class="td td--muted" data-label="Fin">{{ v.fechaFin }}</td>
+              <td class="td td--muted td--hide-mobile" data-label="Regreso">{{ v.fechaRegreso || '—' }}</td>
+              <td class="td td--num" data-label="Días">{{ v.diasOcupados }}</td>
+              <td class="td td--num td--money" data-label="Monto pagado">{{ formatearMoneda(v.cantidadPagada) }}</td>
+              <td class="td" data-label="Estatus">
                 <span [class]="estatusClase(v.estatus)">
                   {{ labelEstatus(v.estatus) }}
                 </span>
               </td>
-              <td class="td td--actions">
-                
-                <!-- Botón Imprimir/PDF -->
+              <td class="td td--actions" data-label="Acciones">
                 <button
                   type="button"
                   class="icon-btn icon-btn--pdf"
@@ -176,7 +172,6 @@
                   }
                 </button>
 
-                <!-- Botón Editar -->
                 <button
                   type="button"
                   class="icon-btn icon-btn--edit"
@@ -190,7 +185,6 @@
                   </svg>
                 </button>
 
-                <!-- Botón Eliminar -->
                 <button
                   type="button"
                   class="icon-btn icon-btn--danger"

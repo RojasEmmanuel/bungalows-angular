@@ -1,6 +1,5 @@
 <section class="lista">
 
-  <!-- ============ Cabecera del colaborador ============ -->
   <header class="colab">
     <div class="colab__avatar">
       @if (mostrarAvatar()) {
@@ -24,14 +23,12 @@
     </div>
   </header>
 
-  <!-- ============ Estados ============ -->
   @if (loading()) {
     <p class="state">Cargando préstamos…</p>
   } @else if (error()) {
     <p class="state state--error">{{ error() }}</p>
   }
 
-  <!-- ============ Empty state ============ -->
   @else if (prestamos().length === 0) {
     <app-empty-state
       image="prestamos_empty.svg"
@@ -40,9 +37,7 @@
     />
   }
 
-  <!-- ============ Con datos ============ -->
   @else {
-    <!-- Resumen de totales -->
     <div class="resumen">
       <div class="resumen__item">
         <span class="resumen__label">Préstamos</span>
@@ -64,12 +59,10 @@
       </div>
     </div>
 
-    <!-- Lista -->
     <ul class="items">
       @for (p of prestamos(); track p.id) {
         <li class="item">
           
-          <!-- Fila 1: Concepto y Monto Pendiente -->
           <div class="item__row item__row--top">
             <span class="item__concepto" [title]="p.concepto">
               {{ p.concepto || 'Préstamo' }}
@@ -79,7 +72,6 @@
             </div>
           </div>
 
-          <!-- Fila 2: Estatus, Fecha, Progreso y Acciones -->
           <div class="item__row item__row--bottom">
             <div class="item__meta">
               <span [class]="estatusClase(p.estatus)">
@@ -97,7 +89,6 @@
             </div>
 
             <div class="item__actions">
-              <!-- Botón cancelar como icono sutil -->
               <button
                 type="button"
                 class="icon-btn"
@@ -126,8 +117,6 @@
   }
 </section>
 
-
-<!-- ============ Modal abono ============ -->
 <app-modal
   titulo="Aplicar abono"
   [abierto]="modalAbonoAbierto()"
@@ -148,8 +137,6 @@
   }
 </app-modal>
 
-
-<!-- ============ Modal cancelar ============ -->
 <app-confirm-modal
   titulo="Cancelar préstamo"
   mensaje="¿Seguro que deseas cancelar este préstamo? Esta acción no se puede deshacer."

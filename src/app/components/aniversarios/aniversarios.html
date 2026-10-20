@@ -6,7 +6,6 @@
     <p class="state state--error">{{ error() }}</p>
   }
 
-  <!-- ===== Sin aniversarios hoy: empty extendido ===== -->
   @else if (!hayAniversarios()) {
     <app-empty-state
       image="aniversarios-empty.svg"
@@ -15,7 +14,6 @@
     />
   }
 
-  <!-- ===== Con aniversarios: grid ===== -->
   @else {
     <div [class]="gridClase()">
       @for (a of aniversarios(); track a.id) {
@@ -57,4 +55,4 @@
       }
     </div>
   }
-</section>
+</section>  

@@ -1,9 +1,8 @@
-/* ============ Wizard ============ */
 .wizard {
-  
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  min-width: 0;
 }
 
 .wizard__head {
@@ -27,7 +26,6 @@
   transition: width 0.3s ease;
 }
 
-/* Stepper */
 .stepper {
   display: flex;
   justify-content: space-between;
@@ -79,6 +77,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .stepper__item--active .stepper__label {
@@ -90,13 +89,13 @@
   height: 12px;
 }
 
-/* Body */
 .wizard__body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   padding: 1rem 0;
   min-height: 180px;
+  min-width: 0;
 }
 
 .step-title {
@@ -116,9 +115,9 @@
   font-size: 0.75rem;
   color: var(--color-ink-soft);
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
-/* Footer */
 .wizard__foot {
   display: flex;
   justify-content: space-between;
@@ -131,14 +130,15 @@
 .wizard__nav {
   display: flex;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
-/* ============ Estados ============ */
 .state {
   font-size: 0.875rem;
   color: var(--color-ink-soft);
   margin: 0;
   padding: 0.75rem 0;
+  overflow-wrap: anywhere;
 }
 
 .state--error {
@@ -152,27 +152,19 @@
   background-color: var(--color-brand-soft);
   color: var(--color-brand);
   font-size: 0.875rem;
+  overflow-wrap: anywhere;
 }
 
-/* ============ Grids ============ */
 .grid {
   display: grid;
   gap: 0.75rem;
+  min-width: 0;
 }
 
 .grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
-@media (max-width: 720px) {
-  .grid--2,
-  .grid--3,
-  .grid--4 {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ============ Campos ============ */
 .field {
   display: flex;
   flex-direction: column;
@@ -196,6 +188,8 @@
   border-radius: 0.5rem;
   outline: none;
   font-family: inherit;
+  min-width: 0;
+  width: 100%;
 }
 
 .field__input:focus {
@@ -211,6 +205,7 @@
   font-size: 0.6875rem;
   color: var(--color-brand);
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 select.field__input {
@@ -225,7 +220,6 @@ select.field__input {
   cursor: pointer;
 }
 
-/* ============ Foto ============ */
 .filepick {
   display: flex;
   align-items: center;
@@ -255,6 +249,7 @@ select.field__input {
   border-radius: 0.5rem;
   padding: 0.375rem;
   background-color: var(--color-brand-softer);
+  min-width: 0;
 }
 
 .preview__img {
@@ -271,6 +266,7 @@ select.field__input {
   flex-direction: column;
   gap: 0.125rem;
   min-width: 0;
+  flex: 1;
 }
 
 .preview__name {
@@ -290,6 +286,7 @@ select.field__input {
   font-weight: 600;
   cursor: pointer;
   padding: 0;
+  touch-action: manipulation;
 }
 
 .preview__remove:disabled {
@@ -297,7 +294,6 @@ select.field__input {
   cursor: not-allowed;
 }
 
-/* ============ Botones ============ */
 .btn {
   height: 40px;
   padding: 0 1rem;
@@ -307,6 +303,8 @@ select.field__input {
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
+  white-space: nowrap;
+  touch-action: manipulation;
 }
 
 .btn--primary {
@@ -325,4 +323,106 @@ select.field__input {
 .btn--ghost:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .grid--4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .grid--3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .grid--2,
+  .grid--3,
+  .grid--4 {
+    grid-template-columns: 1fr;
+  }
+
+  .stepper {
+    overflow-x: auto;
+    gap: 0.75rem;
+    padding-bottom: 0.25rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .stepper::-webkit-scrollbar {
+    display: none;
+  }
+  .stepper__item {
+    flex: 0 0 auto;
+  }
+  .stepper__label {
+    white-space: nowrap;
+  }
+
+  .wizard__foot {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .wizard__cancel {
+    order: 1;
+    width: 100%;
+  }
+  .wizard__nav {
+    order: 0;
+    width: 100%;
+    flex-wrap: nowrap;
+  }
+  .wizard__nav .btn {
+    flex: 1;
+    height: 44px;
+  }
+  .wizard__cancel {
+    height: 44px;
+  }
+
+  .field__input {
+    height: 44px;
+    font-size: 1rem;
+  }
+  .filepick {
+    height: 44px;
+  }
+  .btn {
+    height: 44px;
+    font-size: 0.9375rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .wizard {
+    gap: 1rem;
+  }
+  .wizard__body {
+    padding: 0.75rem 0;
+  }
+  .grid {
+    gap: 0.625rem;
+  }
+  .stepper__label {
+    font-size: 0.6875rem;
+  }
+  .stepper__dot {
+    width: 22px;
+    height: 22px;
+  }
+  .wizard__nav {
+    flex-wrap: wrap;
+  }
+  .wizard__nav .btn {
+    flex: 1 1 100%;
+  }
+  .btn {
+    font-size: 0.875rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wizard__progress-fill {
+    transition: none;
+  }
 }

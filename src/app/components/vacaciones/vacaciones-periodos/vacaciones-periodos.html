@@ -1,15 +1,11 @@
 <section class="periodos">
 
-  
-
-  <!-- ============ Estados ============ -->
   @if (loading()) {
     <p class="state">Cargando periodos vacacionales…</p>
   } @else if (error()) {
     <p class="state state--error">{{ error() }}</p>
   }
 
-  <!-- ============ Sin periodos en absoluto: empty extendido ============ -->
   @else if (periodos().length === 0) {
     <app-empty-state
       image="periodos-vacacionales-empty.svg"
@@ -18,7 +14,6 @@
     />
   }
 
-  <!-- ============ Búsqueda sin resultados: empty simple ============ -->
   @else if (periodosFiltrados().length === 0) {
     <app-empty-state
       image="periodos-vacacionales-empty.svg"
@@ -29,19 +24,16 @@
     />
   }
 
-  <!-- ============ Cards ============ -->
   @else {
 
-    <!-- ============ Header con búsqueda ============ -->
   <header class="periodos__head">
-    <div>
+    <div class="periodos__head-text">
       <h2 class="periodos__title">Periodos vacacionales</h2>
       <p class="periodos__subtitle">
         Consulta los días disponibles y ocupados por colaborador.
       </p>
     </div>
 
-    <!-- La búsqueda solo aparece cuando hay datos o está cargando -->
     @if (loading() || periodos().length > 0) {
       <div class="search">
         <svg class="search__icon" viewBox="0 0 512 512">
@@ -70,7 +62,6 @@
       </div>
     }
   </header>
-
 
     <div class="cards">
       @for (p of periodosFiltrados(); track p.id) {

@@ -1,6 +1,5 @@
 <section class="directorio">
 
-  <!-- ============ Header: solo si hay datos en absoluto ============ -->
   @if (hayAntiguedades()) {
     <header class="directorio__head">
       <div class="directorio__title-wrap">
@@ -10,7 +9,7 @@
         </p>
       </div>
 
-      <div class="seacha__actions">
+      <div class="directorio__actions">
         <div class="search">
           <svg class="search__icon" viewBox="0 0 512 512">
             <path
@@ -51,7 +50,6 @@
     </header>
   }
 
-  <!-- ============ Sin aniversarios en absoluto: empty extendido ============ -->
   @if (!hayAntiguedades()) {
     <app-empty-state
       image="proximos_aniversarios_empty.svg"
@@ -60,7 +58,6 @@
     />
   }
 
-  <!-- ============ Búsqueda sin resultados: empty simple ============ -->
   @else if (!hayResultados()) {
     <app-empty-state
       image="aniversarios-proximos_empty.svg"
@@ -71,7 +68,6 @@
     />
   }
 
-  <!-- ============ Grupos ============ -->
   @else {
     <div class="grupos">
       @for (g of grupos(); track g.id) {
@@ -115,7 +111,7 @@
                     </div>
 
                     <div class="aniv__info">
-                      <div class="aniv__row">
+                      <div class="aniv__row aniv__row--main">
                         <span class="aniv__name">{{ a.nombreColaborador }}</span>
                         <span class="aniv__fecha">{{ fechaProximoAniversario(a) }}</span>
                       </div>

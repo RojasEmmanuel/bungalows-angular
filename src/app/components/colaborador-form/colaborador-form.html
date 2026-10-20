@@ -5,7 +5,6 @@
 } @else {
   <form class="wizard" [formGroup]="form" (ngSubmit)="submit()" novalidate>
 
-    <!-- ============ Header: barra + stepper ============ -->
     <header class="wizard__head">
       <div class="wizard__progress">
         <div
@@ -36,12 +35,10 @@
       </ul>
     </header>
 
-    <!-- ============ Banner general ============ -->
     @if (errorGeneral()) {
       <div class="banner">{{ errorGeneral() }}</div>
     }
 
-    <!-- ============ Body: contenido del paso ============ -->
     <div class="wizard__body">
       <div class="step-title">
         <h4 class="step-title__name">{{ pasoConfig().label }}</h4>
@@ -50,7 +47,6 @@
 
       @switch (pasoActual()) {
 
-        <!-- ============ PASO 1: Datos personales ============ -->
         @case (0) {
           <div class="grid grid--3">
             <div class="field">
@@ -123,7 +119,6 @@
           </div>
         }
 
-        <!-- ============ PASO 2: Datos laborales ============ -->
         @case (1) {
           <div class="grid grid--3">
             <div class="field">
@@ -205,7 +200,6 @@
           </div>
         }
 
-        <!-- ============ PASO 3: Información (confidencial) ============ -->
         @case (2) {
           <div class="grid grid--3">
             <div class="field">
@@ -228,7 +222,6 @@
           </div>
         }
 
-        <!-- ============ PASO 4: Dirección ============ -->
         @case (3) {
           <div class="grid grid--2">
             <div class="field">
@@ -270,11 +263,10 @@
       }
     </div>
 
-    <!-- ============ Footer: navegación ============ -->
     <footer class="wizard__foot">
       <button
         type="button"
-        class="btn btn--ghost"
+        class="btn btn--ghost wizard__cancel"
         (click)="cancelar()"
         [disabled]="enviando()"
       >

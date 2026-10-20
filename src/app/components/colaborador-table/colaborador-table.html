@@ -1,6 +1,5 @@
 <div class="table-card">
 
-  <!-- ===== Tabs por ubicación ===== -->
   @if (hayColaboradoresGlobal() && ubicaciones().length > 0) {
     <div class="tabs">
       <div class="tabs__control"
@@ -21,7 +20,6 @@
     </div>
   }
 
-  <!-- ===== Toolbar: search + filtros ===== -->
   @if (hayColaboradoresGlobal()) {
     <div class="toolbar">
 
@@ -107,7 +105,6 @@
     </div>
   }
 
-  <!-- ===== Sin colaboradores: empty extendido ===== -->
   @if (!hayColaboradoresGlobal()) {
     <app-empty-state
       image="colaboradores_empty.svg"
@@ -116,7 +113,6 @@
     />
   }
 
-  <!-- ===== Tab sin colaboradores ===== -->
   @else if (!hayColaboradores()) {
     <app-empty-state
       image="colaboradores_empty.svg"
@@ -125,7 +121,6 @@
     />
   }
 
-  <!-- ===== Filtros sin resultados: empty simple ===== -->
   @else if (colaboradoresFiltrados().length === 0) {
     <app-empty-state
       image="colaboradores_empty.svg"
@@ -136,7 +131,6 @@
     />
   }
 
-  <!-- ===== Tabla ===== -->
   @else {
     <div class="table-wrap">
       <table class="table">
@@ -151,7 +145,7 @@
                 </svg>
               </span>
             </th>
-            <th class="th th--sortable" (click)="onSort('edad')">
+            <th class="th th--sortable th--hide-mobile" (click)="onSort('edad')">
               <span class="th__inner">
                 Edad
                 <svg class="sort-icon" [class]="iconClass('edad')" viewBox="0 0 24 24">
@@ -171,11 +165,11 @@
                 </svg>
               </span>
             </th>
-            <th class="th">Ingreso</th>
+            <th class="th th--hide-mobile">Ingreso</th>
             <th class="th th--num">Sueldo</th>
-            <th class="th">Turno</th>
-            <th class="th">Descanso</th>
-            <th class="th">Horario</th>
+            <th class="th th--hide-mobile">Turno</th>
+            <th class="th th--hide-mobile">Descanso</th>
+            <th class="th th--hide-mobile">Horario</th>
             <th class="th th--actions">Acciones</th>
           </tr>
         </thead>
@@ -183,7 +177,7 @@
         <tbody>
           @for (c of pageRows(); track c.id) {
             <tr class="tr">
-              <td class="td td--colab">
+              <td class="td td--colab" data-label="Colaborador">
                 <div class="colab">
                   @if (showAvatar(c)) {
                     <div class="avatar">
@@ -201,18 +195,20 @@
                 </div>
               </td>
 
-              <td class="td td--muted">{{ c.edad }}</td>
-              <td class="td">{{ c.puesto }}</td>
-              <td class="td td--muted">{{ c.ubicacion }}</td>
-              <td class="td"><span class="pill">{{ c.antiguedad }} años</span></td>
-              <td class="td td--muted">{{ c.fechaIngreso }}</td>
-              <td class="td td--num">{{ formatoSueldo(c.sueldo) }}</td>
-              <td class="td">{{ c.turno }}</td>
-              <td class="td td--muted">{{ c.diaDescanso }}</td>
-              <td class="td td--muted">
+              <td class="td td--muted td--hide-mobile" data-label="Edad">{{ c.edad }}</td>
+              <td class="td" data-label="Puesto">{{ c.puesto }}</td>
+              <td class="td td--muted" data-label="Ubicación">{{ c.ubicacion }}</td>
+              <td class="td" data-label="Antigüedad">
+                <span class="pill">{{ c.antiguedad }} años</span>
+              </td>
+              <td class="td td--muted td--hide-mobile" data-label="Ingreso">{{ c.fechaIngreso }}</td>
+              <td class="td td--num" data-label="Sueldo">{{ formatoSueldo(c.sueldo) }}</td>
+              <td class="td td--hide-mobile" data-label="Turno">{{ c.turno }}</td>
+              <td class="td td--muted td--hide-mobile" data-label="Descanso">{{ c.diaDescanso }}</td>
+              <td class="td td--muted td--hide-mobile" data-label="Horario">
                 {{ c.entrada?.slice(0, 5) }} – {{ c.salida?.slice(0, 5) }}
               </td>
-              <td class="td td--actions">
+              <td class="td td--actions" data-label="Acciones">
                 <button type="button" class="btn-ver" (click)="onVer(c.id)">
                   Ver
                 </button>
@@ -222,7 +218,6 @@
         </tbody>
       </table>
 
-      <!-- ===== Paginador ===== -->
       @if (colaboradoresFiltrados().length > 0) {
         <div class="pager">
           @if (mostrarPaginador()) {

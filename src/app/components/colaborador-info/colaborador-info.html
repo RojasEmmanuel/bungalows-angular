@@ -1,6 +1,5 @@
 @let c = colaborador();
 
-<!-- ============ HERO (cabecera con foto) ============ -->
 <div class="hero">
   <div class="hero__avatar">
     @if (showAvatar()) {
@@ -36,7 +35,6 @@
     </div>
   </div>
 
-  <!-- ============ Menú de 3 puntos ============ -->
   <div class="hero__menu">
     <button
       type="button"
@@ -90,11 +88,8 @@
   </div>
 </div>
 
-<!-- ============ GRID DE SECCIONES ============ -->
 <div class="grid">
-  <!-- Datos laborales -->
   <section class="card">
-
     <h3 class="card__title card__title--bare">Datos laborales</h3>
 
     <dl class="kv">
@@ -135,11 +130,8 @@
     </dl>
   </section>
 
-  <!-- Datos confidenciales -->
   <section class="card">
-    
     <h3 class="card__title card__title--bare">Información complementaria</h3>
-
 
     <dl class="kv">
       <div class="kv__row">
@@ -157,9 +149,7 @@
     </dl>
   </section>
 
-  <!-- Dirección -->
   <section class="card card--wide">
-  
     <h3 class="card__title card__title--bare">Dirección</h3>
 
     <p class="address">{{ c.direccion }}</p>
