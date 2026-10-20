@@ -283,8 +283,8 @@
   padding: 0;
   border: 1px solid var(--color-line);
   border-radius: 0.5rem;
-  background-color: var(--color-surface);
-  color: var(--color-ink-soft);
+  background-color: var(--color-brand);
+  color: var(--color-surfacet);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -296,19 +296,10 @@
 .icon-btn__svg {
   width: 14px;
   height: 14px;
+  color: var(--color-surface);
 }
 
-.icon-btn--edit {
-  color: var(--color-brand);
-  border-color: var(--color-line);
-  background-color: var(--color-brand-soft);
-}
 
-.icon-btn--danger {
-  color: #c0392b;
-  border-color: #f5c6c6;
-  background-color: #fdecec;
-}
 
 .td--money {
   font-variant-numeric: tabular-nums;
@@ -316,11 +307,6 @@
   color: #1e7a3d;
 }
 
-.icon-btn--pdf {
-  color: #4f46e5;
-  border-color: #c7d2fe;
-  background-color: #eef2ff;
-}
 
 .icon-btn--pdf:disabled {
   opacity: 0.7;
