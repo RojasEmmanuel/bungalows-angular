@@ -1,12 +1,7 @@
 <div class="auth">
 
-  <!-- ============================================================
-       Columna izquierda: formulario
-       ============================================================ -->
-  <section class="auth__form-side">
-    <div class="auth__form-wrap">
-
-      <!-- Marca -->
+  <aside class="auth__visual">
+    <div class="auth__visual-content">
       <div class="auth__brand">
         <div class="auth__brand-logo" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -19,15 +14,30 @@
         <span class="auth__brand-name">Gestión Interna</span>
       </div>
 
-      <!-- Encabezado -->
+      <h2 class="auth__visual-title">
+        Gestiona a tu equipo y tus operaciones sin esfuerzo.
+      </h2>
+      <p class="auth__visual-subtitle">
+        Centraliza colaboradores, nóminas, vacaciones y préstamos en un solo lugar.
+      </p>
+
+      <div class="auth__visual-image">
+        <!-- Asegúrate de que login.svg esté en la ruta correcta -->
+        <img src="login.svg" alt="Ilustración del sistema" />
+      </div>
+    </div>
+  </aside>
+
+  <section class="auth__form-side">
+    <div class="auth__form-wrap">
+
       <header class="auth__head">
         <h1 class="auth__title">Bienvenido de nuevo</h1>
         <p class="auth__subtitle">
-          Ingresa tu usuario y contraseña para acceder al sistema de Recursos Humanos.
+          Ingresa tu usuario y contraseña para acceder al sistema.
         </p>
       </header>
 
-      <!-- Error -->
       @if (error()) {
         <div class="auth__banner" role="alert">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -40,7 +50,6 @@
         </div>
       }
 
-      <!-- Formulario -->
       <form class="auth__form" (ngSubmit)="onSubmit()" novalidate>
 
         <div class="field">
@@ -123,21 +132,4 @@
     </div>
   </section>
 
-  <!-- ============================================================
-       Columna derecha: branding + ilustración
-       ============================================================ -->
-  <aside class="auth__visual">
-    <div class="auth__visual-content">
-      <h2 class="auth__visual-title">
-        Gestiona a tu equipo y tus operaciones sin esfuerzo.
-      </h2>
-      <p class="auth__visual-subtitle">
-        Centraliza colaboradores, nóminas, vacaciones y préstamos en un solo lugar.
-      </p>
-
-      <div class="auth__visual-image">
-        <img src="login.svg" alt="Ilustración del sistema" />
-      </div>
-    </div>
-  </aside>
 </div>

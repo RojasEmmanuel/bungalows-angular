@@ -1,53 +1,32 @@
 <div class="table-card">
 
-  @if (hayColaboradoresGlobal() && ubicaciones().length > 0) {
-    <div class="tabs">
-      <div class="tabs__control"
-           [style.--tab-count]="tabs().length"
-           [style.--tab-index]="tabs().indexOf(tabActivo())">
-        <div class="tabs__thumb"></div>
-        @for (t of tabs(); track t) {
-          <button
-            type="button"
-            class="tabs__item"
-            [class.tabs__item--active]="tabActivo() === t"
-            (click)="seleccionarTab(t)"
-          >
-            {{ tabLabel(t) }}
-          </button>
-        }
-      </div>
-    </div>
-  }
+  
 
   @if (hayColaboradoresGlobal()) {
     <div class="toolbar">
-
-      <div class="filtros__group">
-        <label class="filtros__label" for="buscar-colaborador">Buscar</label>
-        <div class="InputContainer">
-          <label class="labelforsearch" for="buscar-colaborador">
-            <svg class="searchIcon" viewBox="0 0 512 512" aria-hidden="true">
-              <path
-                d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
-              ></path>
-            </svg>
-          </label>
-
-          <input
-            id="buscar-colaborador"
-            class="input"
-            type="text"
-            name="busqueda"
-            placeholder="Buscar por nombre..."
-            autocomplete="off"
-            [value]="busqueda()"
-            (input)="onBusqueda($event)"
-          />
-        </div>
-      </div>
-
       <div class="filtros">
+        
+        <div class="filtros__group">
+          <label class="filtros__label" for="buscar-colaborador">Buscar</label>
+          <div class="InputContainer">
+            <label class="labelforsearch" for="buscar-colaborador">
+              <svg class="searchIcon" viewBox="0 0 512 512" aria-hidden="true">
+                <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"></path>
+              </svg>
+            </label>
+            <input
+              id="buscar-colaborador"
+              class="input"
+              type="text"
+              name="busqueda"
+              placeholder="Buscar por nombre..."
+              autocomplete="off"
+              [value]="busqueda()"
+              (input)="onBusqueda($event)"
+            />
+          </div>
+        </div>
+
         <div class="filtros__group">
           <label class="filtros__label" for="f-puesto">Puesto</label>
           <select
@@ -101,6 +80,24 @@
         >
           Limpiar
         </button>
+        
+      </div>
+    </div>
+  }
+
+  @if (hayColaboradoresGlobal() && ubicaciones().length > 0) {
+    <div class="ubicaciones-container">
+      <div class="ubicaciones-list">
+        @for (t of tabs(); track t) {
+          <button
+            type="button"
+            class="ubicacion-tag"
+            [class.ubicacion-tag--active]="tabActivo() === t"
+            (click)="seleccionarTab(t)"
+          >
+            {{ tabLabel(t) }}
+          </button>
+        }
       </div>
     </div>
   }

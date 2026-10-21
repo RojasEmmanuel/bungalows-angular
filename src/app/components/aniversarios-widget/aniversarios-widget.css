@@ -16,9 +16,6 @@
 }
 
 
-.widget:hover {
-  border-color: var(--color-brand);
-}
 
 /* ============ Header ============ */
 .widget__head {
