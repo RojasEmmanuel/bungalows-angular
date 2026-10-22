@@ -1,5 +1,5 @@
 # ============ Etapa 1: Builder ============
-FROM node:22-alpine AS builder
+FROM node:22.23.4-alpine AS builder
 WORKDIR /app
 
 # Copiamos archivos de dependencias para cachear
